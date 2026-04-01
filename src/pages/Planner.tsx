@@ -1,6 +1,8 @@
-import { CalendarDays, Clock, Trash2 } from "lucide-react";
+import { CalendarDays, Clock, Trash2, Plus, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/Layouts";
 import { useMeals } from "@/contexts/MealContext";
+import { CTAButton } from "@/components/UI";
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
