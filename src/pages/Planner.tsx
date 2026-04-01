@@ -1,11 +1,20 @@
-import { CalendarDays, Clock, Trash2 } from "lucide-react";
+import { CalendarDays, Clock, Trash2, Plus, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { MainLayout } from "@/components/Layouts";
 import { useMeals } from "@/contexts/MealContext";
+import { CTAButton } from "@/components/UI";
 
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const Planner = () => {
-  const { schedule, removeMealFromPlan } = useMeals();
+  const navigate = useNavigate();
+  const { schedule, removeMealFromPlan, setTargetDay, setTargetType } = useMeals();
+
+  const handleAddMeal = (day: string, type: string) => {
+    setTargetDay(day);
+    setTargetType(type);
+    navigate('/meals');
+  };
 
   const getMealsForDay = (day: string) => schedule.filter(m => m.day === day);
 
@@ -55,6 +64,17 @@ const Planner = () => {
           ))}
         </div>
       )}
+
+      {/* Actions */}
+      <div className="mt-8 space-y-3">
+        <button onClick={() => handleAddMeal("Mon", "Dinner")} className="w-full flex items-center justify-center gap-2 p-4 bg-muted/30 border border-border border-dashed rounded-2xl text-muted-foreground hover:text-primary hover:border-primary/30 transition-all">
+          <Plus size={18} />
+          <span className="text-xs font-bold uppercase tracking-widest">Add a meal</span>
+        </button>
+        {schedule.length > 0 && (
+          <CTAButton text={`Checkout · ${schedule.length} meals`} onClick={() => navigate('/checkout')} />
+        )}
+      </div>
     </MainLayout>
   );
 };
