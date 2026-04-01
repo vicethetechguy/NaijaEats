@@ -7,7 +7,14 @@ import { CTAButton } from "@/components/UI";
 const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 const Planner = () => {
-  const { schedule, removeMealFromPlan } = useMeals();
+  const navigate = useNavigate();
+  const { schedule, removeMealFromPlan, setTargetDay, setTargetType } = useMeals();
+
+  const handleAddMeal = (day: string, type: string) => {
+    setTargetDay(day);
+    setTargetType(type);
+    navigate('/meals');
+  };
 
   const getMealsForDay = (day: string) => schedule.filter(m => m.day === day);
 
