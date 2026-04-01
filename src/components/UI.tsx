@@ -3,7 +3,7 @@ import { cn } from '@/lib/utils';
 
 interface CTAButtonProps {
   text: string;
-  onClick?: () => void;
+  onClick?: (e?: React.MouseEvent) => void;
   style?: 'rounded orange' | 'outlined' | 'orange' | 'dark' | 'glass';
   className?: string;
   disabled?: boolean;
