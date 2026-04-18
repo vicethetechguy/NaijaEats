@@ -9,6 +9,10 @@ const foodImg = "https://www.remitly.com/blog/wp-content/uploads/2022/09/differe
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
+  const goStart = () => {
+    const onboarded = localStorage.getItem('platera_onboarded');
+    navigate(onboarded ? '/home' : '/onboarding');
+  };
 
   const fadeInUp = {
     initial: { opacity: 0, y: 20 },
@@ -80,7 +84,7 @@ const LandingPage: React.FC = () => {
                 World-class chefs. Tailored nutrition. Delivered fresh to your door.
               </p>
               <div className="pt-4 flex flex-col gap-4">
-                <CTAButton text="Begin your journey" onClick={() => navigate('/home')} />
+                <CTAButton text="Begin your journey" onClick={goStart} />
                 <button className="flex items-center justify-center gap-2 py-4 text-[11px] font-normal tracking-wide text-muted-foreground hover:text-foreground transition-all font-poppins">
                   <Play size={12} fill="currentColor" /> Watch how it works
                 </button>
@@ -165,7 +169,7 @@ const LandingPage: React.FC = () => {
                 </div>
               ))}
             </div>
-            <CTAButton text="Start your plan" onClick={() => navigate('/home')} />
+            <CTAButton text="Start your plan" onClick={goStart} />
             <div className="pt-12 border-t border-border opacity-30 flex flex-col items-center gap-4">
               <div className="flex items-center gap-2">
                 <img src={LOGO_URL} alt="P" className="w-8 h-8 object-contain" />
