@@ -90,7 +90,7 @@ const Account: React.FC = () => {
           </div>
           <p className="text-3xl font-black font-sans relative z-10 tracking-tight">$128.50<span className="text-sm font-normal opacity-70 font-poppins"> /mo</span></p>
           <div className="pt-2 relative z-10">
-            <button className="w-full py-4 bg-primary-foreground/10 backdrop-blur-md text-primary-foreground border border-primary-foreground/30 font-black rounded-2xl text-xs hover:bg-primary-foreground/20 transition-all font-poppins uppercase tracking-widest">Manage Plan</button>
+            <button onClick={() => navigate('/pricing')} className="w-full py-4 bg-primary-foreground/10 backdrop-blur-md text-primary-foreground border border-primary-foreground/30 font-black rounded-2xl text-xs hover:bg-primary-foreground/20 transition-all font-poppins uppercase tracking-widest">Manage Plan</button>
           </div>
           <div className="absolute top-[-20%] right-[-10%] w-40 h-40 bg-primary-foreground/10 rounded-full blur-2xl" />
         </div>

@@ -12,7 +12,7 @@ const Notifications: React.FC = () => {
   ];
 
   return (
-    <DetailLayout onBack={() => navigate('/home')} title="Activity Center">
+    <DetailLayout onBack={() => navigate(-1)} title="Activity Center">
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between mb-4 px-2">
           <p className="text-muted-foreground font-medium text-sm">2 unread updates.</p>
