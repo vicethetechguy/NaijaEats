@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,47 +6,47 @@
 
 @layer base {
   :root {
-    --background: 0 0% 2%;
-    --foreground: 0 0% 95%;
+    /* Sticker palette: cream paper + tomato + sage + mustard, hard ink outlines */
+    --background: 38 50% 97%;       /* cream */
+    --foreground: 80 4% 10%;        /* ink */
 
-    --card: 0 0% 7%;
-    --card-foreground: 0 0% 95%;
+    --card: 0 0% 100%;              /* paper white */
+    --card-foreground: 80 4% 10%;
 
-    --popover: 0 0% 7%;
-    --popover-foreground: 0 0% 95%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 80 4% 10%;
 
-    --primary: 24 95% 53%;
+    --primary: 9 100% 59%;          /* tomato */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 0 0% 12%;
-    --secondary-foreground: 0 0% 85%;
+    --secondary: 90 16% 60%;        /* sage */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 55%;
+    --muted: 38 30% 92%;            /* cream-2 */
+    --muted-foreground: 80 4% 35%;
 
-    --accent: 24 95% 53%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 47 90% 57%;           /* mustard */
+    --accent-foreground: 80 4% 10%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 84% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 15%;
-    --input: 0 0% 15%;
-    --ring: 24 95% 53%;
+    --border: 80 4% 10%;            /* INK borders */
+    --input: 80 4% 10%;
+    --ring: 9 100% 59%;
 
-    --radius: 0.75rem;
+    --radius: 1.25rem;
 
-    --surface-elevated: 0 0% 10%;
-    --surface-glass: 0 0% 100% / 0.05;
-    --gradient-primary: linear-gradient(135deg, hsl(24 95% 53%), hsl(35 100% 60%));
-    --gradient-dark: linear-gradient(180deg, hsl(0 0% 5%), hsl(0 0% 2%));
-    --shadow-glow: 0 0 40px hsl(24 95% 53% / 0.15);
+    --ink: 80 4% 10%;
+    --tomato: 9 100% 59%;
+    --sage: 90 16% 60%;
+    --mustard: 47 90% 57%;
+    --cream: 38 50% 97%;
   }
 }
 
 @layer base {
   * {
-    @apply border-border;
     -webkit-tap-highlight-color: transparent;
   }
 
@@ -61,10 +61,39 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
+    font-family: 'Outfit', system-ui, sans-serif;
   }
 
   ::selection {
-    background-color: hsl(24 95% 53%);
+    background-color: hsl(var(--primary));
     color: white;
   }
+}
+
+@layer utilities {
+  .shadow-stk {
+    box-shadow: 4px 4px 0 0 hsl(var(--ink));
+  }
+  .shadow-stk-sm {
+    box-shadow: 2px 2px 0 0 hsl(var(--ink));
+  }
+  .shadow-stk-lg {
+    box-shadow: 6px 6px 0 0 hsl(var(--ink));
+  }
+  .border-ink {
+    border-color: hsl(var(--ink));
+  }
+  .text-ink {
+    color: hsl(var(--ink));
+  }
+  .bg-ink {
+    background-color: hsl(var(--ink));
+  }
+  .bg-tomato { background-color: hsl(var(--tomato)); }
+  .bg-sage { background-color: hsl(var(--sage)); }
+  .bg-mustard { background-color: hsl(var(--mustard)); }
+  .bg-cream { background-color: hsl(var(--cream)); }
+  .text-tomato { color: hsl(var(--tomato)); }
+  .text-sage { color: hsl(var(--sage)); }
+  .text-mustard { color: hsl(var(--mustard)); }
 }

@@ -1,139 +1,117 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Badge } from '@/components/UI';
-import { ShoppingBasket, Check, ChefHat, Clock, ArrowRight, ShieldCheck } from 'lucide-react';
+import { DetailLayout } from '@/components/Layouts';
+import { Badge, CTAButton, StickerCard } from '@/components/UI';
+import { ShoppingBasket, Check, ChefHat, Clock } from 'lucide-react';
 import { useMeals } from '@/contexts/MealContext';
-import { cn } from '@/lib/utils';
 
 const MealDetail: React.FC = () => {
   const navigate = useNavigate();
   const { mealId } = useParams();
   const { targetDay, targetType, addMealToPlan, setTargetDay, setTargetType } = useMeals();
-  const [isAdded, setIsAdded] = useState(false);
+  const [added, setAdded] = useState(false);
 
   const meal = {
     id: mealId || 'jollof',
-    title: "Smoky Party Jollof",
-    chefName: "Chef Ezinne",
-    chefRole: "Executive Saucier",
-    chefImage: "https://images.unsplash.com/photo-1583394293214-28dea15ee548?q=80&w=200&auto=format&fit=crop",
-    image: "https://www.remitly.com/blog/wp-content/uploads/2022/09/different-Nigerian-dishes.jpeg",
-    description: "The pride of West Africa. Long-grain parboiled rice cooked in a rich, spicy tomato and bell pepper base, flavored with bay leaves, thyme, and a distinct smoky aroma achieved through traditional bottom-pot steaming.",
-    tags: ["High Protein", "Spicy", "Authentic"],
-    prepTime: "45 Mins",
+    title: 'Smoky Party Jollof',
+    chef: 'Chef Ezinne',
+    chefImg: 'https://i.pravatar.cc/200?img=32',
+    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?q=80&w=1200&auto=format&fit=crop',
+    desc: 'Long-grain parboiled rice cooked in a rich, spicy tomato-and-pepper base, finished with a distinct smoky aroma from traditional bottom-pot steaming.',
+    prep: '45 min',
+    price: 18.99,
     nutrition: [
-      { label: "Calories", value: "650", unit: "KCAL" },
-      { label: "Protein", value: "24", unit: "G" },
-      { label: "Carbs", value: "85", unit: "G" },
-      { label: "Fats", value: "18", unit: "G" },
+      { l: 'Calories', v: '650', u: 'kcal' },
+      { l: 'Protein', v: '24', u: 'g' },
+      { l: 'Carbs', v: '85', u: 'g' },
+      { l: 'Fats', v: '18', u: 'g' },
     ],
-    ingredients: [
-      "Long grain parboiled rice", "Scotch bonnet peppers", "Red bell peppers",
-      "Premium vegetable oil", "Traditional Nigerian seasoning", "Grilled hard chicken portion", "Fried sweet plantains"
-    ],
-    allergens: ["Contains Poultry", "Medium spice level"]
+    ingredients: ['Long-grain parboiled rice', 'Scotch bonnet peppers', 'Red bell peppers', 'Premium vegetable oil', 'Nigerian seasoning blend', 'Grilled chicken portion', 'Fried sweet plantains'],
   };
 
-  const handleAddToPlan = () => {
-    const day = targetDay || "Mon";
-    const type = targetType || "Dinner";
+  const handleAdd = () => {
+    const day = targetDay || 'Mon';
+    const type = targetType || 'Dinner';
     addMealToPlan({
       title: meal.title, day, type,
-      time: type === "Breakfast" ? "8:30 AM" : type === "Lunch" ? "1:00 PM" : "7:30 PM",
-      image: meal.image, chefName: meal.chefName, price: 18.99
+      time: type === 'Breakfast' ? '8:30 AM' : type === 'Lunch' ? '1:00 PM' : '7:30 PM',
+      image: meal.image, chefName: meal.chef, price: meal.price,
     });
-    setIsAdded(true);
-    setTimeout(() => { setIsAdded(false); setTargetDay(null); setTargetType(null); navigate('/planner'); }, 800);
+    setAdded(true);
+    setTimeout(() => { setAdded(false); setTargetDay(null); setTargetType(null); navigate('/planner'); }, 800);
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-0 md:p-8">
-      <div className="flex flex-col h-screen md:h-[844px] w-full max-w-md bg-card shadow-2xl rounded-none md:rounded-[40px] relative overflow-hidden border border-border">
-        
-        <div className="absolute top-0 left-0 right-0 z-[60] px-6 py-8 flex items-center justify-between pointer-events-none">
-          <button onClick={() => navigate(-1)} className="p-3 bg-background/20 backdrop-blur-xl rounded-2xl text-foreground border border-border active:scale-90 transition-all pointer-events-auto">
-            <ArrowRight size={20} className="rotate-180" />
-          </button>
-          <button className="p-3 bg-background/20 backdrop-blur-xl rounded-2xl text-foreground border border-border active:scale-90 transition-all pointer-events-auto">
-            <ShieldCheck size={20} />
-          </button>
-        </div>
+    <DetailLayout title={meal.title}>
+      <div className="grid lg:grid-cols-12 gap-10">
+        <div className="lg:col-span-7">
+          <div className="border-[4px] border-ink rounded-[32px] overflow-hidden shadow-stk-lg bg-card">
+            <img src={meal.image} alt={meal.title} className="w-full aspect-[4/3] object-cover" />
+          </div>
+          <div className="mt-6 flex flex-wrap gap-2">
+            <Badge text="Signature" color="orange" />
+            <Badge text={meal.prep} color="mustard" />
+            <Badge text="High Protein" color="sage" />
+          </div>
+          <h2 className="text-3xl sm:text-5xl font-black tracking-tighter mt-6">{meal.title}</h2>
+          <p className="mt-4 text-lg font-medium text-ink/70 leading-relaxed">{meal.desc}</p>
 
-        <div className="flex-1 overflow-y-auto scroll-smooth">
-          <section className="h-[50vh] relative shrink-0">
-            <motion.img initial={{ scale: 1.1, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 0.8 }} src={meal.image} className="w-full h-full object-cover" alt={meal.title} />
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-transparent to-transparent" />
-            <div className="absolute bottom-8 px-8 w-full">
-              <div className="flex items-center gap-2 mb-3">
-                <Badge text="Signature" color="orange" />
-                <span className="text-[10px] text-foreground/50 uppercase tracking-widest flex items-center gap-1 font-normal">
-                  <Clock size={12} /> {meal.prepTime}
-                </span>
+          <div className="grid grid-cols-4 gap-3 mt-8">
+            {meal.nutrition.map((n) => (
+              <div key={n.l} className="bg-card border-[3px] border-ink rounded-2xl p-4 text-center shadow-stk-sm">
+                <p className="text-[10px] font-bold uppercase tracking-wide text-ink/60">{n.l}</p>
+                <p className="text-xl font-black">{n.v}<span className="text-xs font-bold text-ink/60 ml-0.5">{n.u}</span></p>
               </div>
-              <h1 className="text-4xl font-black text-foreground leading-tight tracking-tighter">{meal.title}</h1>
-            </div>
-          </section>
+            ))}
+          </div>
 
-          <div className="px-8 space-y-12 pb-40 pt-4">
-            <section className="grid grid-cols-4 gap-3">
-              {meal.nutrition.map((item, i) => (
-                <div key={i} className="bg-muted/30 border border-border rounded-2xl p-4 flex flex-col items-center justify-center text-center">
-                  <span className="text-[9px] font-normal text-muted-foreground uppercase tracking-widest mb-1">{item.label}</span>
-                  <div className="flex items-baseline gap-0.5">
-                    <span className="text-lg font-black text-foreground">{item.value}</span>
-                    <span className="text-[8px] font-normal text-muted-foreground">{item.unit}</span>
-                  </div>
-                </div>
-              ))}
-            </section>
-
-            <section className="space-y-4">
-              <h3 className="text-[10px] font-normal text-muted-foreground uppercase tracking-[0.3em]">Description</h3>
-              <p className="text-lg font-normal text-muted-foreground leading-relaxed font-poppins">{meal.description}</p>
-            </section>
-
-            <section className="p-6 bg-muted/30 rounded-[32px] border border-border flex items-center gap-5">
-              <div className="w-16 h-16 rounded-2xl overflow-hidden border border-border">
-                <img src={meal.chefImage} className="w-full h-full object-cover" alt={meal.chefName} />
+          <h3 className="text-xs font-bold uppercase tracking-widest text-ink/60 mt-10 mb-4">Ingredients</h3>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {meal.ingredients.map((i) => (
+              <div key={i} className="flex items-center gap-3 bg-card border-2 border-ink rounded-2xl px-4 py-3">
+                <span className="size-2 rounded-full bg-tomato" />
+                <span className="font-semibold text-sm">{i}</span>
               </div>
-              <div>
-                <div className="flex items-center gap-1 text-primary mb-0.5">
-                  <ChefHat size={12} />
-                  <span className="text-[9px] font-normal uppercase tracking-widest">Master chef</span>
-                </div>
-                <h4 className="text-xl font-black text-foreground">{meal.chefName}</h4>
-                <p className="text-[10px] text-muted-foreground uppercase font-normal">{meal.chefRole}</p>
-              </div>
-            </section>
-
-            <section className="space-y-6">
-              <h3 className="text-[10px] font-normal text-muted-foreground uppercase tracking-[0.3em]">Ingredients</h3>
-              <div className="space-y-3">
-                {meal.ingredients.map((ing, i) => (
-                  <div key={i} className="flex items-center gap-4 bg-muted/20 p-4 rounded-2xl border border-border">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary" />
-                    <span className="text-sm font-normal text-muted-foreground">{ing}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
+            ))}
           </div>
         </div>
 
-        <div className="absolute bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-card via-card to-transparent pt-12 z-[70]">
-          <button
-            onClick={handleAddToPlan}
-            className={cn(
-              "w-full h-16 rounded-[24px] font-normal text-sm flex items-center justify-center gap-3 transition-all active:scale-[0.98] shadow-2xl",
-              isAdded ? "bg-green-500 text-primary-foreground" : "bg-primary text-primary-foreground hover:bg-primary/90"
-            )}
-          >
-            {isAdded ? (<><Check size={18} strokeWidth={3} /> Plan updated</>) : (<><ShoppingBasket size={18} /> {targetDay && targetType ? `Add to ${targetDay} ${targetType}` : "Add to plan"}</>)}
-          </button>
+        <div className="lg:col-span-5 lg:sticky lg:top-32 lg:self-start space-y-6">
+          <StickerCard className="p-6 flex items-center gap-4">
+            <div className="size-16 rounded-2xl border-[3px] border-ink overflow-hidden shrink-0">
+              <img src={meal.chefImg} alt={meal.chef} className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-1 text-tomato">
+                <ChefHat size={14} />
+                <span className="text-[10px] font-bold uppercase tracking-widest">Master chef</span>
+              </div>
+              <h4 className="text-xl font-black">{meal.chef}</h4>
+              <p className="text-xs font-bold text-ink/60 uppercase">Executive Saucier</p>
+            </div>
+          </StickerCard>
+
+          <StickerCard className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-xs font-bold uppercase tracking-widest text-ink/60">Per plate</span>
+              <span className="text-3xl font-black text-tomato">${meal.price.toFixed(2)}</span>
+            </div>
+            <div className="flex items-center gap-2 text-sm font-bold text-ink/70 mb-5">
+              <Clock size={14} /> Ready in {meal.prep}
+            </div>
+            <CTAButton
+              text={added ? 'Added to plan' : targetDay ? `Add to ${targetDay} ${targetType}` : 'Add to plan'}
+              onClick={handleAdd}
+              style={added ? 'sage' : 'orange'}
+            />
+            <button onClick={() => navigate('/planner')} className="w-full mt-3 text-sm font-bold uppercase tracking-wide text-ink/60 hover:text-ink py-2 flex items-center justify-center gap-2">
+              <ShoppingBasket size={14} /> View planner
+            </button>
+            {added && <p className="text-center text-sage font-bold text-sm mt-2"><Check size={14} className="inline" /> Saved to your plan</p>}
+          </StickerCard>
         </div>
       </div>
-    </div>
+    </DetailLayout>
   );
 };
 

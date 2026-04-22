@@ -1,104 +1,89 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
-import { CTAButton, Badge } from '@/components/UI';
-import { ChefHat, Truck, ArrowRight, Play } from 'lucide-react';
+import { Badge, StickerCard } from '@/components/UI';
+import { ChefHat, ArrowRight, Truck, Flame } from 'lucide-react';
+
+const heroImg = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1200&auto=format&fit=crop';
+
+const favorites = [
+  { id: 'jollof', title: 'Smoky Jollof Rice', cal: '650 KCAL', chef: 'Chef Ezinne', image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?q=80&w=600&auto=format&fit=crop' },
+  { id: 'egusi', title: 'Egusi & Pounded Yam', cal: '820 KCAL', chef: 'Chef Funmi', image: 'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=600&auto=format&fit=crop' },
+  { id: 'suya', title: 'Lagos Beef Suya', cal: '540 KCAL', chef: 'Chef Amaka', image: 'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=600&auto=format&fit=crop' },
+];
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState('Eleanor');
-
+  const [name, setName] = useState('Eleanor');
   useEffect(() => {
-    const savedUser = localStorage.getItem('platera_user');
-    if (savedUser) {
-      try {
-        const parsed = JSON.parse(savedUser);
-        if (parsed.name) setUserName(parsed.name.split(' ')[0]);
-      } catch (e) { console.error("Failed to parse user data", e); }
-    }
+    const u = localStorage.getItem('platera_user');
+    if (u) try { const p = JSON.parse(u); if (p.name) setName(p.name.split(' ')[0]); } catch {}
   }, []);
 
-  const foodImg = "https://www.remitly.com/blog/wp-content/uploads/2022/09/different-Nigerian-dishes.jpeg";
-
-  const favorites = [
-    { id: 'jollof', title: "Smoky Jollof Rice", image: foodImg, cal: "650 KCAL", protein: "24g" },
-    { id: 'egusi', title: "Egusi & Pounded Yam", image: foodImg, cal: "820 KCAL", protein: "35g" },
-  ];
-
   return (
-    <MainLayout title="Platera">
-      <div className="space-y-10">
-        <section className="space-y-1">
-          <h2 className="text-3xl font-black text-foreground tracking-tight font-sans">Welcome, {userName}</h2>
-          <p className="text-muted-foreground font-medium text-sm font-poppins">Your next Nigerian feast arrives in <span className="text-primary font-bold">2 days</span>.</p>
-        </section>
-
-        <section className="relative group cursor-pointer overflow-hidden rounded-[32px] p-8 text-foreground min-h-[380px] flex flex-col justify-end shadow-2xl" onClick={() => navigate('/meals')}>
-          <div className="absolute inset-0">
-            <img src={foodImg} className="w-full h-full object-cover" alt="Banner" />
-          </div>
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-          
-          <div className="relative z-10 space-y-4">
-            <div className="flex gap-2">
-              <Badge text="New specials" color="orange" />
-            </div>
-            <h2 className="text-4xl font-black leading-none tracking-tighter font-sans text-foreground">Naija spice.</h2>
-            <p className="text-secondary-foreground text-sm font-medium font-poppins">
-              Authentic flavors from Lagos to Abuja, delivered to your doorstep.
+    <MainLayout title="Home">
+      <div className="space-y-12">
+        <section className="grid lg:grid-cols-12 gap-8 items-center">
+          <div className="lg:col-span-7 space-y-5">
+            <Badge text="🔥 Specials today" color="mustard" />
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter leading-[0.95]">
+              Welcome back, <span className="text-tomato">{name}</span>.
+            </h1>
+            <p className="text-lg text-ink/70 font-medium max-w-xl">
+              Your next neighborhood feast arrives in <span className="font-black text-ink">2 days</span>. Ready to plan the week?
             </p>
-            <div className="flex gap-3 pt-2">
-              <CTAButton 
-                text="Explore" 
-                className="w-auto px-6 h-12"
-                onClick={(e) => { e.stopPropagation(); navigate('/meals'); }}
-              />
-              <button 
-                onClick={(e) => { e.stopPropagation(); navigate('/planner'); }}
-                className="flex items-center justify-center gap-2 px-6 h-12 bg-muted/40 backdrop-blur-xl rounded-2xl font-normal text-xs border border-border font-poppins hover:bg-muted/60 transition-all text-foreground"
-              >
-                <Play size={14} fill="currentColor" />
-                Planner
-              </button>
+            <div className="flex flex-wrap gap-3 pt-2">
+              <button onClick={() => navigate('/meals')} className="bg-tomato text-white border-[3px] border-ink px-6 py-3 rounded-2xl font-bold uppercase tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all">Explore meals</button>
+              <button onClick={() => navigate('/planner')} className="bg-card border-[3px] border-ink px-6 py-3 rounded-2xl font-bold uppercase tracking-wide shadow-stk-sm hover:bg-mustard transition-colors">Open planner</button>
+            </div>
+          </div>
+          <div className="lg:col-span-5 relative">
+            <div className="rotate-2 border-[4px] border-ink rounded-[36px] overflow-hidden shadow-stk-lg">
+              <img src={heroImg} alt="Today's special" className="w-full aspect-[5/4] object-cover" />
+            </div>
+            <div className="absolute -bottom-5 -left-5 bg-sage text-white border-[3px] border-ink p-4 rounded-2xl -rotate-6 shadow-stk">
+              <p className="font-black text-xl leading-none">Free</p>
+              <p className="text-xs font-bold uppercase">Delivery today</p>
             </div>
           </div>
         </section>
 
-        <section className="grid grid-cols-2 gap-4">
+        <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: "Calories", val: "2,450", sub: "Avg" },
-            { label: "Protein", val: "142g", sub: "Daily" },
-          ].map((stat, i) => (
-            <div key={i} className="p-6 bg-muted/30 backdrop-blur-xl border border-border rounded-[28px] hover:bg-muted/50 transition-all cursor-pointer group shadow-xl">
-              <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest mb-1 font-poppins">{stat.label}</p>
-              <h4 className="text-2xl font-black text-foreground tracking-tight font-sans">{stat.val}</h4>
-              <p className="text-[9px] font-bold text-primary/80 font-poppins">{stat.sub}</p>
-            </div>
-          ))}
+            { l: 'Calories', v: '2,450', s: 'Daily avg', icon: Flame, c: 'bg-tomato text-white' },
+            { l: 'Protein', v: '142g', s: 'On track', icon: ChefHat, c: 'bg-sage text-white' },
+            { l: 'Meals', v: '12', s: 'This week', icon: Truck, c: 'bg-mustard text-ink' },
+            { l: 'Saved', v: '$84', s: 'vs eating out', icon: ArrowRight, c: 'bg-ink text-cream' },
+          ].map((s) => {
+            const I = s.icon;
+            return (
+              <StickerCard key={s.l} className="p-5">
+                <div className={`size-10 rounded-xl border-2 border-ink ${s.c} flex items-center justify-center mb-3`}><I size={18} /></div>
+                <p className="text-xs font-bold uppercase tracking-wide text-ink/60">{s.l}</p>
+                <p className="text-2xl font-black tracking-tight">{s.v}</p>
+                <p className="text-xs font-bold text-ink/60">{s.s}</p>
+              </StickerCard>
+            );
+          })}
         </section>
 
         <section className="space-y-6">
           <div className="flex items-center justify-between">
-            <h3 className="text-xl font-black text-foreground font-sans">Trending in Lagos</h3>
-            <button onClick={() => navigate('/meals')} className="text-primary font-normal text-xs flex items-center gap-1 font-poppins">
-              All <ArrowRight size={14} />
-            </button>
+            <h2 className="text-3xl font-black tracking-tight">Trending in your area</h2>
+            <button onClick={() => navigate('/meals')} className="font-bold text-sm uppercase tracking-wide text-tomato hover:underline flex items-center gap-1">All <ArrowRight size={14} /></button>
           </div>
-          <div className="space-y-4">
-            {favorites.map((meal) => (
-              <div key={meal.id} className="group cursor-pointer bg-muted/30 backdrop-blur-xl rounded-[28px] p-4 flex items-center gap-4 border border-border hover:bg-muted/50 transition-all shadow-xl" onClick={() => navigate(`/meals/${meal.id}`)}>
-                <div className="w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0">
-                  <img src={meal.image} alt={meal.title} className="w-full h-full object-cover" />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {favorites.map((m) => (
+              <StickerCard key={m.id} onClick={() => navigate(`/meals/${m.id}`)} className="overflow-hidden">
+                <div className="aspect-[4/3] border-b-[3px] border-ink overflow-hidden">
+                  <img src={m.image} alt={m.title} className="w-full h-full object-cover" />
                 </div>
-                <div className="flex-1 space-y-1">
-                  <Badge text={meal.cal} color="gray" />
-                  <h4 className="font-bold text-foreground text-sm group-hover:text-primary transition-colors font-sans">{meal.title}</h4>
-                  <div className="flex items-center gap-3 text-[10px] font-normal text-muted-foreground uppercase font-poppins">
-                    <span className="flex items-center gap-1"><ChefHat size={12} /> 45m</span>
-                    <span className="flex items-center gap-1"><Truck size={12} /> Ready</span>
-                  </div>
+                <div className="p-5 space-y-2">
+                  <Badge text={m.cal} color="mustard" />
+                  <h3 className="text-xl font-extrabold leading-tight">{m.title}</h3>
+                  <p className="text-sm font-medium text-ink/60">By {m.chef}</p>
                 </div>
-              </div>
+              </StickerCard>
             ))}
           </div>
         </section>

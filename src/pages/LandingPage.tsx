@@ -1,11 +1,44 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ChefHat, ShieldCheck, Star, Zap, Play, CheckCircle2 } from 'lucide-react';
-import { CTAButton } from '@/components/UI';
+import { ChefHat, ShieldCheck, Zap, MapPin, Star, ArrowRight } from 'lucide-react';
+import { SiteHeader, SiteFooter, MobileBottomDock } from '@/components/Layouts';
+import { Badge, StickerCard } from '@/components/UI';
 
-const LOGO_URL = "https://drive.google.com/thumbnail?id=1jkLC0R1klmr8UOCJ2exnvjROu8VUjPWV&sz=w500";
-const foodImg = "https://www.remitly.com/blog/wp-content/uploads/2022/09/different-Nigerian-dishes.jpeg";
+const heroImg =
+  'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1200&auto=format&fit=crop';
+
+const trending = [
+  {
+    id: 'jollof',
+    title: 'Smoky Party Jollof',
+    chef: 'Chef Ezinne',
+    miles: '1.2 mi',
+    price: 18,
+    badge: { text: 'Spicy', color: 'mustard' as const },
+    image:
+      'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 'egusi',
+    title: 'Lemon Zest Gnocchi',
+    chef: 'Pasta Lab',
+    miles: '0.8 mi',
+    price: 22,
+    badge: { text: 'Vegan', color: 'sage' as const },
+    image:
+      'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=800&auto=format&fit=crop',
+  },
+  {
+    id: 'suya',
+    title: 'Umami Smash Burger',
+    chef: 'Big Mike',
+    miles: '2.4 mi',
+    price: 16,
+    badge: { text: 'Top Rated', color: 'orange' as const },
+    image:
+      'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop',
+  },
+];
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
@@ -14,172 +47,177 @@ const LandingPage: React.FC = () => {
     navigate(onboarded ? '/home' : '/onboarding');
   };
 
-  const fadeInUp = {
-    initial: { opacity: 0, y: 20 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true },
-    transition: { duration: 0.6 }
-  };
-
-  const stagger = {
-    whileInView: { transition: { staggerChildren: 0.1 } }
-  };
-
-  const chefs = [
-    { name: "Chef Ezinne", spec: "Rice & Grills", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQnBfy2y1_WsK76Sxb8-cyd6-afx_dj_dazdQ&s" },
-    { name: "Chef Funmi", spec: "Traditional Soups", img: "https://media.cnn.com/api/v1/images/stellar/prod/240209100557-chishuru-michelin-restaurant-1.jpg?c=16x9" },
-    { name: "Chef Amaka", spec: "Fusion Bowls", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQN6tGEFhm0wylpw1gthnY_ZpKOaqtNrNhILA&s" },
-    { name: "Chef Ozin", spec: "Gourmet Pastries", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKeWm_LhDIBSiUb1DMStIw7w7FjhreUt2Q1w&s" },
-    { name: "Chef Dele", spec: "Seafood Specialties", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRf3hDFr4bsi2K6J8oktRJNeBBAjNZtpz1Zxg&s" },
-    { name: "Chef Bayo", spec: "Plant-based Delights", img: "https://static01.nyt.com/images/2024/01/07/nyregion/07routine-nigerian-chef-02/07routine-nigerian-chef-02-superJumbo-v2.jpg" }
-  ];
-
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-0 md:p-8">
-      <div className="flex flex-col h-screen md:h-[844px] w-full max-w-md bg-card shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] rounded-none md:rounded-[40px] relative overflow-hidden border border-border">
-        
-        <div className="flex-1 overflow-y-auto">
-          
-          <header className="sticky top-0 left-0 right-0 z-50 px-6 py-6 flex items-center justify-between bg-card/80 backdrop-blur-xl border-b border-border transition-all duration-300">
-            <motion.div 
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-1.5 cursor-pointer group"
-            >
-              <img src={LOGO_URL} alt="Platera" className="w-10 h-10 object-contain group-hover:scale-110 transition-transform" />
-              <h1 className="text-xl font-black text-foreground tracking-tighter">Platera</h1>
-            </motion.div>
-            
-            <motion.button 
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              onClick={() => navigate('/auth')}
-              className="px-5 py-2 bg-muted hover:bg-muted/80 rounded-lg text-[10px] font-normal tracking-wide text-foreground border border-border shadow-xl active:scale-95 transition-all font-poppins"
-            >
-              Sign in
-            </motion.button>
-          </header>
+    <div className="min-h-screen bg-cream text-ink">
+      <SiteHeader />
 
-          {/* HERO */}
-          <section className="relative min-h-[700px] flex flex-col justify-end p-8 pb-16 -mt-20">
-            <div className="absolute inset-0">
-              <img src={foodImg} className="w-full h-full object-cover opacity-60" alt="Premium Food" />
-              <div className="absolute inset-0 bg-gradient-to-t from-card via-card/40 to-transparent" />
+      {/* HERO */}
+      <header className="pt-16 pb-20 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
+          <div className="lg:col-span-7">
+            <div className="inline-block bg-mustard border-2 border-ink px-4 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide mb-6 -rotate-2 shadow-stk-sm">
+              ⭐ New in your neighborhood
             </div>
-
-            <motion.div 
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="relative z-10 space-y-6"
-            >
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/20 rounded-full border border-primary/30">
-                <Star size={10} className="text-primary fill-primary" />
-                <span className="text-[9px] font-normal text-primary tracking-wide font-poppins">Voted #1 meal planner 2026</span>
+            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black leading-[0.9] tracking-tighter mb-8">
+              The neighborhood
+              <br />
+              <span className="text-tomato underline decoration-[6px] decoration-ink underline-offset-[10px]">
+                on your plate.
+              </span>
+            </h1>
+            <p className="text-lg sm:text-xl text-ink/70 max-w-xl mb-8 font-medium">
+              Book chef-prepped meals from real cooks in your zip code — fresh, fast, and made with
+              love. Lunch, dinner, or weekly plans.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 max-w-xl">
+              <div className="flex-1 bg-card border-[3px] border-ink rounded-2xl p-4 shadow-stk-sm flex items-center gap-3">
+                <MapPin size={20} className="text-tomato" />
+                <input
+                  type="text"
+                  placeholder="Enter your zip code"
+                  className="w-full font-semibold outline-none bg-transparent placeholder:text-ink/40"
+                />
               </div>
-              <h2 className="text-6xl font-black text-foreground leading-[0.85] tracking-tighter font-sans">
-                Dining,<br/>Evolved.
-              </h2>
-              <p className="text-muted-foreground text-lg font-normal leading-relaxed max-w-[280px] font-poppins">
-                World-class chefs. Tailored nutrition. Delivered fresh to your door.
-              </p>
-              <div className="pt-4 flex flex-col gap-4">
-                <CTAButton text="Begin your journey" onClick={goStart} />
-                <button className="flex items-center justify-center gap-2 py-4 text-[11px] font-normal tracking-wide text-muted-foreground hover:text-foreground transition-all font-poppins">
-                  <Play size={12} fill="currentColor" /> Watch how it works
-                </button>
+              <button
+                onClick={goStart}
+                className="bg-sage text-white border-[3px] border-ink px-8 py-4 rounded-2xl font-extrabold uppercase shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm active:translate-x-1.5 active:translate-y-1.5 active:shadow-none transition-all"
+              >
+                Find Food
+              </button>
+            </div>
+            <div className="mt-8 flex items-center gap-3 text-sm font-bold text-ink/60">
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <img
+                    key={i}
+                    src={`https://i.pravatar.cc/40?img=${i + 10}`}
+                    className="w-8 h-8 rounded-full border-2 border-ink"
+                    alt=""
+                  />
+                ))}
               </div>
-            </motion.div>
-          </section>
+              <span>10k+ hungry neighbors served this month</span>
+            </div>
+          </div>
 
-          {/* VALUE PROPS */}
-          <section className="p-8 space-y-12">
-            <motion.div {...fadeInUp} className="text-center space-y-2">
-              <h3 className="text-[10px] font-normal text-primary tracking-widest font-poppins uppercase">The experience</h3>
-              <h4 className="text-3xl font-black text-foreground tracking-tighter leading-tight font-sans">Elevated from the first bite.</h4>
-            </motion.div>
-
-            <motion.div variants={stagger} initial="initial" whileInView="whileInView" viewport={{ once: true }} className="grid grid-cols-1 gap-4">
-              {[
-                { icon: <ChefHat className="text-primary" />, title: "Master chefs", desc: "Our culinary experts from 5-star backgrounds design every meal." },
-                { icon: <ShieldCheck className="text-primary" />, title: "Bio-matched", desc: "Meals calculated to hit your specific macro and health goals." },
-                { icon: <Zap className="text-primary" />, title: "Zero prep", desc: "No chopping. No cooking. Just heat and indulge in minutes." }
-              ].map((item, i) => (
-                <motion.div key={i} variants={fadeInUp} className="bg-muted/30 p-6 rounded-xl border border-border flex gap-5 items-start">
-                  <div className="p-4 bg-secondary rounded-lg shadow-xl">{item.icon}</div>
-                  <div className="space-y-1">
-                    <h5 className="font-black text-foreground text-lg tracking-tight font-sans">{item.title}</h5>
-                    <p className="text-muted-foreground text-xs font-normal leading-relaxed font-poppins">{item.desc}</p>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </section>
-
-          {/* CHEF SHOWCASE */}
-          <section className="bg-secondary/50 border-y border-border py-12 space-y-8">
-            <div className="px-8 space-y-2">
-              <h3 className="text-3xl font-black text-foreground tracking-tighter font-sans">Chef-led kitchens.</h3>
-              <p className="text-muted-foreground text-sm font-poppins">Authentic flavors from Nigeria's top culinary talent.</p>
+          <div className="lg:col-span-5 relative">
+            <div className="rotate-[3deg] border-[4px] border-ink rounded-[40px] overflow-hidden shadow-stk-lg bg-card">
+              <img src={heroImg} alt="Fresh chef-prepped meal" className="w-full aspect-[4/5] object-cover" />
             </div>
-            <div className="flex gap-4 overflow-x-auto px-8 pb-4">
-              {chefs.map((chef, i) => (
-                <div key={i} className="min-w-[180px] bg-muted/30 rounded-xl overflow-hidden border border-border shrink-0 group">
-                  <div className="h-40 relative">
-                    <img src={chef.img} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" alt={chef.name} />
-                  </div>
-                  <div className="p-4">
-                    <h5 className="font-normal text-foreground text-sm font-sans">{chef.name}</h5>
-                    <p className="text-[9px] font-normal text-primary tracking-widest font-poppins">{chef.spec}</p>
-                  </div>
-                </div>
-              ))}
+            <div className="absolute -bottom-6 -left-6 bg-tomato text-white border-[3px] border-ink p-5 rounded-3xl -rotate-6 shadow-stk">
+              <p className="font-black text-2xl leading-none">12 Chefs</p>
+              <p className="font-semibold text-xs uppercase tracking-wide mt-1">Cooking today</p>
             </div>
-          </section>
-
-          {/* SOCIAL PROOF */}
-          <section className="p-8 space-y-8">
-            <div className="bg-primary rounded-2xl p-8 text-primary-foreground relative overflow-hidden">
-              <div className="relative z-10 space-y-4">
-                <h4 className="text-4xl font-black leading-none tracking-tighter font-sans">Loved by 10k+ foodies.</h4>
-                <div className="flex -space-x-3">
-                  {[1,2,3,4].map(i => (
-                    <img key={i} src={`https://i.pravatar.cc/100?img=${i+10}`} className="w-10 h-10 rounded-full border-2 border-primary" alt="Avatar" />
-                  ))}
-                  <div className="w-10 h-10 rounded-full border-2 border-primary bg-primary-foreground/20 backdrop-blur-md flex items-center justify-center text-[10px] font-black font-poppins">+10k</div>
-                </div>
-                <p className="text-primary-foreground/80 text-sm font-normal font-poppins">"Finally, a healthy meal service that doesn't compromise on the real Naija taste. Absolute game changer."</p>
-                <p className="text-xs font-normal tracking-widest font-poppins">— Amadi K.</p>
-              </div>
-              <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-primary-foreground/10 rounded-full blur-3xl" />
+            <div className="absolute -top-4 -right-4 bg-mustard text-ink border-[3px] border-ink p-4 rounded-2xl rotate-[8deg] shadow-stk-sm flex items-center gap-2">
+              <Star size={16} fill="currentColor" />
+              <span className="font-black text-sm">4.9 / 5</span>
             </div>
-          </section>
-
-          {/* FINAL CTA */}
-          <section className="p-8 pb-32 text-center space-y-8">
-            <div className="space-y-4">
-              <h3 className="text-3xl font-black text-foreground tracking-tighter font-sans">Ready for better?</h3>
-              <p className="text-muted-foreground text-sm font-normal px-8 font-poppins">No long-term contracts. Pause or cancel your plan at any time.</p>
-            </div>
-            <div className="space-y-4 max-w-[280px] mx-auto">
-              {["Eco-friendly packaging", "Real-time tracking", "Custom portions"].map(feat => (
-                <div key={feat} className="flex items-center gap-3 justify-center text-[10px] font-normal text-muted-foreground tracking-widest font-poppins">
-                  <CheckCircle2 size={14} className="text-primary" />
-                  {feat}
-                </div>
-              ))}
-            </div>
-            <CTAButton text="Start your plan" onClick={goStart} />
-            <div className="pt-12 border-t border-border opacity-30 flex flex-col items-center gap-4">
-              <div className="flex items-center gap-2">
-                <img src={LOGO_URL} alt="P" className="w-8 h-8 object-contain" />
-                <span className="text-[10px] font-normal tracking-widest text-muted-foreground font-poppins uppercase">Platera culinary group</span>
-              </div>
-              <p className="text-[8px] font-normal text-muted-foreground tracking-tighter font-poppins">© 2024 Platera. All rights reserved.</p>
-            </div>
-          </section>
+          </div>
         </div>
-      </div>
+      </header>
+
+      {/* TRENDING */}
+      <section className="py-16 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-6 mb-12">
+          <div>
+            <h2 className="text-4xl sm:text-5xl font-black uppercase tracking-tighter">Trending Flavors</h2>
+            <p className="text-ink/60 font-medium text-lg mt-2">Freshly prepped by neighborhood favorites</p>
+          </div>
+          <button
+            onClick={() => navigate('/meals')}
+            className="self-start sm:self-auto border-[3px] border-ink px-6 py-2 rounded-full font-bold uppercase text-sm hover:bg-ink hover:text-cream transition-colors shadow-stk-sm"
+          >
+            View All
+          </button>
+        </div>
+
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {trending.map((meal, i) => (
+            <StickerCard
+              key={meal.id}
+              onClick={() => navigate(`/meals/${meal.id}`)}
+              className={`overflow-hidden ${i === 2 ? 'lg:translate-y-8' : ''}`}
+            >
+              <div className="relative aspect-[4/3] overflow-hidden border-b-[3px] border-ink">
+                <img src={meal.image} alt={meal.title} className="w-full h-full object-cover" />
+                <div className="absolute top-4 left-4">
+                  <Badge text={meal.badge.text} color={meal.badge.color} />
+                </div>
+              </div>
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-2 gap-3">
+                  <h3 className="text-2xl font-extrabold leading-tight">{meal.title}</h3>
+                  <span className="font-black text-xl text-tomato shrink-0">${meal.price}</span>
+                </div>
+                <p className="text-ink/70 font-medium mb-5">
+                  By {meal.chef} • {meal.miles} away
+                </p>
+                <div className="flex items-center gap-2">
+                  <div className="size-8 rounded-full border-2 border-ink bg-sage flex items-center justify-center font-bold text-xs uppercase text-white">
+                    {meal.chef[0]}
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-wide">Order within 20 mins</span>
+                </div>
+              </div>
+            </StickerCard>
+          ))}
+        </div>
+      </section>
+
+      {/* HOW IT WORKS */}
+      <section className="py-20 bg-sage/15 border-y-[3px] border-ink">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-14">
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight mb-3">How we play</h2>
+            <p className="text-xl font-medium text-ink/70">Simple, community-driven, deliciously easy.</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-10">
+            {[
+              { n: '01', color: 'bg-tomato text-white', rot: '-rotate-3', title: 'Pick a Chef', desc: 'Discover top-rated talent cooking in your neighborhood today.', icon: ChefHat },
+              { n: '02', color: 'bg-mustard text-ink', rot: 'rotate-2', title: 'Secure Your Meal', desc: 'Portions are limited. Book your slot before the kitchen closes.', icon: ShieldCheck },
+              { n: '03', color: 'bg-card text-ink', rot: '-rotate-1', title: 'Eat Locally', desc: 'Pickup or get it delivered fresh. Support your local food scene.', icon: Zap },
+            ].map((s) => {
+              const I = s.icon;
+              return (
+                <div key={s.n} className="text-center">
+                  <div
+                    className={`size-20 ${s.color} border-[3px] border-ink rounded-3xl flex items-center justify-center text-3xl font-black mx-auto mb-6 shadow-stk ${s.rot}`}
+                  >
+                    {s.n}
+                  </div>
+                  <h4 className="text-2xl font-extrabold mb-2 flex items-center justify-center gap-2">
+                    <I size={22} /> {s.title}
+                  </h4>
+                  <p className="font-medium text-ink/70 max-w-xs mx-auto">{s.desc}</p>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* FINAL CTA */}
+      <section className="py-20 px-4 sm:px-6 max-w-7xl mx-auto">
+        <div className="bg-tomato border-[4px] border-ink rounded-[40px] shadow-stk-lg p-10 sm:p-16 text-white text-center relative overflow-hidden">
+          <div className="relative z-10 max-w-2xl mx-auto space-y-6">
+            <h3 className="text-4xl sm:text-6xl font-black tracking-tighter leading-none">
+              Ready to eat better?
+            </h3>
+            <p className="text-lg sm:text-xl font-medium opacity-90">
+              No contracts. Pause or cancel any time. Real chefs, real food, real fast.
+            </p>
+            <button
+              onClick={goStart}
+              className="inline-flex items-center gap-2 bg-card text-ink border-[3px] border-ink px-8 py-4 rounded-2xl font-extrabold uppercase tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all"
+            >
+              Start your plan <ArrowRight size={18} strokeWidth={3} />
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <SiteFooter />
+      <MobileBottomDock />
     </div>
   );
 };

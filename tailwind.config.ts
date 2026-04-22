@@ -14,8 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Montserrat', 'sans-serif'],
-        poppins: ['Poppins', 'sans-serif'],
+        sans: ['Outfit', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+        body: ['Inter', 'sans-serif'],
+        poppins: ['Outfit', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -23,6 +25,11 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        ink: "hsl(var(--ink))",
+        tomato: "hsl(var(--tomato))",
+        sage: "hsl(var(--sage))",
+        mustard: "hsl(var(--mustard))",
+        cream: "hsl(var(--cream))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",

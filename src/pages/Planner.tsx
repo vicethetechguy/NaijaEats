@@ -1,118 +1,101 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
-import { ChevronLeft, ChevronRight, X, ArrowRight, Coffee, Sun, Moon } from 'lucide-react';
+import { StickerCard, CTAButton } from '@/components/UI';
+import { Coffee, Sun, Moon, X, Plus, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useMeals, ScheduledMeal } from '@/contexts/MealContext';
+
+const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+const mealTypes = [
+  { label: 'Breakfast', icon: Coffee, color: 'bg-mustard text-ink' },
+  { label: 'Lunch', icon: Sun, color: 'bg-sage text-white' },
+  { label: 'Dinner', icon: Moon, color: 'bg-tomato text-white' },
+];
 
 const Planner: React.FC = () => {
   const navigate = useNavigate();
   const { schedule, removeMealFromPlan, setTargetDay, setTargetType } = useMeals();
-  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const mealTypes = [
-    { label: "Breakfast", icon: Coffee },
-    { label: "Lunch", icon: Sun },
-    { label: "Dinner", icon: Moon }
-  ];
 
-  const handleAddMeal = (day: string, type: string) => {
+  const handleAdd = (day: string, type: string) => {
     setTargetDay(day);
     setTargetType(type);
     navigate('/meals');
   };
 
-  const totalPrice = schedule.reduce((acc, meal) => acc + (meal.price || 14.99), 0);
+  const total = schedule.reduce((a, m) => a + (m.price || 14.99), 0);
 
-  const MealCard = ({ item }: { item: ScheduledMeal }) => (
-    <div className="bg-muted/40 backdrop-blur-xl p-2 rounded-2xl border border-border group cursor-pointer hover:bg-muted/60 transition-all relative flex flex-col h-full animate-in fade-in zoom-in-95 duration-300 shadow-2xl">
+  const Filled = ({ item }: { item: ScheduledMeal }) => (
+    <div className="bg-card border-[3px] border-ink rounded-2xl shadow-stk-sm overflow-hidden h-full flex flex-col group relative">
       <button
         onClick={(e) => { e.stopPropagation(); removeMealFromPlan(item.id); }}
-        className="absolute top-1 right-1 p-1.5 bg-background/60 backdrop-blur-md rounded-lg text-muted-foreground hover:text-destructive transition-all z-10 border border-border"
-        aria-label="Remove meal"
+        className="absolute top-1.5 right-1.5 size-6 rounded-full bg-card border-2 border-ink flex items-center justify-center hover:bg-tomato hover:text-white transition-colors z-10"
+        aria-label="Remove"
       >
         <X size={12} strokeWidth={3} />
       </button>
-      <div className="w-full h-20 rounded-xl overflow-hidden mb-2 shrink-0 border border-border">
-        <img src={item.image} alt={item.title} className="w-full h-full object-cover opacity-90 group-hover:scale-110 transition-transform duration-500" />
+      <div className="aspect-square overflow-hidden border-b-[3px] border-ink">
+        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
       </div>
-      <div className="space-y-0.5 min-w-0 px-1">
-        <h4 className="font-bold text-[10px] text-foreground leading-tight truncate tracking-tight">{item.title}</h4>
-        <div className="flex items-center justify-between gap-1 pt-1">
-          <p className="text-[8px] font-normal text-muted-foreground uppercase truncate">{item.type.charAt(0)}</p>
-          <p className="text-[9px] font-black text-primary tracking-tight">${(item.price || 14.99).toFixed(2)}</p>
-        </div>
+      <div className="p-2.5 flex-1 flex flex-col justify-between">
+        <h4 className="font-extrabold text-xs leading-tight line-clamp-2">{item.title}</h4>
+        <p className="text-[11px] font-black text-tomato mt-1">${(item.price || 14.99).toFixed(2)}</p>
       </div>
     </div>
   );
 
-  const EmptySlot = ({ day, type, icon: Icon }: { day: string; type: string; icon: any }) => (
+  const Empty = ({ day, type, icon: Icon, color }: any) => (
     <button
-      onClick={() => handleAddMeal(day, type)}
-      className="w-full h-full min-h-[88px] bg-muted/20 backdrop-blur-md border border-dashed border-border rounded-2xl flex flex-col items-center justify-center gap-1 text-muted-foreground hover:text-primary hover:border-primary/40 transition-all group p-2 shadow-inner"
+      onClick={() => handleAdd(day, type)}
+      className="h-full min-h-[140px] w-full bg-card border-[3px] border-dashed border-ink rounded-2xl flex flex-col items-center justify-center gap-2 text-ink/60 hover:bg-mustard/30 hover:text-ink hover:border-solid transition-all group"
     >
-      <Icon size={16} className="shrink-0 group-hover:scale-110 transition-transform" />
-      <span className="text-[9px] font-normal uppercase tracking-widest truncate">{type}</span>
+      <div className={`size-10 rounded-xl border-2 border-ink flex items-center justify-center ${color} group-hover:scale-110 transition-transform`}>
+        <Icon size={18} strokeWidth={2.5} />
+      </div>
+      <span className="text-[10px] font-bold uppercase tracking-wide">{type}</span>
+      <Plus size={14} strokeWidth={3} />
     </button>
   );
 
   return (
-    <MainLayout title="Meal Planner">
-      <div className="space-y-8 pb-12">
-        <header className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h2 className="text-3xl font-black text-foreground tracking-tight">Oct 23 — 28</h2>
-            <p className="text-muted-foreground font-normal text-sm">{schedule.length} meals scheduled</p>
+    <MainLayout title="Planner">
+      <div className="space-y-10">
+        <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
+          <div>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter">Meal Planner</h1>
+            <p className="text-lg text-ink/70 font-medium mt-2">Oct 23 — 28 • {schedule.length} meals scheduled</p>
           </div>
           <div className="flex gap-2">
-            <button className="p-3 bg-muted/30 backdrop-blur-md border border-border rounded-xl text-foreground hover:bg-muted/50 transition-all">
-              <ChevronLeft size={20} />
-            </button>
-            <button className="p-3 bg-muted/30 backdrop-blur-md border border-border rounded-xl text-foreground hover:bg-muted/50 transition-all">
-              <ChevronRight size={20} />
-            </button>
+            <button className="size-11 rounded-full bg-card border-[3px] border-ink flex items-center justify-center hover:bg-mustard transition-colors shadow-stk-sm"><ChevronLeft size={18} strokeWidth={3} /></button>
+            <button className="size-11 rounded-full bg-card border-[3px] border-ink flex items-center justify-center hover:bg-mustard transition-colors shadow-stk-sm"><ChevronRight size={18} strokeWidth={3} /></button>
           </div>
         </header>
 
         <div className="space-y-8">
           {days.map((day) => (
-            <div key={day} className="space-y-3">
-              <div className="flex items-center gap-4 px-2">
-                <span className="text-xs font-normal text-foreground uppercase tracking-[0.2em]">{day}</span>
-                <div className="h-px flex-1 bg-border" />
+            <StickerCard key={day} className="p-5 sm:p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="bg-ink text-cream px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest">{day}</span>
+                <div className="h-0.5 flex-1 bg-ink/15" />
               </div>
-              <div className="grid grid-cols-3 gap-3 items-stretch">
-                {mealTypes.map((typeObj) => {
-                  const mealInSlot = schedule.find(s => s.day === day && s.type === typeObj.label);
-                  return (
-                    <div key={typeObj.label} className="h-full">
-                      {mealInSlot ? (
-                        <MealCard item={mealInSlot} />
-                      ) : (
-                        <EmptySlot day={day} type={typeObj.label} icon={typeObj.icon} />
-                      )}
-                    </div>
-                  );
+              <div className="grid grid-cols-3 gap-3 sm:gap-4">
+                {mealTypes.map((t) => {
+                  const slot = schedule.find((s) => s.day === day && s.type === t.label);
+                  return slot ? <Filled key={t.label} item={slot} /> : <Empty key={t.label} day={day} type={t.label} icon={t.icon} color={t.color} />;
                 })}
               </div>
-            </div>
+            </StickerCard>
           ))}
         </div>
 
         {schedule.length > 0 && (
-          <div className="pt-4">
-            <div className="bg-card/80 backdrop-blur-3xl border border-border rounded-3xl p-6 flex items-center justify-between shadow-[0_30px_60px_rgba(0,0,0,0.8)]">
-              <div className="flex flex-col">
-                <div className="flex items-center gap-1.5 mb-0.5">
-                  <span className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-                  <p className="text-[9px] font-normal text-muted-foreground uppercase tracking-widest">Total</p>
-                </div>
-                <h4 className="text-2xl font-black text-foreground tracking-tighter">${totalPrice.toFixed(2)}</h4>
+          <div className="lg:sticky lg:bottom-6">
+            <div className="bg-tomato text-white border-[4px] border-ink rounded-3xl shadow-stk-lg p-6 flex items-center justify-between">
+              <div>
+                <p className="text-xs font-bold uppercase tracking-widest opacity-80">Weekly total</p>
+                <p className="text-3xl font-black">${total.toFixed(2)}</p>
               </div>
-              <button
-                onClick={() => navigate('/checkout')}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground h-11 px-6 rounded-2xl font-normal text-sm flex items-center gap-2.5 active:scale-95 transition-all shadow-lg shadow-primary/20"
-              >
-                Checkout
-                <ArrowRight size={16} strokeWidth={2} />
+              <button onClick={() => navigate('/checkout')} className="bg-card text-ink border-[3px] border-ink rounded-2xl px-6 py-3 font-bold uppercase tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all flex items-center gap-2">
+                Checkout <ArrowRight size={16} strokeWidth={3} />
               </button>
             </div>
           </div>
