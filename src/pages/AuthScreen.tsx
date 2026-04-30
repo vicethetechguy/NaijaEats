@@ -79,9 +79,9 @@ const AuthScreen = () => {
           </div>
 
           {/* Right: form card */}
-          <div className="bg-card border-[3px] border-ink rounded-3xl shadow-stk p-6 sm:p-8">
+          <div className="bg-card border-[3px] border-ink rounded-3xl shadow-stk p-5 sm:p-8">
             <div className="mb-6">
-              <h2 className="text-3xl sm:text-4xl font-black tracking-tighter mb-1">
+              <h2 className="text-2xl sm:text-4xl font-black tracking-tighter mb-1">
                 {mode === 'login' ? 'Welcome back.' : 'Create account.'}
               </h2>
               <p className="text-sm font-medium text-ink/60">
@@ -112,7 +112,7 @@ const AuthScreen = () => {
               ))}
             </div>
 
-            <form onSubmit={submit} className="space-y-3">
+            <form onSubmit={submit} className="space-y-3.5">
               {mode === 'signup' && (
                 <FieldWrap icon={<UserIcon size={18} strokeWidth={2.5} />}>
                   <input
@@ -121,7 +121,7 @@ const AuthScreen = () => {
                     required
                     value={form.name}
                     onChange={(e) => update('name', e.target.value)}
-                    className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-ink/40"
+                    className="w-full bg-transparent outline-none text-base font-semibold placeholder:text-ink/40 min-w-0"
                   />
                 </FieldWrap>
               )}
@@ -132,7 +132,7 @@ const AuthScreen = () => {
                   required
                   value={form.email}
                   onChange={(e) => update('email', e.target.value)}
-                  className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-ink/40"
+                  className="w-full bg-transparent outline-none text-base font-semibold placeholder:text-ink/40 min-w-0"
                 />
               </FieldWrap>
               <FieldWrap icon={<Lock size={18} strokeWidth={2.5} />}>
@@ -142,12 +142,12 @@ const AuthScreen = () => {
                   required
                   value={form.password}
                   onChange={(e) => update('password', e.target.value)}
-                  className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-ink/40"
+                  className="w-full bg-transparent outline-none text-base font-semibold placeholder:text-ink/40 min-w-0"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword((s) => !s)}
-                  className="text-ink/50 hover:text-ink"
+                  className="text-ink/50 hover:text-ink shrink-0"
                   aria-label="Toggle password"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -178,9 +178,9 @@ const AuthScreen = () => {
             </form>
 
             {/* Divider */}
-            <div className="flex items-center gap-3 my-6">
+            <div className="flex items-center gap-3 mt-8 mb-6">
               <div className="flex-1 h-[2px] bg-ink/10" />
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink/40">or continue with</span>
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink/40 whitespace-nowrap">or continue with</span>
               <div className="flex-1 h-[2px] bg-ink/10" />
             </div>
 
@@ -206,7 +206,7 @@ const AuthScreen = () => {
 };
 
 const FieldWrap: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
-  <div className="flex items-center gap-3 bg-cream border-2 border-ink rounded-xl px-4 py-3.5 focus-within:bg-mustard/30 transition-colors">
+  <div className="flex items-center gap-3 bg-cream border-2 border-ink rounded-xl px-4 h-14 focus-within:bg-mustard/30 transition-colors">
     <span className="text-ink/60 shrink-0">{icon}</span>
     {children}
   </div>
