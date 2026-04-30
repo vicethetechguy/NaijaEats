@@ -1,0 +1,224 @@
+import { useState, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Mail, Lock, User as UserIcon, Eye, EyeOff, Loader2, ArrowLeft, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+type AuthMode = 'login' | 'signup';
+
+const AuthScreen = () => {
+  const navigate = useNavigate();
+  const [mode, setMode] = useState<AuthMode>('login');
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState('');
+  const [form, setForm] = useState({ email: '', password: '', name: '' });
+
+  const update = useCallback((field: string, value: string) => {
+    setForm((p) => ({ ...p, [field]: value }));
+  }, []);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    await new Promise((r) => setTimeout(r, 1200));
+    const user = {
+      email: form.email,
+      name: form.name || form.email.split('@')[0] || 'Foodie Friend',
+      image: `https://i.pravatar.cc/150?u=${form.email}`,
+    };
+    localStorage.setItem('platera_onboarded', 'true');
+    localStorage.setItem('platera_user', JSON.stringify(user));
+    setSuccess(mode === 'login' ? 'Welcome back!' : 'Account created!');
+    setTimeout(() => navigate('/home'), 800);
+    setLoading(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-cream text-ink flex flex-col">
+      {/* Top bar */}
+      <div className="px-4 sm:px-6 pt-5 max-w-7xl mx-auto w-full flex items-center justify-between">
+        <button
+          onClick={() => navigate('/')}
+          className="p-2.5 bg-card border-2 border-ink rounded-full hover:bg-mustard transition-colors shadow-stk-sm"
+          aria-label="Back"
+        >
+          <ArrowLeft size={18} strokeWidth={2.5} />
+        </button>
+        <button
+          onClick={() => navigate('/')}
+          className="text-2xl font-black tracking-tighter text-tomato"
+        >
+          PLATERA
+        </button>
+        <div className="w-10" />
+      </div>
+
+      <div className="flex-1 flex items-center justify-center px-4 sm:px-6 py-10">
+        <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-10 items-center">
+          {/* Left: marketing panel (desktop only) */}
+          <div className="hidden lg:block">
+            <div className="inline-block bg-mustard border-2 border-ink px-4 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide mb-6 -rotate-2 shadow-stk-sm">
+              🍳 Real food, real chefs
+            </div>
+            <h1 className="text-6xl font-black leading-[0.95] tracking-tighter mb-6">
+              Eat what your <span className="text-tomato underline decoration-[6px] decoration-ink underline-offset-[8px]">block</span> is cooking.
+            </h1>
+            <p className="text-lg font-medium text-ink/70 mb-8">
+              Sign in to plan meals, track orders, and discover chefs near you.
+            </p>
+            <div className="space-y-3">
+              {['Personalized meal plans', 'Allergen-safe filtering', 'Pause or cancel anytime'].map((t) => (
+                <div key={t} className="flex items-center gap-3 text-base font-bold">
+                  <div className="w-7 h-7 rounded-full bg-sage border-2 border-ink flex items-center justify-center shadow-stk-sm">
+                    <Check size={14} strokeWidth={3} />
+                  </div>
+                  {t}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Right: form card */}
+          <div className="bg-card border-[3px] border-ink rounded-3xl shadow-stk p-6 sm:p-8">
+            <div className="mb-6">
+              <h2 className="text-3xl sm:text-4xl font-black tracking-tighter mb-1">
+                {mode === 'login' ? 'Welcome back.' : 'Create account.'}
+              </h2>
+              <p className="text-sm font-medium text-ink/60">
+                {mode === 'login' ? 'Sign in to continue your plan.' : 'Join Platera in a few seconds.'}
+              </p>
+            </div>
+
+            {success && (
+              <div className="mb-5 p-3 bg-sage/30 border-2 border-ink rounded-xl flex items-center gap-2">
+                <Check size={16} strokeWidth={3} />
+                <span className="text-xs font-extrabold uppercase tracking-wide">{success}</span>
+              </div>
+            )}
+
+            {/* Mode toggle */}
+            <div className="flex bg-cream border-2 border-ink rounded-full p-1 mb-6">
+              {(['login', 'signup'] as AuthMode[]).map((m) => (
+                <button
+                  key={m}
+                  onClick={() => setMode(m)}
+                  className={cn(
+                    'flex-1 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide transition-all',
+                    mode === m ? 'bg-tomato text-white' : 'text-ink/60 hover:text-ink'
+                  )}
+                >
+                  {m === 'login' ? 'Sign in' : 'Register'}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={submit} className="space-y-3">
+              {mode === 'signup' && (
+                <FieldWrap icon={<UserIcon size={18} strokeWidth={2.5} />}>
+                  <input
+                    type="text"
+                    placeholder="Full name"
+                    required
+                    value={form.name}
+                    onChange={(e) => update('name', e.target.value)}
+                    className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-ink/40"
+                  />
+                </FieldWrap>
+              )}
+              <FieldWrap icon={<Mail size={18} strokeWidth={2.5} />}>
+                <input
+                  type="email"
+                  placeholder="Email address"
+                  required
+                  value={form.email}
+                  onChange={(e) => update('email', e.target.value)}
+                  className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-ink/40"
+                />
+              </FieldWrap>
+              <FieldWrap icon={<Lock size={18} strokeWidth={2.5} />}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Password"
+                  required
+                  value={form.password}
+                  onChange={(e) => update('password', e.target.value)}
+                  className="w-full bg-transparent outline-none text-sm font-semibold placeholder:text-ink/40"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((s) => !s)}
+                  className="text-ink/50 hover:text-ink"
+                  aria-label="Toggle password"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </FieldWrap>
+
+              {mode === 'login' && (
+                <div className="flex justify-end">
+                  <button type="button" className="text-xs font-bold uppercase tracking-wide text-tomato hover:underline">
+                    Forgot password?
+                  </button>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-tomato text-white border-[3px] border-ink rounded-2xl py-4 font-extrabold uppercase tracking-wide text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : mode === 'login' ? (
+                  'Sign in'
+                ) : (
+                  'Create account'
+                )}
+              </button>
+            </form>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3 my-6">
+              <div className="flex-1 h-[2px] bg-ink/10" />
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink/40">or continue with</span>
+              <div className="flex-1 h-[2px] bg-ink/10" />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <SocialBtn label="Google" />
+              <SocialBtn label="Apple" />
+            </div>
+
+            <p className="text-center text-xs font-medium text-ink/60 mt-6">
+              {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+              <button
+                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                className="text-tomato font-extrabold uppercase tracking-wide hover:underline"
+              >
+                {mode === 'login' ? 'Register' : 'Sign in'}
+              </button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const FieldWrap: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> = ({ icon, children }) => (
+  <div className="flex items-center gap-3 bg-cream border-2 border-ink rounded-xl px-4 py-3.5 focus-within:bg-mustard/30 transition-colors">
+    <span className="text-ink/60 shrink-0">{icon}</span>
+    {children}
+  </div>
+);
+
+const SocialBtn: React.FC<{ label: string }> = ({ label }) => (
+  <button
+    type="button"
+    className="bg-card border-2 border-ink rounded-xl py-3 font-extrabold uppercase tracking-wide text-xs hover:bg-mustard/40 transition-colors shadow-stk-sm"
+  >
+    {label}
+  </button>
+);
+
+export default AuthScreen;
