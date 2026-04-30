@@ -146,16 +146,15 @@ export const MobileBottomDock: React.FC = () => {
   }, [location.pathname]);
 
   const handleClick = (to: string) => {
-    if (expanded === to) {
+    setExpanded(to);
+    if (location.pathname !== to) {
       navigate(to);
-    } else {
-      setExpanded(to);
     }
   };
 
   return (
     <div className="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md">
-      <div className="bg-card border-[3px] border-ink rounded-2xl px-2 py-2 shadow-stk flex items-center justify-between gap-1">
+      <div className="bg-card border-[3px] border-ink rounded-2xl px-2 py-2 shadow-stk flex items-center justify-center gap-1">
         {items.map((item) => {
           const Icon = item.icon;
           const isExpanded = expanded === item.to;
@@ -164,9 +163,9 @@ export const MobileBottomDock: React.FC = () => {
               key={item.to}
               onClick={() => handleClick(item.to)}
               className={cn(
-                'flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2',
+                'flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0',
                 isExpanded
-                  ? 'bg-mustard text-ink border-ink px-3 flex-1'
+                  ? 'bg-mustard text-ink border-ink px-3'
                   : 'text-ink border-transparent hover:bg-mustard/30 w-11'
               )}
               aria-label={item.label}
