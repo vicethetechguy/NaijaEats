@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DetailLayout } from '@/components/Layouts';
 import { CTAButton } from '@/components/UI';
-import { Check, ShieldCheck, Zap, Heart, Sparkles, Crown, Package } from 'lucide-react';
+import { Check, Sparkles, Crown, Package } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
@@ -12,7 +12,7 @@ const Pricing: React.FC = () => {
   const tiers = [
     {
       name: "Standard",
-      price: "12.99",
+      price: "3,500",
       desc: "Perfect for casual eaters looking for quality.",
       features: ["5 Meals / week", "Standard Delivery", "24/7 Support", "Recyclable Packaging"],
       cta: "Current Plan",
@@ -22,7 +22,7 @@ const Pricing: React.FC = () => {
     },
     {
       name: "Premium",
-      price: "18.50",
+      price: "5,500",
       desc: "Our most popular choice for food enthusiasts.",
       features: ["Unlimited Meals", "Priority Delivery", "Nutritionist Advice", "Compostable Tubs", "Custom Portions"],
       cta: "Upgrade to Premium",
@@ -32,7 +32,7 @@ const Pricing: React.FC = () => {
     },
     {
       name: "Family Max",
-      price: "29.99",
+      price: "9,500",
       desc: "Ultimate convenience for the whole household.",
       features: ["Family Portions", "Concierge Support", "Menu Planning", "Weekend Kit", "Guest Boxes"],
       cta: "Go Family Max",
@@ -60,7 +60,7 @@ const Pricing: React.FC = () => {
   };
 
   return (
-    <DetailLayout onBack={() => navigate(-1)} title="Platera Premium">
+    <DetailLayout onBack={() => navigate(-1)} title="Naija Eats Premium">
       <div className="p-8 space-y-8 pb-24 flex flex-col">
         <div className="text-center space-y-2">
           <h2 className="text-2xl font-black text-foreground leading-tight tracking-tight">Elevate your eating.</h2>
@@ -88,7 +88,7 @@ const Pricing: React.FC = () => {
                 </div>
 
                 <div className="flex items-baseline gap-1 relative z-10 mt-4 mb-4">
-                  <span className="text-3xl font-black text-foreground tracking-tighter">${tier.price}</span>
+                  <span className="text-3xl font-black text-foreground tracking-tighter">₦{tier.price}</span>
                   <span className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">/ plate</span>
                 </div>
 
@@ -116,22 +116,6 @@ const Pricing: React.FC = () => {
             );
           })}
         </div>
-
-        <section className="grid grid-cols-1 gap-3">
-          {[
-            { icon: <ShieldCheck className="text-primary" size={18} />, title: "Secure Pay", sub: "Encrypted checkout" },
-            { icon: <Zap className="text-primary" size={18} />, title: "Skip Weeks", sub: "Maximum flexibility" },
-            { icon: <Heart className="text-primary" size={18} />, title: "Money Back", sub: "Quality guaranteed" },
-          ].map((item, i) => (
-            <div key={i} className="flex items-center gap-4 p-5 bg-muted/30 rounded-[28px] border border-border shadow-xl">
-              <div className="p-2.5 bg-card rounded-xl">{item.icon}</div>
-              <div>
-                <h5 className="font-bold text-foreground text-xs tracking-tight">{item.title}</h5>
-                <p className="text-[8px] font-black text-muted-foreground uppercase tracking-widest leading-none mt-1">{item.sub}</p>
-              </div>
-            </div>
-          ))}
-        </section>
       </div>
     </DetailLayout>
   );

@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naija Eats Chefs - Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        tomato: '#ff4d4d',
+                        ink: '#1a1a1a',
+                        cream: '#fffdf5',
+                        mustard: '#facc15',
+                        sage: '#84cc16'
+                    },
+                    boxShadow: {
+                        'stk': '8px 8px 0px 0px #1a1a1a',
+                        'stk-sm': '4px 4px 0px 0px #1a1a1a',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Outfit', sans-serif; background-color: #fffdf5; color: #1a1a1a; }
+        .sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .sidebar.closed { transform: translateX(-100%); }
+        .neo-card { background: white; border: 3px solid #1a1a1a; border-radius: 24px; box-shadow: 6px 6px 0px 0px #1a1a1a; }
+        .view-content { display: none; }
+        .view-content.active { display: block; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        textarea:focus { outline: none; border-color: #ff4d4d !important; }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Sidebar -->
+    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 w-72 bg-cream border-r-[3px] border-ink z-50 p-6 flex flex-col closed">
+        <div class="flex justify-between items-center mb-12">
+            <div class="text-2xl tracking-tighter text-tomato">
+                <span class="font-light">Naija</span><span class="font-black">Eats</span>
+                <span class="block text-[10px] font-black text-ink uppercase tracking-widest -mt-1">Chef Console</span>
+            </div>
+            <button onclick="toggleSidebar()" class="p-2 border-2 border-ink rounded-xl bg-white shadow-stk-sm">
+                <i data-lucide="x" size="20"></i>
+            </button>
+        </div>
+
+        <nav class="flex-1 space-y-3">
+            <button onclick="showView('dashboard')" class="nav-link w-full flex items-center gap-4 p-4 bg-mustard border-2 border-ink rounded-2xl shadow-stk-sm font-black text-sm uppercase tracking-wide transition-all" data-view="dashboard">
+                <i data-lucide="layout-dashboard" size="20"></i> Dashboard
+            </button>
+            <button onclick="showView('menu')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="menu">
+                <i data-lucide="utensils" size="20"></i> My Menu
+            </button>
+            <button onclick="showView('bookings')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="bookings">
+                <i data-lucide="calendar" size="20"></i> Bookings
+            </button>
+            <button onclick="showView('earnings')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="earnings">
+                <i data-lucide="wallet" size="20"></i> Earnings
+            </button>
+            <button onclick="showView('profile')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="profile">
+                <i data-lucide="user-circle" size="20"></i> Profile
+            </button>
+        </nav>
+
+        <div class="mt-auto pt-6 border-t-2 border-dashed border-ink/20">
+            <button onclick="window.location.href='/'" class="w-full flex items-center gap-4 p-4 text-tomato font-black text-sm uppercase tracking-wide">
+                <i data-lucide="log-out" size="20"></i> Log Out
+            </button>
+        </div>
+    </aside>
+
+    <!-- Overlay -->
+    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40 hidden"></div>
+
+    <!-- Top Bar -->
+    <header class="p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
+        <button onclick="toggleSidebar()" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm hover:-translate-y-0.5 active:translate-y-0.5 transition-all">
+            <i data-lucide="menu" size="24"></i>
+        </button>
+        <button onclick="showView('profile')" class="flex items-center gap-3 text-left">
+            <div class="text-right">
+                <p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Live</p>
+                <p class="text-sm font-black chef-name-header">Chef Ezinne</p>
+            </div>
+            <div class="size-12 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm overflow-hidden">
+                <img src="https://i.pravatar.cc/150?u=chef" id="header-avatar" class="w-full h-full object-cover">
+            </div>
+        </button>
+    </header>
+
+    <main class="p-6 pb-12">
+        <!-- VIEW: DASHBOARD -->
+        <div id="view-dashboard" class="view-content active space-y-8">
+            <header>
+                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Kitchen Feed</h1>
+                <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">3 active orders • Lagos, NG</p>
+            </header>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="neo-card p-5 bg-sage/20">
+                    <i data-lucide="trending-up" class="text-sage mb-3" size="20"></i>
+                    <p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Today</p>
+                    <p class="text-2xl font-black tracking-tighter">₦14,250</p>
+                </div>
+                <div class="neo-card p-5 bg-mustard/20">
+                    <i data-lucide="star" class="text-mustard mb-3" size="20"></i>
+                    <p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Rating</p>
+                    <p class="text-2xl font-black tracking-tighter">4.9/5</p>
+                </div>
+            </div>
+
+            <section class="space-y-4">
+                <div class="flex justify-between items-center px-1">
+                    <h2 class="text-xs font-black uppercase tracking-[0.2em] text-ink/40">Active Prep</h2>
+                    <span class="size-2 bg-tomato rounded-full animate-pulse"></span>
+                </div>
+                <div class="neo-card p-4 space-y-4">
+                    <div class="flex items-center gap-4">
+                        <div class="size-16 rounded-xl border-2 border-ink overflow-hidden shrink-0">
+                            <img src="https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-lg font-black leading-tight tracking-tight">Party Jollof (x2)</p>
+                            <p class="text-[10px] font-bold text-ink/60 uppercase">Order #1102 • Table 4</p>
+                        </div>
+                    </div>
+                    <button class="w-full py-3 bg-tomato text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs shadow-stk-sm">Mark Ready</button>
+                </div>
+            </section>
+        </div>
+
+        <!-- VIEW: MENU -->
+        <div id="view-menu" class="view-content space-y-8">
+            <header class="flex justify-between items-end">
+                <div>
+                    <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Menu</h1>
+                    <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">14 Active Dishes</p>
+                </div>
+                <button class="p-3 bg-mustard border-[3px] border-ink rounded-2xl shadow-stk-sm">
+                    <i data-lucide="plus" size="20"></i>
+                </button>
+            </header>
+
+            <div class="grid grid-cols-1 gap-4">
+                <div class="neo-card p-4 flex gap-4">
+                    <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=200&auto=format&fit=crop" class="size-20 rounded-xl border-2 border-ink object-cover">
+                    <div class="flex-1">
+                        <div class="flex justify-between">
+                            <p class="font-black text-lg">Egusi Special</p>
+                            <span class="text-tomato font-black">₦12,500</span>
+                        </div>
+                        <p class="text-xs text-ink/60 font-bold mb-2">Traditional melon seed soup</p>
+                        <div class="flex gap-2">
+                            <span class="text-[8px] font-black bg-sage/20 px-2 py-1 rounded-full uppercase border border-ink/10 text-sage">Traditional</span>
+                            <span class="text-[8px] font-black bg-ink text-white px-2 py-1 rounded-full uppercase">In Stock</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: BOOKINGS -->
+        <div id="view-bookings" class="view-content space-y-8">
+            <header>
+                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Bookings</h1>
+                <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Upcoming Chef Slots</p>
+            </header>
+
+            <div class="space-y-6">
+                <div class="p-4 border-l-[6px] border-mustard bg-white neo-card shadow-none border-t-0 border-r-0 border-b-0 rounded-l-none">
+                    <p class="text-[10px] font-black text-ink/40 uppercase mb-1">Tomorrow, Oct 25</p>
+                    <p class="text-xl font-black mb-3">Dinner Experience • 6 Guests</p>
+                    <div class="flex -space-x-3 mb-4">
+                        <img src="https://i.pravatar.cc/150?u=1" class="size-8 rounded-full border-2 border-ink bg-white">
+                        <img src="https://i.pravatar.cc/150?u=2" class="size-8 rounded-full border-2 border-ink bg-white">
+                        <img src="https://i.pravatar.cc/150?u=3" class="size-8 rounded-full border-2 border-ink bg-white">
+                        <div class="size-8 rounded-full border-2 border-ink bg-mustard flex items-center justify-center text-[10px] font-black">+3</div>
+                    </div>
+                    <button onclick="showView('guests')" class="w-full py-3 bg-ink text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs">Manage Guest List</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: GUEST LIST -->
+        <div id="view-guests" class="view-content space-y-8">
+            <header class="flex items-center gap-4">
+                <button onclick="showView('bookings')" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm"><i data-lucide="arrow-left" size="20"></i></button>
+                <div>
+                    <h1 class="text-4xl font-black tracking-tighter leading-none mb-1 uppercase">Guest List</h1>
+                    <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Dinner Exp • Oct 25</p>
+                </div>
+            </header>
+            <div class="space-y-4">
+                <div class="neo-card p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <img src="https://i.pravatar.cc/150?u=1" class="size-12 rounded-xl border-2 border-ink">
+                        <div><p class="font-black">Amara Kalu</p><p class="text-[10px] font-bold text-ink/40 uppercase">Eater • 2 Guests</p></div>
+                    </div>
+                    <span class="bg-sage/20 text-sage text-[10px] font-black uppercase px-2 py-1 rounded-full border border-sage/10">Confirmed</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW: EARNINGS -->
+        <div id="view-earnings" class="view-content space-y-8">
+            <header>
+                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Earnings</h1>
+                <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Available Balance: ₦142,200</p>
+            </header>
+
+            <div class="neo-card p-6 bg-ink text-white relative overflow-hidden">
+                <div class="absolute bottom-0 right-0 size-32 bg-tomato/20 rounded-full blur-3xl -mb-10 -mr-10"></div>
+                <p class="text-xs font-black uppercase tracking-widest opacity-40 mb-2">Pending Payout</p>
+                <h2 class="text-5xl font-black tracking-tighter mb-8">₦84,000</h2>
+                <button class="w-full py-4 bg-tomato text-white border-[3px] border-white/20 rounded-2xl font-black uppercase text-sm shadow-xl">Withdraw Funds</button>
+            </div>
+        </div>
+
+        <!-- VIEW: PROFILE -->
+        <div id="view-profile" class="view-content space-y-8">
+            <header>
+                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Profile</h1>
+                <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Public Chef Profile</p>
+            </header>
+
+            <div class="neo-card p-6 text-center space-y-4">
+                <div class="relative inline-block group">
+                    <div class="size-32 rounded-[32px] border-[4px] border-ink shadow-stk mx-auto overflow-hidden">
+                        <img src="https://i.pravatar.cc/150?u=chef" id="profile-img-preview" class="w-full h-full object-cover">
+                    </div>
+                    <input type="file" id="profile-upload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
+                    <button onclick="document.getElementById('profile-upload').click()" class="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm active:scale-90 transition-transform">
+                        <i data-lucide="camera" size="16"></i>
+                    </button>
+                </div>
+                <div class="space-y-2">
+                    <input type="text" id="chef-name-input" class="text-3xl font-black tracking-tight text-center bg-transparent border-b-2 border-ink/10 focus:border-tomato w-full" value="Chef Ezinne">
+                    <p class="text-ink/60 font-bold uppercase text-[10px] tracking-widest">Traditional West African Cuisine</p>
+                </div>
+                <div class="flex justify-center gap-2">
+                    <span class="bg-mustard border-2 border-ink text-ink text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Platinum Chef</span>
+                    <span class="bg-sage/20 border-2 border-ink text-sage text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-widest">Verified</span>
+                </div>
+            </div>
+
+            <section class="space-y-4">
+                <h3 class="text-xs font-black uppercase tracking-widest text-ink/40 px-1">Kitchen Bio</h3>
+                <div class="neo-card p-4">
+                    <textarea id="chef-bio-input" rows="4" class="w-full bg-transparent font-medium text-sm leading-relaxed text-ink/70 resize-none" placeholder="Tell your story...">Specializing in smoky party jollof and traditional Egusi since 2012. I believe food is a love language that should be shared with the community.</textarea>
+                </div>
+            </section>
+
+            <button onclick="saveProfile()" id="save-btn" class="w-full py-4 bg-ink text-white border-[3px] border-ink rounded-2xl font-black uppercase text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all flex items-center justify-center gap-2">
+                <span id="save-text">Save Changes</span>
+            </button>
+        </div>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        window.onload = () => {
+            const savedData = localStorage.getItem('chef_profile');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                document.getElementById('chef-name-input').value = data.name;
+                document.getElementById('chef-bio-input').value = data.bio;
+                document.getElementById('profile-img-preview').src = data.image;
+                document.getElementById('header-avatar').src = data.image;
+                document.querySelector('.chef-name-header').innerText = data.name;
+            }
+        };
+
+        function toggleSidebar() {
+            const sb = document.getElementById('sidebar');
+            const ov = document.getElementById('overlay');
+            sb.classList.toggle('closed');
+            ov.classList.toggle('hidden');
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + viewId).classList.add('active');
+            document.querySelectorAll('.nav-link').forEach(link => {
+                if (link.dataset.view === viewId) {
+                    link.classList.add('bg-mustard', 'shadow-stk-sm');
+                    link.classList.remove('hover:bg-cream', 'border-transparent');
+                } else {
+                    link.classList.remove('bg-mustard', 'shadow-stk-sm');
+                    link.classList.add('hover:bg-cream', 'border-transparent');
+                }
+            });
+            const sb = document.getElementById('sidebar');
+            if (!sb.classList.contains('closed')) toggleSidebar();
+            window.scrollTo(0, 0);
+        }
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => { document.getElementById('profile-img-preview').src = e.target.result; };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function saveProfile() {
+            const btn = document.getElementById('save-btn');
+            const text = document.getElementById('save-text');
+            const profileData = {
+                name: document.getElementById('chef-name-input').value,
+                bio: document.getElementById('chef-bio-input').value,
+                image: document.getElementById('profile-img-preview').src
+            };
+            localStorage.setItem('chef_profile', JSON.stringify(profileData));
+            text.innerText = "Saving...";
+            btn.disabled = true;
+            setTimeout(() => {
+                text.innerText = "Changes Saved!";
+                btn.classList.replace('bg-ink', 'bg-sage');
+                document.getElementById('header-avatar').src = profileData.image;
+                document.querySelector('.chef-name-header').innerText = profileData.name;
+                setTimeout(() => { text.innerText = "Save Changes"; btn.classList.replace('bg-sage', 'bg-ink'); btn.disabled = false; }, 2000);
+            }, 800);
+        }
+    </script>
+</body>
+</html>

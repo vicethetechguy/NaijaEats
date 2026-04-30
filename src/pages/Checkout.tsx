@@ -18,8 +18,8 @@ const Checkout: React.FC = () => {
 
   useEffect(() => { if (schedule.length === 0) navigate('/planner'); }, [schedule, navigate]);
 
-  const subtotal = schedule.reduce((acc, meal) => acc + (meal.price || 14.99), 0);
-  const deliveryFee = schedule.length > 0 ? 5.00 : 0;
+  const subtotal = schedule.reduce((acc, meal) => acc + (meal.price || 5500), 0);
+  const deliveryFee = schedule.length > 0 ? 1500 : 0;
   const total = subtotal + deliveryFee;
 
   const mealsByChef: Record<string, ScheduledMeal[]> = schedule.reduce((acc, meal) => {
@@ -72,7 +72,7 @@ const Checkout: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex items-center gap-4 shrink-0">
-                        <span className="text-sm font-black text-foreground">${(meal.price || 14.99).toFixed(2)}</span>
+                        <span className="text-sm font-black text-foreground">₦{(meal.price || 5500).toLocaleString()}</span>
                         <button onClick={() => removeMealFromPlan(meal.id)} className="p-2 text-muted-foreground hover:text-destructive transition-colors"><Trash2 size={16} /></button>
                       </div>
                     </div>
@@ -134,14 +134,17 @@ const Checkout: React.FC = () => {
         </section>
 
         <section className="p-8 bg-secondary rounded-2xl border border-border space-y-4 shadow-2xl mb-4">
-          <div className="flex justify-between items-center text-sm font-medium text-muted-foreground"><span>Subtotal</span><span className="text-foreground font-bold">${subtotal.toFixed(2)}</span></div>
-          <div className="flex justify-between items-center text-sm font-medium text-muted-foreground"><span>Delivery Fee</span><span className="text-foreground font-bold">${deliveryFee.toFixed(2)}</span></div>
+          <div className="flex justify-between items-center text-sm font-medium text-muted-foreground"><span>Subtotal</span><span className="text-foreground font-bold">₦{subtotal.toLocaleString()}</span></div>
+          <div className="flex justify-between items-center text-sm font-medium text-muted-foreground"><span>Delivery Fee</span><span className="text-foreground font-bold">₦{deliveryFee.toLocaleString()}</span></div>
           <div className="h-px bg-border my-2" />
-          <div className="flex justify-between items-center"><span className="text-lg font-black text-foreground">Total Amount</span><span className="text-2xl font-black text-primary">${total.toFixed(2)}</span></div>
+          <div className="flex justify-between items-center"><span className="text-lg font-black text-foreground">Total Amount</span><span className="text-2xl font-black text-primary">₦{total.toLocaleString()}</span></div>
         </section>
 
-        <div className="fixed bottom-0 left-0 right-0 max-w-md mx-auto p-6 bg-card/80 backdrop-blur-xl border-t border-border z-20">
-          <CTAButton text={isProcessing ? "Processing..." : `Pay $${total.toFixed(2)}`} disabled={isProcessing || schedule.length === 0} onClick={handlePayment} />
+        <div className="pb-8 px-4 text-center">
+          <p className="text-[10px] text-muted-foreground font-medium max-w-[280px] mx-auto mb-6">
+            By clicking place order you agree to Naija Eats' Terms of Service and Privacy Policy.
+          </p>
+          <CTAButton text={isProcessing ? "Processing..." : `Pay ₦${total.toLocaleString()}`} disabled={isProcessing || schedule.length === 0} onClick={handlePayment} />
           <div className="mt-4 flex items-center justify-center gap-2 text-muted-foreground">
             <ShieldCheck size={14} />
             <span className="text-[10px] font-bold uppercase tracking-widest">Secure 256-bit SSL Payment</span>

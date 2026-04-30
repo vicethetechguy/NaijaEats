@@ -32,9 +32,10 @@ export const SiteHeader: React.FC = () => {
         <div className="flex items-center gap-2 sm:gap-8">
           <button
             onClick={() => navigate(isSignedIn ? '/home' : '/')}
-            className="text-2xl font-black tracking-tighter text-tomato pl-2"
+            className="text-2xl tracking-tighter text-tomato pl-2"
           >
-            PLATERA
+            <span className="font-light">Naija</span>
+            <span className="font-black">Eats</span>
           </button>
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold uppercase tracking-wide">
             {navLinks.map((l) => (
@@ -89,7 +90,10 @@ export const SiteFooter: React.FC = () => (
     <div className="max-w-7xl mx-auto px-6">
       <div className="grid md:grid-cols-4 gap-12 mb-14">
         <div className="col-span-2">
-          <span className="text-3xl font-black tracking-tighter text-tomato block mb-4">PLATERA</span>
+          <span className="text-3xl tracking-tighter text-tomato block mb-4">
+            <span className="font-light">Naija</span>
+            <span className="font-black">Eats</span>
+          </span>
           <p className="text-cream/70 max-w-sm font-medium">
             Connecting hungry neighbors with talented chefs through high-quality, local food experiences.
           </p>
@@ -112,7 +116,7 @@ export const SiteFooter: React.FC = () => (
         </div>
       </div>
       <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center gap-4">
-        <p className="text-cream/40 text-xs font-medium">© 2024 Platera Social Club. Built with hunger.</p>
+        <p className="text-cream/40 text-xs font-medium">© 2024 Naija Eats Social Club. Built with hunger.</p>
         <div className="flex gap-6 text-cream/40 text-xs font-bold uppercase tracking-widest">
           <a href="#" className="hover:text-white">Instagram</a>
           <a href="#" className="hover:text-white">Twitter</a>

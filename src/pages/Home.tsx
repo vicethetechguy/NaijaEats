@@ -53,7 +53,7 @@ const Home: React.FC = () => {
             { l: 'Calories', v: '2,450', s: 'Daily avg', icon: Flame, c: 'bg-tomato text-white' },
             { l: 'Protein', v: '142g', s: 'On track', icon: ChefHat, c: 'bg-sage text-white' },
             { l: 'Meals', v: '12', s: 'This week', icon: Truck, c: 'bg-mustard text-ink' },
-            { l: 'Saved', v: '$84', s: 'vs eating out', icon: ArrowRight, c: 'bg-ink text-cream' },
+            { l: 'Saved', v: '₦12,500', s: 'vs eating out', icon: ArrowRight, c: 'bg-ink text-cream' },
           ].map((s) => {
             const I = s.icon;
             return (
@@ -72,16 +72,16 @@ const Home: React.FC = () => {
             <h2 className="text-3xl font-black tracking-tight">Trending in your area</h2>
             <button onClick={() => navigate('/meals')} className="font-bold text-sm uppercase tracking-wide text-tomato hover:underline flex items-center gap-1">All <ArrowRight size={14} /></button>
           </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {favorites.map((m) => (
-              <StickerCard key={m.id} onClick={() => navigate(`/meals/${m.id}`)} className="overflow-hidden">
-                <div className="aspect-[4/3] border-b-[3px] border-ink overflow-hidden">
-                  <img src={m.image} alt={m.title} className="w-full h-full object-cover" />
+              <StickerCard key={m.id} onClick={() => navigate(`/meals/${m.id}`)} className="overflow-hidden group">
+                <div className="aspect-square border-b-[3px] border-ink overflow-hidden">
+                  <img src={m.image} alt={m.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                 </div>
-                <div className="p-5 space-y-2">
-                  <Badge text={m.cal} color="mustard" />
-                  <h3 className="text-xl font-extrabold leading-tight">{m.title}</h3>
-                  <p className="text-sm font-medium text-ink/60">By {m.chef}</p>
+                <div className="p-3 sm:p-5 space-y-1 sm:space-y-2">
+                  <Badge text={m.cal} color="mustard" className="text-[7px] sm:text-[10px] px-2 py-0.5" />
+                  <h3 className="text-sm sm:text-xl font-black leading-tight line-clamp-1 sm:line-clamp-2">{m.title}</h3>
+                  <p className="text-[10px] sm:text-sm font-medium text-ink/60">By {m.chef}</p>
                 </div>
               </StickerCard>
             ))}

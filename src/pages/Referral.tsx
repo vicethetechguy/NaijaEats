@@ -34,9 +34,8 @@ const Referral: React.FC = () => {
   ];
 
   const recentReferrals = [
-    { name: "Chidi Anagonye", status: "Subscribed", date: "2 days ago", amount: "+$20" },
-    { name: "Tahani Al-Jamil", status: "Joined", date: "5 days ago", amount: "Pending" },
-    { name: "Jason Mendoza", status: "Subscribed", date: "1 week ago", amount: "+$20" },
+    { id: 1, name: "Tunde", amount: "$45", date: "Oct 12", avatar: "https://i.pravatar.cc/100?u=1", status: "Joined Naija Eats" },
+    { id: 2, name: "Amara", amount: "$20", date: "Oct 15", avatar: "https://i.pravatar.cc/100?u=2", status: "Joined Naija Eats" }
   ];
 
   return (

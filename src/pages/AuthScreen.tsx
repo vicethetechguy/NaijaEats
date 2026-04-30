@@ -1,13 +1,22 @@
 import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User as UserIcon, Eye, EyeOff, Loader2, ArrowLeft, Check } from 'lucide-react';
+import { Mail, Lock, User as UserIcon, Eye, EyeOff, Loader2, ArrowLeft, Check, ChefHat, Bike, Store, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 type AuthMode = 'login' | 'signup';
+type UserRole = 'user' | 'chef' | 'restaurant' | 'delivery';
+
+const roles: { id: UserRole; label: string; icon: any }[] = [
+  { id: 'user', label: 'Eater', icon: UserCircle },
+  { id: 'chef', label: 'Chef', icon: ChefHat },
+  { id: 'restaurant', label: 'Restaurant', icon: Store },
+  { id: 'delivery', label: 'Delivery', icon: Bike },
+];
 
 const AuthScreen = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>('login');
+  const [role, setRole] = useState<UserRole>('user');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
@@ -21,15 +30,30 @@ const AuthScreen = () => {
     e.preventDefault();
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1200));
+    
     const user = {
       email: form.email,
       name: form.name || form.email.split('@')[0] || 'Foodie Friend',
       image: `https://i.pravatar.cc/150?u=${form.email}`,
+      role: role,
     };
+    
     localStorage.setItem('platera_onboarded', 'true');
     localStorage.setItem('platera_user', JSON.stringify(user));
+    
     setSuccess(mode === 'login' ? 'Welcome back!' : 'Account created!');
-    setTimeout(() => navigate('/home'), 800);
+    
+    setTimeout(() => {
+      if (role === 'chef') {
+        window.location.href = '/apps/chef/index.html';
+      } else if (role === 'delivery') {
+        window.location.href = '/apps/delivery/index.html';
+      } else if (role === 'restaurant') {
+        window.location.href = '/apps/restaurant/index.html';
+      } else {
+        navigate('/home');
+      }
+    }, 800);
     setLoading(false);
   };
 
@@ -46,9 +70,10 @@ const AuthScreen = () => {
         </button>
         <button
           onClick={() => navigate('/')}
-          className="text-2xl font-black tracking-tighter text-tomato"
+          className="text-2xl tracking-tighter text-tomato"
         >
-          PLATERA
+          <span className="font-light">Naija</span>
+          <span className="font-black">Eats</span>
         </button>
         <div className="w-10" />
       </div>
@@ -85,7 +110,7 @@ const AuthScreen = () => {
                 {mode === 'login' ? 'Welcome back.' : 'Create account.'}
               </h2>
               <p className="text-sm font-medium text-ink/60">
-                {mode === 'login' ? 'Sign in to continue your plan.' : 'Join Platera in a few seconds.'}
+                {mode === 'login' ? 'Sign in to continue your plan.' : 'Join Naija Eats in a few seconds.'}
               </p>
             </div>
 
@@ -111,6 +136,32 @@ const AuthScreen = () => {
                 </button>
               ))}
             </div>
+
+            {/* Role selection for signup */}
+            {mode === 'signup' && (
+              <div className="mb-8 space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Joining as a...</p>
+                <div className="grid grid-cols-4 gap-2">
+                  {roles.map((r) => {
+                    const Icon = r.icon;
+                    return (
+                      <button
+                        key={r.id}
+                        type="button"
+                        onClick={() => setRole(r.id)}
+                        className={cn(
+                          'flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all gap-1',
+                          role === r.id ? 'bg-mustard border-ink shadow-stk-sm -translate-y-0.5' : 'bg-cream border-ink/5 text-ink/40 hover:border-ink/20'
+                        )}
+                      >
+                        <Icon size={18} />
+                        <span className="text-[8px] font-black uppercase tracking-tighter">{r.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <form onSubmit={submit} className="space-y-5">
               {mode === 'signup' && (

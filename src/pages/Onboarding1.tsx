@@ -10,7 +10,10 @@ const Onboarding1: React.FC = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-0 md:p-8">
       <div className="flex flex-col h-screen md:h-[844px] w-full max-w-md bg-card shadow-[0_50px_100px_-20px_rgba(0,0,0,0.8)] rounded-none md:rounded-[60px] relative overflow-hidden border border-border">
         <div className="px-6 py-10 flex items-center justify-between absolute top-0 left-0 right-0 z-10">
-          <h1 className="text-2xl font-black text-foreground drop-shadow-2xl tracking-tighter">Platera</h1>
+          <h1 className="text-2xl tracking-tighter">
+            <span className="font-light">Naija</span>
+            <span className="font-black">Eats</span>
+          </h1>
           <button onClick={() => navigate('/notifications')} className="p-3 bg-background/40 backdrop-blur-md rounded-2xl text-foreground border border-border active:scale-95 transition-all">
             <Bell size={18} />
           </button>

@@ -24,12 +24,8 @@ const Onboarding3: React.FC = () => {
 
         <div className="p-10 space-y-8 bg-card relative z-10 shrink-0">
           <div className="space-y-4">
-            <h2 className="text-5xl font-black text-foreground leading-[0.85] tracking-tighter">
-              Eat well,<br />without effort.
-            </h2>
-            <p className="text-muted-foreground text-lg font-medium leading-relaxed">
-              Custom meal plans and fresh ingredients delivered straight to your door.
-            </p>
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tighter leading-none mb-4">You're in.</h1>
+            <p className="text-muted-foreground text-lg leading-relaxed font-medium">Welcome to the Naija Eats Social Club. Your first box is being prepared.</p>
           </div>
 
           <div className="space-y-4 pt-4">

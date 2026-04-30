@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -30,6 +30,14 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const isSignedIn = !!localStorage.getItem('platera_user');
+  if (!isSignedIn) {
+    return <Navigate to="/auth" replace />;
+  }
+  return <>{children}</>;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -39,27 +47,31 @@ const App = () => (
           <Sonner />
           <BrowserRouter>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
-              <Route path="/onboarding" element={<Onboarding1 />} />
-              <Route path="/onboarding/preferences" element={<Onboarding2 />} />
-              <Route path="/onboarding/welcome" element={<Onboarding3 />} />
-              <Route path="/home" element={<Home />} />
-              <Route path="/meals" element={<DiscoverMeals />} />
-              <Route path="/meals/:mealId" element={<MealDetail />} />
-              <Route path="/planner" element={<Planner />} />
-              <Route path="/account" element={<Account />} />
-              <Route path="/account/edit" element={<ProfileEdit />} />
-              <Route path="/account/dietary" element={<DietaryPreferences />} />
-              <Route path="/search" element={<SearchScreen />} />
-              <Route path="/orders" element={<Orders />} />
-              <Route path="/orders/:orderId" element={<OrderDetails />} />
               <Route path="/auth" element={<AuthScreen />} />
-              <Route path="/delivery/:orderId" element={<DeliveryTrack />} />
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/checkout" element={<Checkout />} />
-              <Route path="/payment-success" element={<PaymentSuccess />} />
-              <Route path="/pricing" element={<Pricing />} />
-              <Route path="/referral" element={<Referral />} />
+
+              {/* Protected Routes */}
+              <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+              <Route path="/onboarding" element={<ProtectedRoute><Onboarding1 /></ProtectedRoute>} />
+              <Route path="/onboarding/preferences" element={<ProtectedRoute><Onboarding2 /></ProtectedRoute>} />
+              <Route path="/onboarding/welcome" element={<ProtectedRoute><Onboarding3 /></ProtectedRoute>} />
+              <Route path="/meals" element={<ProtectedRoute><DiscoverMeals /></ProtectedRoute>} />
+              <Route path="/meals/:mealId" element={<ProtectedRoute><MealDetail /></ProtectedRoute>} />
+              <Route path="/planner" element={<ProtectedRoute><Planner /></ProtectedRoute>} />
+              <Route path="/account" element={<ProtectedRoute><Account /></ProtectedRoute>} />
+              <Route path="/account/edit" element={<ProtectedRoute><ProfileEdit /></ProtectedRoute>} />
+              <Route path="/account/dietary" element={<ProtectedRoute><DietaryPreferences /></ProtectedRoute>} />
+              <Route path="/search" element={<ProtectedRoute><SearchScreen /></ProtectedRoute>} />
+              <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+              <Route path="/orders/:orderId" element={<ProtectedRoute><OrderDetails /></ProtectedRoute>} />
+              <Route path="/delivery/:orderId" element={<ProtectedRoute><DeliveryTrack /></ProtectedRoute>} />
+              <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+              <Route path="/checkout" element={<ProtectedRoute><Checkout /></ProtectedRoute>} />
+              <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
+              <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
+              <Route path="/referral" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
