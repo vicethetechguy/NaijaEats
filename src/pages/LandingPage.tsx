@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChefHat, ShieldCheck, Zap, MapPin, Star, ArrowRight } from 'lucide-react';
-import { SiteHeader, SiteFooter, MobileBottomDock } from '@/components/Layouts';
+import { SiteHeader, SiteFooter } from '@/components/Layouts';
 import { Badge, StickerCard } from '@/components/UI';
 
 const heroImg =
@@ -213,7 +213,6 @@ const LandingPage: React.FC = () => {
       </section>
 
       <SiteFooter />
-      <MobileBottomDock />
     </div>
   );
 };
