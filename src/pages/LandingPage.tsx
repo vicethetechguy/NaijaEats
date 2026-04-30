@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChefHat, ShieldCheck, Zap, MapPin, Star, ArrowRight } from 'lucide-react';
-import { SiteHeader, SiteFooter, MobileBottomDock } from '@/components/Layouts';
+import { SiteFooter, MobileBottomDock } from '@/components/Layouts';
 import { Badge, StickerCard } from '@/components/UI';
 
 const heroImg =
@@ -42,15 +42,10 @@ const trending = [
 
 const LandingPage: React.FC = () => {
   const navigate = useNavigate();
-  const goStart = () => {
-    const onboarded = localStorage.getItem('platera_onboarded');
-    navigate(onboarded ? '/home' : '/onboarding');
-  };
+  const goStart = () => navigate('/auth');
 
   return (
     <div className="min-h-screen bg-cream text-ink">
-      <SiteHeader />
-
       {/* HERO */}
       <header className="pt-16 pb-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
