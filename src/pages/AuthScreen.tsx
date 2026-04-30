@@ -97,7 +97,7 @@ const AuthScreen = () => {
             )}
 
             {/* Mode toggle */}
-            <div className="flex bg-cream border-2 border-ink rounded-full p-1 mb-6">
+            <div className="flex bg-cream border-2 border-ink rounded-full p-1 mb-8">
               {(['login', 'signup'] as AuthMode[]).map((m) => (
                 <button
                   key={m}
@@ -112,7 +112,7 @@ const AuthScreen = () => {
               ))}
             </div>
 
-            <form onSubmit={submit} className="space-y-3.5">
+            <form onSubmit={submit} className="space-y-5">
               {mode === 'signup' && (
                 <FieldWrap icon={<UserIcon size={18} strokeWidth={2.5} />}>
                   <input
@@ -155,7 +155,7 @@ const AuthScreen = () => {
               </FieldWrap>
 
               {mode === 'login' && (
-                <div className="flex justify-end">
+                <div className="flex justify-end pt-1">
                   <button type="button" className="text-xs font-bold uppercase tracking-wide text-tomato hover:underline">
                     Forgot password?
                   </button>
@@ -165,7 +165,7 @@ const AuthScreen = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-tomato text-white border-[3px] border-ink rounded-2xl py-4 font-extrabold uppercase tracking-wide text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                className="w-full bg-tomato text-white border-[3px] border-ink rounded-2xl py-4 mt-2 font-extrabold uppercase tracking-wide text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-70 flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <Loader2 size={18} className="animate-spin" />
@@ -178,7 +178,7 @@ const AuthScreen = () => {
             </form>
 
             {/* Divider */}
-            <div className="flex items-center gap-3 mt-8 mb-6">
+            <div className="flex items-center gap-3 mt-10 mb-7">
               <div className="flex-1 h-[2px] bg-ink/10" />
               <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink/40 whitespace-nowrap">or continue with</span>
               <div className="flex-1 h-[2px] bg-ink/10" />
@@ -189,7 +189,7 @@ const AuthScreen = () => {
               <SocialBtn label="Apple" />
             </div>
 
-            <p className="text-center text-xs font-medium text-ink/60 mt-6">
+            <p className="text-center text-xs font-medium text-ink/60 mt-8">
               {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
               <button
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
