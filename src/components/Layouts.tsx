@@ -23,13 +23,15 @@ export const SiteHeader: React.FC = () => {
   const location = useLocation();
   const isActive = (to: string) =>
     to === '/home' ? location.pathname === '/home' : location.pathname.startsWith(to);
+  const isLanding = location.pathname === '/';
+  const isSignedIn = typeof window !== 'undefined' && !!localStorage.getItem('platera_user');
 
   return (
     <header className="sticky top-4 z-50 mx-auto max-w-7xl px-4">
       <div className="bg-card border-[3px] border-ink rounded-full px-3 sm:px-6 py-2.5 flex items-center justify-between shadow-stk">
         <div className="flex items-center gap-2 sm:gap-8">
           <button
-            onClick={() => navigate('/home')}
+            onClick={() => navigate(isSignedIn ? '/home' : '/')}
             className="text-2xl font-black tracking-tighter text-tomato pl-2"
           >
             PLATERA
@@ -50,26 +52,32 @@ export const SiteHeader: React.FC = () => {
           </nav>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
-          <button
-            onClick={() => navigate('/notifications')}
-            aria-label="Notifications"
-            className="relative p-2 rounded-full border-2 border-ink bg-cream hover:bg-mustard transition-colors"
-          >
-            <Bell size={16} strokeWidth={2.5} />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-tomato rounded-full border border-ink" />
-          </button>
-          <button
-            onClick={() => navigate('/account')}
-            className="hidden sm:inline-flex font-bold text-sm uppercase tracking-wide hover:text-tomato"
-          >
-            Account
-          </button>
-          <button
-            onClick={() => navigate('/checkout')}
-            className="bg-tomato text-white border-2 border-ink px-4 sm:px-5 py-2 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wide hover:-translate-y-0.5 transition-transform active:translate-y-0"
-          >
-            Order Now
-          </button>
+          {isLanding ? (
+            <button
+              onClick={() => navigate('/auth')}
+              className="bg-tomato text-white border-2 border-ink px-4 sm:px-5 py-2 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wide hover:-translate-y-0.5 transition-transform active:translate-y-0"
+            >
+              Sign In
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/notifications')}
+                aria-label="Notifications"
+                className="relative p-2 rounded-full border-2 border-ink bg-cream hover:bg-mustard transition-colors"
+              >
+                <Bell size={16} strokeWidth={2.5} />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-tomato rounded-full border border-ink" />
+              </button>
+              <button
+                onClick={() => navigate('/account')}
+                aria-label="Profile"
+                className="p-2 rounded-full border-2 border-ink bg-tomato text-white hover:bg-tomato/90 transition-colors"
+              >
+                <User size={16} strokeWidth={2.5} />
+              </button>
+            </>
+          )}
         </div>
       </div>
     </header>
