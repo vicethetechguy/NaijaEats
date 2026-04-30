@@ -51,6 +51,14 @@ const LandingPage: React.FC = () => {
       <header className="pt-16 pb-20 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-12 items-center">
           <div className="lg:col-span-7">
+            <div className="mb-6 flex items-center gap-3">
+              <span className="text-5xl sm:text-6xl font-black tracking-tighter text-tomato leading-none">
+                PLATERA
+              </span>
+              <span className="bg-ink text-cream text-[10px] font-extrabold uppercase tracking-widest px-2 py-1 rounded-full border-2 border-ink">
+                Social Club
+              </span>
+            </div>
             <div className="inline-block bg-mustard border-2 border-ink px-4 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide mb-6 -rotate-2 shadow-stk-sm">
               ⭐ New in your neighborhood
             </div>
