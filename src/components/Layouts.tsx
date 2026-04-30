@@ -136,23 +136,47 @@ export const MobileBottomDock: React.FC = () => {
   const isActive = (to: string) =>
     to === '/home' ? location.pathname === '/home' : location.pathname.startsWith(to);
 
+  const [expanded, setExpanded] = React.useState<string | null>(null);
+
+  // Auto-expand the active route's icon
+  React.useEffect(() => {
+    const active = items.find((i) => isActive(i.to));
+    setExpanded(active?.to ?? null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
+
+  const handleClick = (to: string) => {
+    if (expanded === to) {
+      navigate(to);
+    } else {
+      setExpanded(to);
+    }
+  };
+
   return (
     <div className="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md">
-      <div className="bg-card border-[3px] border-ink rounded-full px-2 py-2 shadow-stk flex items-center justify-between">
+      <div className="bg-card border-[3px] border-ink rounded-2xl px-2 py-2 shadow-stk flex items-center justify-between gap-1">
         {items.map((item) => {
           const Icon = item.icon;
-          const active = isActive(item.to);
+          const isExpanded = expanded === item.to;
           return (
             <button
               key={item.to}
-              onClick={() => navigate(item.to)}
+              onClick={() => handleClick(item.to)}
               className={cn(
-                'flex flex-col items-center justify-center gap-0.5 px-2.5 py-1.5 rounded-full transition-all min-w-[52px]',
-                active ? 'bg-tomato text-white' : 'text-ink hover:bg-mustard/40'
+                'flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2',
+                isExpanded
+                  ? 'bg-mustard text-ink border-ink px-3 flex-1'
+                  : 'text-ink border-transparent hover:bg-mustard/30 w-11'
               )}
+              aria-label={item.label}
             >
-              <Icon size={18} strokeWidth={2.5} />
-              <span className="text-[9px] font-bold uppercase tracking-wide">{item.label}</span>
+              <Icon size={18} strokeWidth={2.5} className="shrink-0" />
+              {isExpanded && (
+                <span className="text-xs font-extrabold uppercase tracking-wide whitespace-nowrap">
+                  {item.label}
+                </span>
+              )}
             </button>
           );
         })}
