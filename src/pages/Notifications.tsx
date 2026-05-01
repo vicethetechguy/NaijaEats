@@ -8,13 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const Notifications: React.FC = () => {
   const navigate = useNavigate();
   const [activeFilter, setActiveFilter] = useState<'all' | 'delivery' | 'offers'>('all');
-
-  const notifs = [
-    { id: 1, title: "Out for Delivery!", desc: "Your Tuesday box is only 2 miles away. Prepare your fridge!", icon: <Truck size={18} />, category: 'delivery', time: "10m ago", unread: true, color: "bg-sage", path: "/delivery/current" },
-    { id: 2, title: "Invite a Friend", desc: "Get $20 credit when you share Naija Eats with a gym buddy.", icon: <Gift size={18} />, category: 'offers', time: "2h ago", unread: true, color: "bg-mustard", path: "/referral" },
-    { id: 3, title: "New Menu Alert!", desc: "Check out our winter harvest specials. Limited time only!", icon: <Zap size={18} />, category: 'offers', time: "1d ago", unread: false, color: "bg-tomato", path: "/meals" },
-    { id: 4, title: "Quality Guarantee", desc: "How was your last meal? We'd love your feedback!", icon: <Heart size={18} />, category: 'all', time: "2d ago", unread: false, color: "bg-white", path: "/account" },
-  ];
+  const [notifs, setNotifs] = useState<any[]>([]);
 
   const filteredNotifs = notifs.filter(n => 
     activeFilter === 'all' || n.category === activeFilter
@@ -119,11 +113,22 @@ const Notifications: React.FC = () => {
                 </motion.div>
               ))
             ) : (
-              <div className="py-20 text-center space-y-4">
-                <div className="w-16 h-16 bg-ink/5 border-2 border-ink/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Bell size={24} className="text-ink/20" />
+              <div className="py-32 text-center space-y-6">
+                <div className="w-24 h-24 bg-card border-[3px] border-ink rounded-[40px] shadow-stk flex items-center justify-center mx-auto mb-6 rotate-3">
+                  <Bell size={40} className="text-tomato" strokeWidth={2.5} />
                 </div>
-                <h3 className="font-black text-ink/40 uppercase tracking-widest">No notifications</h3>
+                <div className="space-y-2">
+                  <h3 className="font-black text-2xl uppercase tracking-tighter">All Caught Up!</h3>
+                  <p className="text-ink/60 font-medium max-w-xs mx-auto text-sm leading-relaxed">
+                    No new alerts right now. We'll ping you as soon as your next meal is on the way or a chef posts a new special!
+                  </p>
+                </div>
+                <button 
+                  onClick={() => navigate('/meals')}
+                  className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-tomato hover:gap-4 transition-all"
+                >
+                  Browse today's specials <Inbox size={14} />
+                </button>
               </div>
             )}
           </AnimatePresence>
