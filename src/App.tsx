@@ -26,6 +26,7 @@ import Onboarding3 from "./pages/Onboarding3";
 import Pricing from "./pages/Pricing";
 import Referral from "./pages/Referral";
 import ProfileEdit from "./pages/ProfileEdit";
+import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/auth" element={<AuthScreen />} />
+              <Route path="/verify-email" element={<VerifyEmail />} />
 
               {/* Protected Routes */}
               <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />

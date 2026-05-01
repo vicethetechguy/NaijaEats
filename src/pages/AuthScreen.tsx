@@ -76,18 +76,8 @@ const AuthScreen = () => {
 
         if (error) throw error;
         
-        const user = {
-          email: data.user?.email,
-          name: form.name,
-          image: `https://i.pravatar.cc/150?u=${data.user?.id}`,
-          role: role,
-        };
-
-        localStorage.setItem('platera_onboarded', 'true');
-        localStorage.setItem('platera_user', JSON.stringify(user));
-
         setSuccess('Account created!');
-        setTimeout(() => redirectUser(role), 800);
+        setTimeout(() => navigate('/verify-email', { state: { email: form.email } }), 800);
       }
     } catch (err: any) {
       toast.error(err.message || "Authentication failed");
