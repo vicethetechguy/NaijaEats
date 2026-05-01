@@ -118,8 +118,7 @@ const AuthScreen = () => {
             alt="Logo" 
             className="h-8 w-auto object-contain"
           />
-          <span className="font-light">Naija</span>
-          <span className="font-black">Eats</span>
+          <span className="font-light">Naija</span><span className="font-black">Eats</span>
         </button>
         <div className="w-10" />
       </div>

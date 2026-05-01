@@ -55,8 +55,7 @@ export const SiteHeader: React.FC = () => {
               alt="Logo" 
               className="h-8 w-auto object-contain"
             />
-            <span className="font-light">Naija</span>
-            <span className="font-black">Eats</span>
+            <span className="font-light">Naija</span><span className="font-black">Eats</span>
           </button>
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold uppercase tracking-wide">
             {navLinks.map((l) => (
@@ -115,10 +114,14 @@ export const SiteFooter: React.FC = () => (
     <div className="max-w-7xl mx-auto px-6">
       <div className="grid md:grid-cols-4 gap-12 mb-14">
         <div className="col-span-2">
-          <span className="text-3xl tracking-tighter text-tomato block mb-4">
-            <span className="font-light">Naija</span>
-            <span className="font-black">Eats</span>
-          </span>
+          <div className="flex items-center gap-2 text-3xl tracking-tighter text-tomato mb-4">
+            <img 
+              src="https://drive.google.com/thumbnail?id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5&sz=w200" 
+              alt="Logo" 
+              className="h-10 w-auto object-contain"
+            />
+            <span className="font-light">Naija</span><span className="font-black">Eats</span>
+          </div>
           <p className="text-cream/70 max-w-sm font-medium">
             Connecting hungry neighbors with talented chefs through high-quality, local food experiences.
           </p>
