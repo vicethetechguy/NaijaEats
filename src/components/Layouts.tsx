@@ -51,14 +51,12 @@ export const SiteHeader: React.FC = () => {
             className="flex items-center gap-2 text-2xl tracking-tighter text-tomato pl-2"
           >
             <img 
-              src="https://drive.google.com/uc?export=download&id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5" 
-              alt="Naija Eats Logo" 
+              src="https://drive.google.com/thumbnail?id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5&sz=w200" 
+              alt="Logo" 
               className="h-8 w-auto object-contain"
             />
-            <div className="flex">
-              <span className="font-light">Naija</span>
-              <span className="font-black">Eats</span>
-            </div>
+            <span className="font-light">Naija</span>
+            <span className="font-black">Eats</span>
           </button>
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold uppercase tracking-wide">
             {navLinks.map((l) => (

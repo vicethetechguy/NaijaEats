@@ -114,14 +114,12 @@ const AuthScreen = () => {
           className="flex items-center gap-2 text-2xl tracking-tighter text-tomato"
         >
           <img 
-            src="https://drive.google.com/uc?export=download&id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5" 
+            src="https://drive.google.com/thumbnail?id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5&sz=w200" 
             alt="Logo" 
             className="h-8 w-auto object-contain"
           />
-          <div className="flex">
-            <span className="font-light">Naija</span>
-            <span className="font-black">Eats</span>
-          </div>
+          <span className="font-light">Naija</span>
+          <span className="font-black">Eats</span>
         </button>
         <div className="w-10" />
       </div>
