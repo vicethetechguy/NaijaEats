@@ -13,7 +13,7 @@ const trending = [
     title: 'Smoky Party Jollof',
     chef: 'Chef Ezinne',
     miles: '1.2 mi',
-    price: 18,
+    price: 2500,
     badge: { text: 'Spicy', color: 'mustard' as const },
     image:
       'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?q=80&w=800&auto=format&fit=crop',
@@ -23,7 +23,7 @@ const trending = [
     title: 'Egusi & Pounded Yam',
     chef: 'Chef Funmi',
     miles: '0.8 mi',
-    price: 22,
+    price: 3000,
     badge: { text: 'Traditional', color: 'sage' as const },
     image:
       'https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=800&auto=format&fit=crop',
@@ -33,7 +33,7 @@ const trending = [
     title: 'Lagos Beef Suya',
     chef: 'Big Mike',
     miles: '2.4 mi',
-    price: 16,
+    price: 3500,
     badge: { text: 'Top Rated', color: 'orange' as const },
     image:
       'https://images.unsplash.com/photo-1568901346375-23c9450c58cd?q=80&w=800&auto=format&fit=crop',
@@ -151,7 +151,7 @@ const LandingPage: React.FC = () => {
               <div className="p-6">
                 <div className="flex justify-between items-start mb-2 gap-3">
                   <h3 className="text-2xl font-extrabold leading-tight">{meal.title}</h3>
-                  <span className="font-black text-xl text-tomato shrink-0">${meal.price}</span>
+                  <span className="font-black text-xl text-tomato shrink-0">₦{meal.price.toLocaleString()}</span>
                 </div>
                 <p className="text-ink/70 font-medium mb-5">
                   By {meal.chef} • Order now or book for later

@@ -191,6 +191,14 @@ const AuthScreen = () => {
                 <div className="grid grid-cols-4 gap-2">
                   {roles.map((r) => {
                     const Icon = r.icon;
+                    const isActive = role === r.id;
+                    const roleColors = {
+                      eater: 'bg-tomato text-white border-ink shadow-stk-sm -translate-y-0.5',
+                      chef: 'bg-mustard text-ink border-ink shadow-stk-sm -translate-y-0.5',
+                      restaurant: 'bg-sage text-white border-ink shadow-stk-sm -translate-y-0.5',
+                      delivery: 'bg-ink text-white border-ink shadow-stk-sm -translate-y-0.5'
+                    };
+
                     return (
                       <button
                         key={r.id}
@@ -198,7 +206,7 @@ const AuthScreen = () => {
                         onClick={() => setRole(r.id)}
                         className={cn(
                           'flex flex-col items-center justify-center p-3 rounded-2xl border-2 transition-all gap-1',
-                          role === r.id ? 'bg-mustard border-ink shadow-stk-sm -translate-y-0.5' : 'bg-cream border-ink/5 text-ink/40 hover:border-ink/20'
+                          isActive ? roleColors[r.id] : 'bg-cream border-ink/5 text-ink/40 hover:border-ink/20'
                         )}
                       >
                         <Icon size={18} />
@@ -263,7 +271,15 @@ const AuthScreen = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full bg-tomato text-white border-[3px] border-ink rounded-2xl py-4 mt-2 font-extrabold uppercase tracking-wide text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-70 flex items-center justify-center gap-2"
+                className={cn(
+                  "w-full border-[3px] border-ink rounded-2xl py-4 mt-2 font-extrabold uppercase tracking-wide text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-70 flex items-center justify-center gap-2",
+                  mode === 'login' ? 'bg-tomato text-white' : (
+                    role === 'eater' ? 'bg-tomato text-white' :
+                    role === 'chef' ? 'bg-mustard text-ink' :
+                    role === 'restaurant' ? 'bg-sage text-white' :
+                    'bg-ink text-white'
+                  )
+                )}
               >
                 {loading ? (
                   <Loader2 size={18} className="animate-spin" />
