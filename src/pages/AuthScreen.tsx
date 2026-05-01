@@ -6,10 +6,10 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 
 type AuthMode = 'login' | 'signup';
-type UserRole = 'user' | 'chef' | 'restaurant' | 'delivery';
+type UserRole = 'eater' | 'chef' | 'restaurant' | 'delivery';
 
 const roles: { id: UserRole; label: string; icon: any }[] = [
-  { id: 'user', label: 'Eater', icon: UserCircle },
+  { id: 'eater', label: 'Eater', icon: UserCircle },
   { id: 'chef', label: 'Chef', icon: ChefHat },
   { id: 'restaurant', label: 'Restaurant', icon: Store },
   { id: 'delivery', label: 'Delivery', icon: Bike },
@@ -18,7 +18,7 @@ const roles: { id: UserRole; label: string; icon: any }[] = [
 const AuthScreen = () => {
   const navigate = useNavigate();
   const [mode, setMode] = useState<AuthMode>('login');
-  const [role, setRole] = useState<UserRole>('user');
+  const [role, setRole] = useState<UserRole>('eater');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState('');
