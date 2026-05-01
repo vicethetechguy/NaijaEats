@@ -32,7 +32,6 @@ const Referral: React.FC = () => {
             </div>
           </div>
           <div className="space-y-2">
-          <div className="space-y-2">
             <h1 className="text-4xl font-black tracking-tighter leading-[0.95]">
               Get a <span className="text-tomato">Free meal</span> ticket
             </h1>
