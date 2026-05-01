@@ -77,8 +77,8 @@ const Home: React.FC = () => {
               Ready to explore authentic Nigerian flavors? Discover what's cooking in your neighborhood today.
             </p>
             <div className="flex flex-wrap gap-3 pt-2">
-              <button onClick={() => navigate('/meals')} className="bg-tomato text-white border-[3px] border-ink px-6 py-3 rounded-2xl font-bold uppercase tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all">Explore meals</button>
-              <button onClick={() => navigate('/planner')} className="bg-card border-[3px] border-ink px-6 py-3 rounded-2xl font-bold uppercase tracking-wide shadow-stk-sm hover:bg-mustard transition-colors">Open planner</button>
+              <button onClick={() => navigate('/meals')} className="bg-tomato text-white border-[3px] border-ink px-6 py-3 rounded-2xl font-bold tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all">Explore meals</button>
+              <button onClick={() => navigate('/planner')} className="bg-card border-[3px] border-ink px-6 py-3 rounded-2xl font-bold tracking-wide shadow-stk-sm hover:bg-mustard transition-colors">Open planner</button>
             </div>
           </div>
           <div className="lg:col-span-5 relative">
@@ -87,7 +87,7 @@ const Home: React.FC = () => {
             </div>
             <div className="absolute -bottom-5 -left-5 bg-sage text-white border-[3px] border-ink p-4 rounded-2xl -rotate-6 shadow-stk">
               <p className="font-black text-xl leading-none">Free</p>
-              <p className="text-xs font-bold uppercase">Delivery today</p>
+              <p className="text-xs font-bold">Delivery today</p>
             </div>
           </div>
         </section>
@@ -103,7 +103,7 @@ const Home: React.FC = () => {
             return (
               <StickerCard key={s.l} className="p-5">
                 <div className={`size-10 rounded-xl border-2 border-ink ${s.c} flex items-center justify-center mb-3`}><I size={18} /></div>
-                <p className="text-xs font-bold uppercase tracking-wide text-ink/60">{s.l}</p>
+                <p className="text-xs font-bold tracking-wide text-ink/60">{s.l}</p>
                 <p className="text-2xl font-black tracking-tight">{s.v}</p>
                 <p className="text-xs font-bold text-ink/60">{s.s}</p>
               </StickerCard>
@@ -114,13 +114,13 @@ const Home: React.FC = () => {
         <section className="space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-3xl font-black tracking-tight">Trending in your area</h2>
-            <button onClick={() => navigate('/meals')} className="font-bold text-sm uppercase tracking-wide text-tomato hover:underline flex items-center gap-1">All <ArrowRight size={14} /></button>
+            <button onClick={() => navigate('/meals')} className="font-bold text-sm tracking-wide text-tomato hover:underline flex items-center gap-1">All <ArrowRight size={14} /></button>
           </div>
           
           {loading ? (
              <div className="py-20 flex flex-col items-center justify-center gap-4">
               <Loader2 className="animate-spin text-tomato" size={40} />
-              <p className="font-bold text-ink/40 uppercase tracking-widest text-xs">Finding hot meals...</p>
+              <p className="font-bold text-ink/40 tracking-wider text-xs">Finding hot meals...</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">

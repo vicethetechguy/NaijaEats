@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Bell, ArrowLeft, Search, Home, CalendarDays, Package, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
+import { useUser } from '@/contexts/UserContext';
 
 /**
  * Responsive site shell for Platera.
@@ -22,25 +23,12 @@ const navLinks = [
 export const SiteHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [profile, setProfile] = React.useState<any>(null);
+  const { profile } = useUser();
 
   const isActive = (to: string) =>
     to === '/home' ? location.pathname === '/home' : location.pathname.startsWith(to);
   const isLanding = location.pathname === '/';
-  const isSignedIn = typeof window !== 'undefined' && !!localStorage.getItem('platera_user');
-
-  React.useEffect(() => {
-    if (isSignedIn) {
-      const loadProfile = async () => {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          const { data } = await supabase.from('profiles').select('avatar_url, full_name').eq('id', user.id).single();
-          if (data) setProfile(data);
-        }
-      };
-      loadProfile();
-    }
-  }, [isSignedIn, location.pathname]); // Re-check when route changes
+  const isSignedIn = !!profile;
 
   return (
     <header className="sticky top-4 z-50 mx-auto max-w-7xl px-4">
@@ -59,7 +47,7 @@ export const SiteHeader: React.FC = () => {
               <span className="font-light">Naija</span><span className="font-black">Eats</span>
             </div>
           </button>
-          <nav className="hidden lg:flex items-center gap-6 text-sm font-bold uppercase tracking-wide">
+          <nav className="hidden lg:flex items-center gap-6 text-sm font-bold tracking-wide">
             {navLinks.map((l) => (
               <button
                 key={l.to}
@@ -78,9 +66,9 @@ export const SiteHeader: React.FC = () => {
           {isLanding ? (
             <button
               onClick={() => navigate('/auth')}
-              className="bg-tomato text-white border-2 border-ink px-4 sm:px-5 py-2 rounded-full font-bold text-xs sm:text-sm uppercase tracking-wide hover:-translate-y-0.5 transition-transform active:translate-y-0"
+              className="bg-tomato text-white border-2 border-ink px-4 sm:px-5 py-2 rounded-full font-bold text-xs sm:text-sm tracking-wide hover:-translate-y-0.5 transition-transform active:translate-y-0"
             >
-              Sign In
+              Sign in
             </button>
           ) : (
             <>
@@ -131,25 +119,25 @@ export const SiteFooter: React.FC = () => (
           </p>
         </div>
         <div>
-          <h5 className="font-bold uppercase text-xs tracking-widest text-mustard mb-5">Community</h5>
+          <h5 className="font-bold text-xs tracking-wider text-mustard mb-5">Community</h5>
           <ul className="space-y-3 font-medium text-cream/80 text-sm">
-            <li><a href="#" className="hover:text-white">Join as Chef</a></li>
-            <li><a href="#" className="hover:text-white">Food Quality</a></li>
-            <li><a href="#" className="hover:text-white">Neighborhood Tips</a></li>
+            <li><a href="#" className="hover:text-white">Join as chef</a></li>
+            <li><a href="#" className="hover:text-white">Food quality</a></li>
+            <li><a href="#" className="hover:text-white">Neighborhood tips</a></li>
           </ul>
         </div>
         <div>
-          <h5 className="font-bold uppercase text-xs tracking-widest text-sage mb-5">Support</h5>
+          <h5 className="font-bold text-xs tracking-wider text-sage mb-5">Support</h5>
           <ul className="space-y-3 font-medium text-cream/80 text-sm">
-            <li><a href="#" className="hover:text-white">Help Center</a></li>
-            <li><a href="#" className="hover:text-white">Order Issues</a></li>
+            <li><a href="#" className="hover:text-white">Help center</a></li>
+            <li><a href="#" className="hover:text-white">Order issues</a></li>
             <li><a href="#" className="hover:text-white">Safety</a></li>
           </ul>
         </div>
       </div>
       <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-cream/40 text-xs font-medium">© 2024 Naija Eats Social Club. Built with hunger.</p>
-        <div className="flex gap-6 text-cream/40 text-xs font-bold uppercase tracking-widest">
+        <div className="flex gap-6 text-cream/40 text-xs font-bold tracking-wider">
           <a href="#" className="hover:text-white">Instagram</a>
           <a href="#" className="hover:text-white">Twitter</a>
           <a href="#" className="hover:text-white">Threads</a>
@@ -208,7 +196,7 @@ export const MobileBottomDock: React.FC = () => {
             >
               <Icon size={18} strokeWidth={2.5} className="shrink-0" />
               {isExpanded && (
-                <span className="text-xs font-extrabold uppercase tracking-wide whitespace-nowrap">
+                <span className="text-xs font-extrabold tracking-wide whitespace-nowrap">
                   {item.label}
                 </span>
               )}

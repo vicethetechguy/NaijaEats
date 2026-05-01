@@ -32,8 +32,9 @@ const Referral: React.FC = () => {
             </div>
           </div>
           <div className="space-y-2">
-            <h1 className="text-4xl font-black tracking-tighter leading-[0.95] uppercase">
-              Get a <span className="text-tomato">Free Meal</span> Ticket
+          <div className="space-y-2">
+            <h1 className="text-4xl font-black tracking-tighter leading-[0.95]">
+              Get a <span className="text-tomato">Free meal</span> ticket
             </h1>
             <p className="text-lg font-bold text-ink/70">
               Refer 5 friends to order their first meal and unlock a ticket!
@@ -45,8 +46,8 @@ const Referral: React.FC = () => {
         <div className="bg-card border-[3px] border-ink rounded-[32px] shadow-stk p-6 space-y-6">
           <div className="flex justify-between items-end">
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-ink/40">Current Mission</p>
-              <h3 className="text-xl font-black">Your Progress</h3>
+              <p className="text-[10px] font-black tracking-widest text-ink/40">Current mission</p>
+              <h3 className="text-xl font-black">Your progress</h3>
             </div>
             <p className="text-2xl font-black text-tomato">{progress}/5</p>
           </div>
@@ -72,7 +73,7 @@ const Referral: React.FC = () => {
           <div className="p-5 bg-mustard/10 border-2 border-dashed border-mustard rounded-3xl space-y-3">
             <div className="flex items-center gap-2 text-ink">
               <Info size={18} strokeWidth={2.5} className="text-mustard" />
-              <h4 className="font-black uppercase text-xs tracking-wider">How the value is calculated</h4>
+              <h4 className="font-black text-xs tracking-wider">How the value is calculated</h4>
             </div>
             <p className="text-sm font-medium leading-relaxed text-ink/80">
               Your free meal ticket value depends on the total meal cost of the first 5 friends you refer. We take the average of their first orders to determine your ticket's worth!
@@ -82,7 +83,7 @@ const Referral: React.FC = () => {
           <div className="p-5 bg-sage/10 border-2 border-dashed border-sage rounded-3xl space-y-3">
             <div className="flex items-center gap-2 text-ink">
               <RefreshCw size={18} strokeWidth={2.5} className="text-sage" />
-              <h4 className="font-black uppercase text-xs tracking-wider">Infinity Rewards</h4>
+              <h4 className="font-black text-xs tracking-wider">Infinity rewards</h4>
             </div>
             <p className="text-sm font-medium leading-relaxed text-ink/80">
               The cycle never ends! Every time you reach 5 successful referrals, a new meal ticket is generated for you. Keep sharing, keep eating for free!
@@ -92,9 +93,9 @@ const Referral: React.FC = () => {
 
         {/* Referral Code */}
         <div className="space-y-4">
-          <p className="text-xs font-black uppercase tracking-widest text-ink/40 text-center">Share your unique code</p>
+          <p className="text-xs font-black tracking-widest text-ink/40 text-center">Share your unique code</p>
           <div className="flex items-center gap-3">
-            <div className="flex-1 bg-cream border-[3px] border-ink p-4 rounded-2xl font-black text-xl tracking-widest text-center shadow-stk-sm">
+            <div className="flex-1 bg-cream border-[3px] border-ink p-4 rounded-2xl font-black text-base tracking-wide text-center shadow-stk-sm">
               {referralCode}
             </div>
             <button 
@@ -106,9 +107,9 @@ const Referral: React.FC = () => {
           </div>
         </div>
 
-        <button className="w-full py-5 bg-ink text-white border-[4px] border-ink rounded-[28px] font-black uppercase text-sm tracking-widest shadow-stk flex items-center justify-center gap-3 hover:bg-tomato transition-colors">
+        <button className="w-full py-5 bg-ink text-white border-[4px] border-ink rounded-[28px] font-black text-sm tracking-wide shadow-stk flex items-center justify-center gap-3 hover:bg-tomato transition-colors">
           <Share2 size={20} strokeWidth={3} />
-          Invite Friends Now
+          Invite friends now
         </button>
       </div>
     </DetailLayout>

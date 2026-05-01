@@ -99,7 +99,7 @@ const DiscoverMeals: React.FC = () => {
 
         <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
           {tabs.map((t) => (
-            <button key={t} onClick={() => setTab(t)} className={cn('whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold uppercase tracking-wide border-[3px] border-ink transition-all', tab === t ? 'bg-tomato text-white shadow-stk-sm' : 'bg-card text-ink hover:bg-mustard shadow-stk-sm')}>
+            <button key={t} onClick={() => setTab(t)} className={cn('whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold tracking-wide border-[3px] border-ink transition-all', tab === t ? 'bg-tomato text-white shadow-stk-sm' : 'bg-card text-ink hover:bg-mustard shadow-stk-sm')}>
               {t}
             </button>
           ))}
@@ -109,19 +109,19 @@ const DiscoverMeals: React.FC = () => {
           {loading ? (
             <div className="col-span-full py-20 flex flex-col items-center justify-center gap-4">
               <Loader2 className="animate-spin text-tomato" size={40} />
-              <p className="font-bold text-ink/40 uppercase tracking-widest text-xs">Finding fresh meals...</p>
+              <p className="font-bold text-ink/40 tracking-wider text-xs">Finding fresh meals...</p>
             </div>
           ) : list.length === 0 ? (
              <div className="col-span-full py-20 text-center space-y-4">
                <div className="size-16 bg-card border-2 border-ink rounded-full flex items-center justify-center mx-auto mb-4 opacity-40">
                  <Search size={32} />
                </div>
-               <p className="font-bold text-ink/40 uppercase tracking-widest text-xs">
+               <p className="font-bold text-ink/40 tracking-wider text-[10px]">
                  No results for "{search}" in {tab}
                </p>
                <button 
                  onClick={() => {setSearch(''); setTab('All meals');}}
-                 className="text-tomato font-black uppercase tracking-widest text-[10px] hover:underline"
+                 className="text-tomato font-black tracking-widest text-[10px] hover:underline"
                >
                  Clear all filters
                </button>
@@ -134,7 +134,7 @@ const DiscoverMeals: React.FC = () => {
                   <div className="absolute top-2 left-2 sm:top-4 sm:left-4"><Badge text={m.category || "New"} color="orange" className="text-[7px] sm:text-[10px] px-2 py-0.5 sm:px-3 sm:py-1" /></div>
                 </div>
                 <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-3 flex-1 flex flex-col">
-                  <div className="flex items-center gap-1.5 text-ink/60 text-[8px] sm:text-xs font-bold uppercase tracking-wide">
+                  <div className="flex items-center gap-1.5 text-ink/60 text-[8px] sm:text-xs font-bold tracking-wide">
                     <ChefHat size={12} className="sm:w-[14px] sm:h-[14px]" /> {m.profiles?.business_name || m.profiles?.full_name || 'Chef'}
                   </div>
                   <h3 className="text-sm sm:text-lg font-black leading-tight line-clamp-2">{m.title}</h3>

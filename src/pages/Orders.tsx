@@ -88,14 +88,14 @@ const Orders: React.FC = () => {
   };
 
   return (
-    <MainLayout title="Order History">
+    <MainLayout title="Order history">
       <div className="space-y-8 max-w-4xl mx-auto">
         {/* Stats Section */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           {stats.map((stat, i) => (
             <div key={i} className={cn("p-5 rounded-3xl border-2 border-ink shadow-stk flex items-center justify-between", stat.color)}>
               <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-ink/70 mb-1">{stat.label}</p>
+                <p className="text-[10px] font-black tracking-widest text-ink/70 mb-1">{stat.label}</p>
                 <h4 className="text-xl font-black text-ink">{stat.value}</h4>
               </div>
               <div className="w-10 h-10 bg-white border-2 border-ink rounded-xl flex items-center justify-center">
@@ -112,11 +112,11 @@ const Orders: React.FC = () => {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={cn(
-                "px-6 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all",
+                "px-6 py-2 rounded-xl text-xs font-black tracking-wide transition-all",
                 activeTab === tab ? "bg-white text-ink border-2 border-ink shadow-stk-sm" : "text-ink/60 hover:text-ink"
               )}
             >
-              {tab}
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
             </button>
           ))}
         </div>
@@ -126,7 +126,7 @@ const Orders: React.FC = () => {
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center gap-4">
               <Loader2 className="animate-spin text-tomato" size={40} />
-              <p className="font-bold text-ink/40 uppercase tracking-widest text-xs">Loading history...</p>
+              <p className="font-bold text-ink/40 tracking-wider text-xs">Loading history...</p>
             </div>
           ) : filteredOrders.length > 0 ? (
             <div className="grid gap-4">
@@ -154,16 +154,16 @@ const Orders: React.FC = () => {
                     
                     <div className="flex flex-wrap items-center gap-2.5">
                       <div className={cn(
-                        "flex items-center gap-1.5 px-3 py-1 rounded-full border-2 border-ink text-[9px] font-black uppercase tracking-wider",
+                        "flex items-center gap-1.5 px-3 py-1 rounded-full border-2 border-ink text-[9px] font-black tracking-wide",
                         getStatusColor(order.status)
                       )}>
                         {getStatusIcon(order.status)}
-                        {order.status}
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1).replace(/_/g, ' ')}
                       </div>
                       <span className="w-1 h-1 bg-ink/20 rounded-full" />
                       <span className="text-xs font-bold text-ink">₦{order.total_amount.toLocaleString()}</span>
                       <span className="w-1 h-1 bg-ink/20 rounded-full" />
-                      <span className="text-[10px] font-black text-ink/60 uppercase tracking-widest">{new Date(order.created_at).toLocaleDateString()}</span>
+                      <span className="text-[10px] font-black text-ink/60 tracking-wider">{new Date(order.created_at).toLocaleDateString()}</span>
                     </div>
                   </div>
 
@@ -182,9 +182,9 @@ const Orders: React.FC = () => {
               <p className="text-sm text-ink/60 max-w-xs mx-auto">Looks like you haven't placed any orders in this category yet.</p>
               <button 
                 onClick={() => navigate('/meals')}
-                className="mt-4 px-8 py-3 bg-tomato text-white border-[3px] border-ink rounded-full font-black uppercase tracking-widest shadow-stk hover:-translate-y-1 transition-transform"
+                className="mt-4 px-8 py-3 bg-tomato text-white border-[3px] border-ink rounded-full font-black tracking-wide shadow-stk hover:-translate-y-1 transition-transform"
               >
-                Start Ordering
+                Start ordering
               </button>
             </div>
           )}

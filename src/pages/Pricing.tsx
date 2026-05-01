@@ -81,7 +81,7 @@ const Pricing: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <h3 className={cn("text-lg font-black tracking-tight", styles.accent)}>{tier.name}</h3>
                     {tier.tag && (
-                      <span className={cn("text-[7px] font-black px-2 py-1 rounded-md uppercase tracking-widest border", styles.tag)}>{tier.tag}</span>
+                      <span className={cn("text-[7px] font-black px-2 py-1 rounded-md tracking-wider border", styles.tag)}>{tier.tag}</span>
                     )}
                   </div>
                   <p className="text-muted-foreground text-[11px] font-medium leading-tight h-6 line-clamp-2">{tier.desc}</p>
@@ -89,7 +89,7 @@ const Pricing: React.FC = () => {
 
                 <div className="flex items-baseline gap-1 relative z-10 mt-4 mb-4">
                   <span className="text-3xl font-black text-foreground tracking-tighter">₦{tier.price}</span>
-                  <span className="text-muted-foreground text-[8px] font-black uppercase tracking-widest">/ plate</span>
+                  <span className="text-muted-foreground text-[8px] font-black tracking-wider">/ plate</span>
                 </div>
 
                 <div className="space-y-2.5 relative z-10">

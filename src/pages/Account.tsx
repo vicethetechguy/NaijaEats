@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
 import { useOnboarding } from '@/contexts/OnboardingContext';
 import { supabase } from '@/lib/supabase';
+import { useUser } from '@/contexts/UserContext';
 import {
   Settings,
   History,
@@ -21,7 +22,7 @@ import {
 const Account: React.FC = () => {
   const navigate = useNavigate();
   const { preferences } = useOnboarding();
-  const [user, setUser] = useState<{ name: string; email: string; image: string } | null>(null);
+  const { profile, signOut } = useUser();
   const [stats, setStats] = useState([
     { label: 'Orders', value: '0' },
     { label: 'Saved', value: '0' },
@@ -30,33 +31,14 @@ const Account: React.FC = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadData() {
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (!authUser) {
-        navigate('/auth');
-        return;
-      }
-
-      // Fetch Profile
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', authUser.id)
-        .single();
-
-      if (profile) {
-        setUser({
-          name: profile.full_name || 'Valued Eater',
-          email: authUser.email || '',
-          image: profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name || 'User'}&background=ff4d4d&color=fff`,
-        });
-      }
+    async function loadStats() {
+      if (!profile) return;
 
       // Fetch Stats
       const { count: orderCount } = await supabase
         .from('orders')
         .select('*', { count: 'exact', head: true })
-        .eq('eater_id', authUser.id);
+        .eq('eater_id', profile.id);
 
       setStats([
         { label: 'Orders', value: String(orderCount || 0) },
@@ -66,8 +48,8 @@ const Account: React.FC = () => {
 
       setLoading(false);
     }
-    loadData();
-  }, [navigate]);
+    loadStats();
+  }, [profile]);
 
   const dietarySummary =
     preferences.dietTypes.length > 0
@@ -75,9 +57,7 @@ const Account: React.FC = () => {
       : 'Not set';
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    localStorage.removeItem('platera_onboarded');
-    localStorage.removeItem('platera_user');
+    await signOut();
     navigate('/');
   };
 
@@ -113,7 +93,11 @@ const Account: React.FC = () => {
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             <div className="relative shrink-0">
               <div className="w-28 h-28 rounded-3xl overflow-hidden border-[3px] border-ink shadow-stk-sm bg-cream">
-                <img src={user?.image} alt={user?.name} className="w-full h-full object-cover" />
+                <img 
+                  src={profile?.avatar_url || `https://ui-avatars.com/api/?name=${profile?.full_name || 'User'}&background=ff4d4d&color=fff`} 
+                  alt={profile?.full_name || 'User'} 
+                  className="w-full h-full object-cover" 
+                />
               </div>
               <button
                 onClick={() => navigate('/account/edit')}
@@ -125,32 +109,31 @@ const Account: React.FC = () => {
             </div>
 
             <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tighter">{user?.name}</h1>
-              <p className="text-ink/60 font-medium mt-1">{user?.email}</p>
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tighter">{profile?.full_name || 'Valued Eater'}</h1>
+              <p className="text-ink/60 font-medium mt-1">{profile?.id ? 'Active Member' : 'Loading...'}</p>
               <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-2">
-                <span className="bg-mustard border-2 border-ink text-ink text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest">
-                  Standard Plan
+                <span className="bg-mustard border-2 border-ink text-ink text-[10px] font-extrabold px-3 py-1 rounded-full tracking-wide">
+                  Standard plan
                 </span>
-                <span className="bg-sage/20 border-2 border-ink text-ink text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest">
-                  Verified
+                <span className="bg-sage/20 border-2 border-ink text-ink text-[10px] font-extrabold px-3 py-1 rounded-full tracking-wide">
+                  Verified account
                 </span>
               </div>
             </div>
 
             <button
               onClick={() => navigate('/account/edit')}
-              className="hidden sm:inline-flex bg-ink text-cream border-[3px] border-ink px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wide hover:bg-tomato transition-colors"
+              className="hidden sm:inline-flex bg-ink text-cream border-[3px] border-ink px-5 py-2.5 rounded-full font-bold text-xs tracking-wide hover:bg-tomato transition-colors"
             >
-              Edit
+              Edit profile
             </button>
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-3 mt-8 pt-8 border-t-2 border-dashed border-ink/20">
             {stats.map((s) => (
               <div key={s.label} className="text-center">
                 <p className="text-3xl sm:text-4xl font-black tracking-tighter text-tomato">{s.value}</p>
-                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-ink/60 mt-1">
+                <p className="text-[10px] sm:text-xs font-bold tracking-wide text-ink/60 mt-1">
                   {s.label}
                 </p>
               </div>
@@ -160,8 +143,8 @@ const Account: React.FC = () => {
 
         {/* Account section */}
         <section>
-          <h2 className="text-xs font-extrabold uppercase tracking-widest text-ink/60 mb-4 px-1">
-            Account
+          <h2 className="text-xs font-extrabold tracking-wide text-ink/60 mb-4 px-1">
+            Account settings
           </h2>
           <div className="bg-card border-[3px] border-ink rounded-[24px] shadow-stk-sm overflow-hidden divide-y-2 divide-ink/10">
             {accountItems.map((item) => {
@@ -188,7 +171,7 @@ const Account: React.FC = () => {
 
         {/* Activity section */}
         <section>
-          <h2 className="text-xs font-extrabold uppercase tracking-widest text-ink/60 mb-4 px-1">
+          <h2 className="text-xs font-extrabold tracking-wide text-ink/60 mb-4 px-1">
             Activity
           </h2>
           <div className="bg-card border-[3px] border-ink rounded-[24px] shadow-stk-sm overflow-hidden divide-y-2 divide-ink/10">
@@ -217,10 +200,10 @@ const Account: React.FC = () => {
         {/* Sign out */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center justify-center gap-2 p-5 bg-card border-[3px] border-ink rounded-[24px] text-tomato hover:bg-tomato hover:text-white transition-colors font-extrabold text-sm uppercase tracking-widest shadow-stk-sm"
+          className="w-full flex items-center justify-center gap-2 p-5 bg-card border-[3px] border-ink rounded-[24px] text-tomato hover:bg-tomato hover:text-white transition-colors font-extrabold text-sm tracking-wide shadow-stk-sm"
         >
           <LogOut size={18} strokeWidth={2.5} />
-          Sign Out
+          Sign out
         </button>
       </div>
     </MainLayout>

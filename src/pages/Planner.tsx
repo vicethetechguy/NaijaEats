@@ -51,7 +51,7 @@ const Planner: React.FC = () => {
       <div className={`size-10 rounded-xl border-2 border-ink flex items-center justify-center ${color} group-hover:scale-110 transition-transform`}>
         <Icon size={18} strokeWidth={2.5} />
       </div>
-      <span className="text-[10px] font-bold uppercase tracking-wide">{type}</span>
+      <span className="text-[10px] font-bold tracking-wide">{type}</span>
       <Plus size={14} strokeWidth={3} />
     </button>
   );
@@ -61,7 +61,7 @@ const Planner: React.FC = () => {
       <div className="space-y-10">
         <header className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
           <div>
-            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter">Meal Planner</h1>
+            <h1 className="text-4xl sm:text-5xl font-black tracking-tighter">Meal planner</h1>
             <p className="text-lg text-ink/70 font-medium mt-2">Oct 23 — 28 • {schedule.length} meals scheduled</p>
           </div>
           <div className="flex gap-2">
@@ -74,7 +74,7 @@ const Planner: React.FC = () => {
           {days.map((day) => (
             <StickerCard key={day} className="p-5 sm:p-6">
               <div className="flex items-center gap-3 mb-4">
-                <span className="bg-ink text-cream px-3 py-1 rounded-full text-xs font-black uppercase tracking-widest">{day}</span>
+                <span className="bg-ink text-cream px-3 py-1 rounded-full text-xs font-black tracking-wider">{day}</span>
                 <div className="h-0.5 flex-1 bg-ink/15" />
               </div>
               <div className="grid grid-cols-3 gap-3 sm:gap-4">
@@ -91,10 +91,10 @@ const Planner: React.FC = () => {
           <div className="lg:sticky lg:bottom-6">
             <div className="bg-tomato text-white border-[4px] border-ink rounded-3xl shadow-stk-lg p-6 flex items-center justify-between">
               <div>
-                <p className="text-xs font-bold uppercase tracking-widest opacity-80">Weekly total</p>
+                <p className="text-xs font-bold tracking-wider opacity-80">Weekly total</p>
                 <p className="text-3xl font-black">₦{total.toLocaleString()}</p>
               </div>
-              <button onClick={() => navigate('/checkout')} className="bg-card text-ink border-[3px] border-ink rounded-2xl px-6 py-3 font-bold uppercase tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all flex items-center gap-2">
+              <button onClick={() => navigate('/checkout')} className="bg-card text-ink border-[3px] border-ink rounded-2xl px-6 py-3 font-bold tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all flex items-center gap-2">
                 Checkout <ArrowRight size={16} strokeWidth={3} />
               </button>
             </div>

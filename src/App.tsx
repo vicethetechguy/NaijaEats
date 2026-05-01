@@ -29,6 +29,8 @@ import ProfileEdit from "./pages/ProfileEdit";
 import VerifyEmail from "./pages/VerifyEmail";
 import NotFound from "./pages/NotFound";
 
+import { UserProvider } from "@/contexts/UserContext";
+
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -42,11 +44,12 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <OnboardingProvider>
-        <MealProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
+      <UserProvider>
+        <OnboardingProvider>
+          <MealProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
             <Routes>
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
@@ -79,6 +82,7 @@ const App = () => (
           </BrowserRouter>
         </MealProvider>
       </OnboardingProvider>
+      </UserProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );

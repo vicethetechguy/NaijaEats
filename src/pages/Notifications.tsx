@@ -42,13 +42,13 @@ const Notifications: React.FC = () => {
               key={filter}
               onClick={() => setActiveFilter(filter)}
               className={cn(
-                "px-5 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all shrink-0",
+                "px-5 py-2 rounded-2xl text-[10px] font-black border-2 transition-all shrink-0",
                 activeFilter === filter 
                   ? "bg-ink text-white border-ink shadow-stk-sm" 
                   : "bg-white text-ink border-ink hover:bg-cream"
               )}
             >
-              {filter}
+              {filter.charAt(0).toUpperCase() + filter.slice(1)}
             </button>
           ))}
         </div>
@@ -99,12 +99,12 @@ const Notifications: React.FC = () => {
                         {n.desc}
                       </p>
                       <div className="pt-2 flex items-center gap-3">
-                        <span className="text-[9px] font-black text-ink/40 flex items-center gap-1.5 uppercase tracking-widest">
+                        <span className="text-[9px] font-black text-ink/40 flex items-center gap-1.5 tracking-wider">
                           <Clock size={10} strokeWidth={3} /> {n.time}
                         </span>
                         {n.category !== 'all' && (
-                          <span className="text-[8px] font-black px-2 py-0.5 bg-ink/10 rounded-md uppercase tracking-tighter">
-                            {n.category}
+                          <span className="text-[8px] font-black px-2 py-0.5 bg-ink/10 rounded-md tracking-tight">
+                            {n.category.charAt(0).toUpperCase() + n.category.slice(1)}
                           </span>
                         )}
                       </div>
@@ -118,14 +118,14 @@ const Notifications: React.FC = () => {
                   <Bell size={40} className="text-tomato" strokeWidth={2.5} />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="font-black text-2xl uppercase tracking-tighter">All Caught Up!</h3>
+                  <h3 className="font-black text-2xl tracking-tighter">All caught up!</h3>
                   <p className="text-ink/60 font-medium max-w-xs mx-auto text-sm leading-relaxed">
                     No new alerts right now. We'll ping you as soon as your next meal is on the way or a chef posts a new special!
                   </p>
                 </div>
                 <button 
                   onClick={() => navigate('/meals')}
-                  className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-widest text-tomato hover:gap-4 transition-all"
+                  className="inline-flex items-center gap-2 text-xs font-black tracking-widest text-tomato hover:gap-4 transition-all"
                 >
                   Browse today's specials <Inbox size={14} />
                 </button>

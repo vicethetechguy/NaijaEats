@@ -69,7 +69,7 @@ const MealDetail: React.FC = () => {
       <DetailLayout title="Loading...">
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <Loader2 size={40} className="animate-spin text-tomato" />
-          <p className="font-black uppercase tracking-widest text-ink/40">Fetching secret recipe...</p>
+          <p className="font-black tracking-wider text-ink/40">Fetching secret recipe...</p>
         </div>
       </DetailLayout>
     );
@@ -100,7 +100,7 @@ const MealDetail: React.FC = () => {
                { l: 'Fats', v: '18', u: 'g' }
             ].map((n) => (
               <div key={n.l} className="bg-card border-[3px] border-ink rounded-2xl p-4 text-center shadow-stk-sm">
-                <p className="text-[10px] font-bold uppercase tracking-wide text-ink/60">{n.l}</p>
+                <p className="text-[10px] font-bold tracking-wide text-ink/60">{n.l}</p>
                 <p className="text-xl font-black">{n.v}<span className="text-xs font-bold text-ink/60 ml-0.5">{n.u}</span></p>
               </div>
             ))}
@@ -115,16 +115,16 @@ const MealDetail: React.FC = () => {
             <div className="flex-1">
               <div className="flex items-center gap-1 text-tomato">
                 <ChefHat size={14} />
-                <span className="text-[10px] font-bold uppercase tracking-widest">Master chef</span>
+                <span className="text-[10px] font-bold tracking-wider">Master chef</span>
               </div>
-              <h4 className="text-xl font-black">{meal.profiles?.full_name || 'Partner Chef'}</h4>
-              <p className="text-xs font-bold text-ink/60 uppercase">Certified Provider</p>
+              <h4 className="text-xl font-black">{meal.profiles?.full_name || 'Partner chef'}</h4>
+              <p className="text-xs font-bold text-ink/60">Certified provider</p>
             </div>
           </StickerCard>
 
           <StickerCard className="p-6">
             <div className="flex items-center justify-between mb-4">
-              <span className="text-xs font-bold uppercase tracking-widest text-ink/60">Per plate</span>
+              <span className="text-xs font-bold tracking-wider text-ink/60">Per plate</span>
               <span className="text-3xl font-black text-tomato">₦{meal.price.toLocaleString()}</span>
             </div>
             <div className="flex items-center gap-2 text-sm font-bold text-ink/70 mb-5">
@@ -135,7 +135,7 @@ const MealDetail: React.FC = () => {
               onClick={handleAdd}
               style={added ? 'sage' : 'orange'}
             />
-            <button onClick={() => navigate('/planner')} className="w-full mt-3 text-sm font-bold uppercase tracking-wide text-ink/60 hover:text-ink py-2 flex items-center justify-center gap-2">
+            <button onClick={() => navigate('/planner')} className="w-full mt-3 text-sm font-bold tracking-wide text-ink/60 hover:text-ink py-2 flex items-center justify-center gap-2">
               <ShoppingBasket size={14} /> View planner
             </button>
             {added && <p className="text-center text-sage font-bold text-sm mt-2"><Check size={14} className="inline" /> Saved to your plan</p>}

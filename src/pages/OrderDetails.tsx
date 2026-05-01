@@ -42,8 +42,8 @@ const OrderDetails: React.FC = () => {
         >
           <div className="relative z-10 flex items-center justify-between">
             <div className="space-y-2">
-              <span className="bg-white border-2 border-ink px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-ink shadow-stk-sm">
-                Successfully {orderData.status}
+              <span className="bg-white border-2 border-ink px-3 py-1 rounded-full text-[10px] font-black tracking-wider text-ink shadow-stk-sm">
+                Successfully {orderData.status.toLowerCase()}
               </span>
               <h2 className="text-4xl font-black text-ink tracking-tight">Enjoy your meal!</h2>
               <p className="text-ink/60 font-bold text-sm">Delivered to your doorstep on {orderData.date}.</p>
@@ -88,7 +88,7 @@ const OrderDetails: React.FC = () => {
                           "font-black text-base tracking-tight",
                           step.completed ? "text-ink" : "text-ink/30"
                         )}>{step.status}</p>
-                        <p className="text-[10px] font-bold text-ink/40 uppercase tracking-widest">{step.time}</p>
+                        <p className="text-[10px] font-bold text-ink/40 tracking-wider">{step.time}</p>
                       </div>
                       {step.completed && <CheckCircle2 size={16} className="text-tomato" strokeWidth={3} />}
                     </div>
@@ -100,7 +100,7 @@ const OrderDetails: React.FC = () => {
             {/* Items */}
             <section className="space-y-6">
               <div className="flex items-center gap-4 px-2">
-                <h4 className="text-[11px] font-black text-ink uppercase tracking-[0.2em]">Order Items</h4>
+                <h4 className="text-[11px] font-black text-ink tracking-widest">Order items</h4>
                 <div className="h-[2px] flex-1 bg-ink/10 rounded-full" />
               </div>
 
@@ -123,11 +123,11 @@ const OrderDetails: React.FC = () => {
                         <div className="p-1 bg-sage/20 border border-sage/30 rounded-md">
                           <ChefHat size={10} className="text-sage" />
                         </div>
-                        <span className="text-[9px] font-black text-ink/50 uppercase tracking-widest">{item.chef}</span>
+                        <span className="text-[9px] font-black text-ink/50 tracking-wider">{item.chef}</span>
                       </div>
                     </div>
                     <div className="px-4 py-2 bg-ink text-white rounded-2xl font-black text-sm">
-                      ${item.price.toFixed(2)}
+                      ₦{(item.price * 1000).toLocaleString()}
                     </div>
                   </motion.div>
                 ))}
@@ -138,14 +138,14 @@ const OrderDetails: React.FC = () => {
           <aside className="space-y-8">
             {/* Delivery Details */}
             <section className="space-y-4">
-              <h4 className="text-[11px] font-black text-ink uppercase tracking-[0.2em] px-2">Delivery</h4>
+              <h4 className="text-[11px] font-black text-ink tracking-widest px-2">Delivery</h4>
               <div className="bg-mustard border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-6">
                 <div className="flex items-start gap-4">
                   <div className="w-10 h-10 bg-white border-2 border-ink rounded-xl flex items-center justify-center text-ink shrink-0">
                     <MapPin size={20} strokeWidth={2.5} />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs font-black text-ink/60 uppercase tracking-widest">Address</p>
+                    <p className="text-xs font-black text-ink/60 tracking-wider">Address</p>
                     <p className="text-sm font-bold text-ink leading-tight">{orderData.deliveryAddress}</p>
                   </div>
                 </div>
@@ -155,9 +155,9 @@ const OrderDetails: React.FC = () => {
                     <Calendar size={20} strokeWidth={2.5} />
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs font-black text-ink/60 uppercase tracking-widest">Arrival</p>
-                    <p className="text-sm font-bold text-ink leading-tight">Tuesday Box Arrival</p>
-                    <p className="text-[10px] font-black text-ink/40 uppercase">Handed to receptionist</p>
+                    <p className="text-xs font-black text-ink/60 tracking-wider">Arrival</p>
+                    <p className="text-sm font-bold text-ink leading-tight">Tuesday box arrival</p>
+                    <p className="text-[10px] font-black text-ink/40">Handed to receptionist</p>
                   </div>
                 </div>
               </div>
@@ -165,24 +165,24 @@ const OrderDetails: React.FC = () => {
 
             {/* Summary */}
             <section className="space-y-4">
-              <h4 className="text-[11px] font-black text-ink uppercase tracking-[0.2em] px-2">Payment</h4>
+              <h4 className="text-[11px] font-black text-ink tracking-widest px-2">Payment</h4>
               <div className="bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-6">
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-xs font-bold text-ink/60">
                     <span>Subtotal</span>
-                    <span className="text-ink">${orderData.subtotal.toFixed(2)}</span>
+                    <span className="text-ink">₦{(orderData.subtotal * 1000).toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between items-center text-xs font-bold text-ink/60">
-                    <span>Delivery Fee</span>
-                    <span className="text-ink">${orderData.deliveryFee.toFixed(2)}</span>
+                    <span>Delivery fee</span>
+                    <span className="text-ink">₦{(orderData.deliveryFee * 1000).toLocaleString()}</span>
                   </div>
                 </div>
                 
                 <div className="h-[2px] border-t-2 border-dashed border-ink/20" />
                 
                 <div className="flex justify-between items-center">
-                  <span className="text-sm font-black text-ink uppercase tracking-widest">Total</span>
-                  <span className="text-3xl font-black text-tomato tracking-tighter">${orderData.total.toFixed(2)}</span>
+                  <span className="text-sm font-black text-ink tracking-wider">Total</span>
+                  <span className="text-3xl font-black text-tomato tracking-tighter">₦{(orderData.total * 1000).toLocaleString()}</span>
                 </div>
 
                 <div className="pt-2">
@@ -191,7 +191,7 @@ const OrderDetails: React.FC = () => {
                         <CreditCard size={20} strokeWidth={2.5} />
                       </div>
                       <div className="space-y-0.5">
-                        <p className="text-[9px] font-black text-ink/40 uppercase tracking-widest">Paid via Card</p>
+                        <p className="text-[9px] font-black text-ink/40 tracking-wider">Paid via card</p>
                         <p className="text-xs font-bold text-ink truncate">Visa ending in •••• 4242</p>
                       </div>
                    </div>
@@ -200,8 +200,8 @@ const OrderDetails: React.FC = () => {
             </section>
 
             <div className="flex flex-col gap-4 pt-4">
-              <CTAButton text="Reorder This Box" style="orange" onClick={() => navigate('/planner')} className="h-14 text-sm" />
-              <button className="flex items-center justify-center gap-2 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-ink/40 hover:text-tomato transition-all group">
+              <CTAButton text="Reorder this box" style="orange" onClick={() => navigate('/planner')} className="h-14 text-sm" />
+              <button className="flex items-center justify-center gap-2 py-4 text-[10px] font-black tracking-widest text-ink/40 hover:text-tomato transition-all group">
                 <Info size={14} className="group-hover:rotate-12 transition-transform" /> 
                 Report an issue
               </button>

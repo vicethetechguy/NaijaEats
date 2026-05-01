@@ -129,7 +129,7 @@ const AuthScreen = () => {
         <div className="w-full max-w-5xl grid lg:grid-cols-2 gap-10 items-center">
           {/* Left: marketing panel (desktop only) */}
           <div className="hidden lg:block">
-            <div className="inline-block bg-mustard border-2 border-ink px-4 py-1 rounded-full text-xs font-extrabold uppercase tracking-wide mb-6 -rotate-2 shadow-stk-sm">
+            <div className="inline-block bg-mustard border-2 border-ink px-4 py-1 rounded-full text-xs font-extrabold tracking-wide mb-6 -rotate-2 shadow-stk-sm">
               🍳 Real food, real chefs
             </div>
             <h1 className="text-6xl font-black leading-[0.95] tracking-tighter mb-6">
@@ -175,7 +175,7 @@ const AuthScreen = () => {
                   key={m}
                   onClick={() => setMode(m)}
                   className={cn(
-                    'flex-1 py-2.5 rounded-full text-xs font-extrabold uppercase tracking-wide transition-all',
+                    'flex-1 py-2.5 rounded-full text-xs font-extrabold tracking-wide transition-all',
                     mode === m ? 'bg-tomato text-white' : 'text-ink/60 hover:text-ink'
                   )}
                 >
@@ -187,7 +187,7 @@ const AuthScreen = () => {
             {/* Role selection for signup */}
             {mode === 'signup' && (
               <div className="mb-8 space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Joining as a...</p>
+                <p className="text-[10px] font-black tracking-widest text-ink/40 ml-1">Joining as a...</p>
                 <div className="grid grid-cols-4 gap-2">
                   {roles.map((r) => {
                     const Icon = r.icon;
@@ -210,7 +210,7 @@ const AuthScreen = () => {
                         )}
                       >
                         <Icon size={18} />
-                        <span className="text-[8px] font-black uppercase tracking-tighter">{r.label}</span>
+                        <span className="text-[8px] font-black tracking-tighter">{r.label}</span>
                       </button>
                     );
                   })}
@@ -262,7 +262,7 @@ const AuthScreen = () => {
 
               {mode === 'login' && (
                 <div className="flex justify-end pt-1">
-                  <button type="button" className="text-xs font-bold uppercase tracking-wide text-tomato hover:underline">
+                  <button type="button" className="text-xs font-bold tracking-wide text-tomato hover:underline">
                     Forgot password?
                   </button>
                 </div>
@@ -272,7 +272,7 @@ const AuthScreen = () => {
                 type="submit"
                 disabled={loading}
                 className={cn(
-                  "w-full border-[3px] border-ink rounded-2xl py-4 mt-2 font-extrabold uppercase tracking-wide text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-70 flex items-center justify-center gap-2",
+                  "w-full border-[3px] border-ink rounded-2xl py-4 mt-2 font-extrabold tracking-wide text-sm shadow-stk hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-70 flex items-center justify-center gap-2",
                   mode === 'login' ? 'bg-tomato text-white' : (
                     role === 'eater' ? 'bg-tomato text-white' :
                     role === 'chef' ? 'bg-mustard text-ink' :
@@ -294,7 +294,7 @@ const AuthScreen = () => {
             {/* Divider */}
             <div className="flex items-center gap-3 mt-10 mb-7">
               <div className="flex-1 h-[2px] bg-ink/10" />
-              <span className="text-[10px] font-extrabold uppercase tracking-widest text-ink/40 whitespace-nowrap">or continue with</span>
+              <span className="text-[10px] font-extrabold tracking-widest text-ink/40 whitespace-nowrap">or continue with</span>
               <div className="flex-1 h-[2px] bg-ink/10" />
             </div>
 
@@ -307,7 +307,7 @@ const AuthScreen = () => {
               {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
               <button
                 onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                className="text-tomato font-extrabold uppercase tracking-wide hover:underline"
+                className="text-tomato font-extrabold tracking-wide hover:underline"
               >
                 {mode === 'login' ? 'Register' : 'Sign in'}
               </button>
@@ -329,7 +329,7 @@ const FieldWrap: React.FC<{ icon: React.ReactNode; children: React.ReactNode }> 
 const SocialBtn: React.FC<{ label: string }> = ({ label }) => (
   <button
     type="button"
-    className="bg-card border-2 border-ink rounded-xl py-3 font-extrabold uppercase tracking-wide text-xs hover:bg-mustard/40 transition-colors shadow-stk-sm"
+    className="bg-card border-2 border-ink rounded-xl py-3 font-extrabold tracking-wide text-xs hover:bg-mustard/40 transition-colors shadow-stk-sm"
   >
     {label}
   </button>
