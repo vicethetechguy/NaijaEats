@@ -7,7 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
+        const SUPABASE_URL = 'https://gfhcctinvgdiirddcftc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmaGNjdGludmdkaWlyZGRjZnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NzI1ODgsImV4cCI6MjA5MzE0ODU4OH0.4tQLIo9lAfZW0ygrcQe6eLdj3aD80Dr47FZPBU3g_RU';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -204,42 +209,78 @@
     <script>
         lucide.createIcons();
 
-        let deliveryHistory = JSON.parse(localStorage.getItem('naija_eats_delivery_history')) || [];
+        let deliveryHistory = [];
         
-        window.onload = () => {
+        window.onload = async () => {
             loadProfile();
-            checkQueue();
-            setInterval(checkQueue, 3000);
+            await fetchHistory();
+            subscribeToOffers();
             renderHistory();
             updateStats();
         };
 
-        function loadProfile() {
-            const saved = localStorage.getItem('rider_profile');
-            if (saved) {
-                const data = JSON.parse(saved);
-                document.getElementById('rider-name-input').value = data.name;
-                document.getElementById('vehicle-input').value = data.vehicle;
-                document.getElementById('profile-img-preview').src = data.image;
-                document.getElementById('header-avatar').src = data.image;
-                document.querySelector('.rider-name-header').innerText = data.name;
+        async function fetchHistory() {
+            const { data } = await supabase
+                .from('orders')
+                .select('*, profiles(full_name)')
+                .eq('status', 'delivered')
+                .order('updated_at', { ascending: false });
+            
+            if (data) {
+                deliveryHistory = data.map(h => ({
+                    id: h.id.slice(0,4),
+                    user: h.profiles?.full_name || 'Customer',
+                    pay: h.delivery_fee || 2500,
+                    time: new Date(h.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                }));
             }
         }
 
-        function saveProfile() {
-            const data = {
-                name: document.getElementById('rider-name-input').value,
-                vehicle: document.getElementById('vehicle-input').value,
-                image: document.getElementById('profile-img-preview').src
-            };
-            localStorage.setItem('rider_profile', JSON.stringify(data));
+        function subscribeToOffers() {
+            supabase
+                .channel('delivery-offers')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders', filter: 'status=eq.ready' }, () => {
+                    checkQueue();
+                })
+                .subscribe();
+            
+            checkQueue(); // Initial check
+        }
+
+        async function loadProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                if (profile) {
+                    document.getElementById('rider-name-input').value = profile.full_name;
+                    if (profile.avatar_url) {
+                        document.getElementById('profile-img-preview').src = profile.avatar_url;
+                        document.getElementById('header-avatar').src = profile.avatar_url;
+                    }
+                    document.querySelector('.rider-name-header').innerText = profile.full_name;
+                }
+            }
+        }
+
+        async function saveProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const name = document.getElementById('rider-name-input').value;
+            const logo = document.getElementById('profile-img-preview').src;
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({ full_name: name, avatar_url: logo })
+                .eq('id', user.id);
             
             const btn = document.getElementById('save-profile-btn');
-            btn.innerText = "Saved!";
-            btn.classList.add('bg-sage');
-            
-            document.querySelector('.rider-name-header').innerText = data.name;
-            document.getElementById('header-avatar').src = data.image;
+            if (!error) {
+                btn.innerText = "Cloud Synced!";
+                btn.classList.add('bg-sage');
+                document.querySelector('.rider-name-header').innerText = name;
+                document.getElementById('header-avatar').src = logo;
+            }
             
             setTimeout(() => {
                 btn.innerText = "Save Profile";
@@ -258,30 +299,34 @@
             }
         }
 
-        function checkQueue() {
-            const queue = JSON.parse(localStorage.getItem('naija_eats_delivery_queue')) || [];
+        async function checkQueue() {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*, profiles(full_name)')
+                .eq('status', 'ready');
+            
             const container = document.getElementById('offers-container');
             if(!container) return;
             
-            if (queue.length === 0) {
+            if (!data || data.length === 0) {
                 container.innerHTML = `<div class="text-center py-8"><p class="text-ink/40 font-bold uppercase text-xs tracking-widest">Searching for nearby orders...</p></div>`;
                 return;
             }
 
             container.innerHTML = '';
-            queue.forEach((order, idx) => {
-                const payAmount = Math.floor(Math.random() * 2000) + 1500;
+            data.forEach((order) => {
+                const payAmount = order.delivery_fee || 2500;
                 const card = document.createElement('div');
                 card.className = "bg-mustard border-[4px] border-ink rounded-[32px] p-6 shadow-stk relative overflow-hidden active:scale-95 transition-transform";
                 card.innerHTML = `
                     <div class="relative z-10">
                         <span class="bg-ink text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full mb-3 inline-block">Flash Offer</span>
                         <h2 class="text-3xl font-black tracking-tighter leading-none mb-1">+₦${payAmount.toLocaleString()}</h2>
-                        <p class="text-sm font-bold opacity-80 mb-2">From: ${order.pickupLocation || 'Local Merchant'}</p>
-                        <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6">Drop: ${order.user}</p>
+                        <p class="text-sm font-bold opacity-80 mb-2">From: Local Merchant</p>
+                        <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6">Drop: ${order.profiles?.full_name || 'Customer'}</p>
                         <div class="grid grid-cols-2 gap-3">
-                            <button onclick="ignoreOffer(${idx})" class="py-4 bg-white border-[3px] border-ink rounded-2xl font-black uppercase text-xs shadow-stk-sm">Ignore</button>
-                            <button onclick="acceptOffer(${idx}, ${payAmount})" class="py-4 bg-ink text-white border-[3px] border-ink rounded-2xl font-black uppercase text-xs shadow-stk-sm">Accept</button>
+                            <button onclick="ignoreOffer('${order.id}')" class="py-4 bg-white border-[3px] border-ink rounded-2xl font-black uppercase text-xs shadow-stk-sm">Ignore</button>
+                            <button onclick="acceptOffer('${order.id}')" class="py-4 bg-ink text-white border-[3px] border-ink rounded-2xl font-black uppercase text-xs shadow-stk-sm">Accept</button>
                         </div>
                     </div>
                 `;
@@ -289,30 +334,22 @@
             });
         }
 
-        function ignoreOffer(idx) {
-            let queue = JSON.parse(localStorage.getItem('naija_eats_delivery_queue')) || [];
-            queue.splice(idx, 1);
-            localStorage.setItem('naija_eats_delivery_queue', JSON.stringify(queue));
+        function ignoreOffer(id) {
+            // In a real app, we might hide this specific offer for this rider
             checkQueue();
         }
 
-        function acceptOffer(idx, pay) {
-            let queue = JSON.parse(localStorage.getItem('naija_eats_delivery_queue')) || [];
-            const order = queue.splice(idx, 1)[0];
-            localStorage.setItem('naija_eats_delivery_queue', JSON.stringify(queue));
+        async function acceptOffer(id) {
+            const { error } = await supabase
+                .from('orders')
+                .update({ status: 'out_for_delivery' })
+                .eq('id', id);
 
-            deliveryHistory.unshift({
-                id: order.id,
-                user: order.user,
-                pay: pay,
-                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-            });
-            localStorage.setItem('naija_eats_delivery_history', JSON.stringify(deliveryHistory));
-            
-            updateStats();
-            renderHistory();
-            checkQueue();
-            alert(`Order Accepted! Navigate to pickup.`);
+            if (!error) {
+                alert(`Order Accepted! Status updated to 'Out for Delivery'.`);
+                fetchHistory();
+                checkQueue();
+            }
         }
 
         function updateStats() {

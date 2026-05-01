@@ -5,6 +5,8 @@ import { CTAButton } from '@/components/UI';
 import { useMeals, ScheduledMeal } from '@/contexts/MealContext';
 import { CreditCard, Truck, ShieldCheck, ChefHat, MapPin, Trash2, Smartphone, Landmark, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 const Checkout: React.FC = () => {
   const navigate = useNavigate();
@@ -29,9 +31,41 @@ const Checkout: React.FC = () => {
     return acc;
   }, {} as Record<string, ScheduledMeal[]>);
 
-  const handlePayment = () => {
+  const handlePayment = async () => {
     setIsProcessing(true);
-    setTimeout(() => { setIsProcessing(false); navigate('/payment-success'); }, 2000);
+    
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Please sign in to place an order");
+        navigate('/auth');
+        return;
+      }
+
+      // Create the order in Supabase
+      const { data, error } = await supabase
+        .from('orders')
+        .insert({
+          eater_id: user.id,
+          total_amount: total,
+          delivery_fee: deliveryFee,
+          delivery_address: address,
+          status: 'pending'
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // In a real app, we'd also insert into order_items here
+      
+      toast.success("Order placed successfully!");
+      navigate('/payment-success');
+    } catch (err: any) {
+      toast.error(err.message || "Payment failed");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const paymentOptions = [

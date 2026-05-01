@@ -2,6 +2,8 @@ import { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Mail, Lock, User as UserIcon, Eye, EyeOff, Loader2, ArrowLeft, Check, ChefHat, Bike, Store, UserCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 type AuthMode = 'login' | 'signup';
 type UserRole = 'user' | 'chef' | 'restaurant' | 'delivery';
@@ -29,32 +31,81 @@ const AuthScreen = () => {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
     
-    const user = {
-      email: form.email,
-      name: form.name || form.email.split('@')[0] || 'Foodie Friend',
-      image: `https://i.pravatar.cc/150?u=${form.email}`,
-      role: role,
-    };
-    
-    localStorage.setItem('platera_onboarded', 'true');
-    localStorage.setItem('platera_user', JSON.stringify(user));
-    
-    setSuccess(mode === 'login' ? 'Welcome back!' : 'Account created!');
-    
-    setTimeout(() => {
-      if (role === 'chef') {
-        window.location.href = '/apps/chef/index.html';
-      } else if (role === 'delivery') {
-        window.location.href = '/apps/delivery/index.html';
-      } else if (role === 'restaurant') {
-        window.location.href = '/apps/restaurant/index.html';
+    try {
+      if (mode === 'login') {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: form.email,
+          password: form.password,
+        });
+
+        if (error) throw error;
+
+        // Fetch profile to get role
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+
+        if (profileError) throw profileError;
+
+        const user = {
+          email: data.user.email,
+          name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0],
+          image: `https://i.pravatar.cc/150?u=${data.user.id}`,
+          role: profile.role,
+        };
+        
+        localStorage.setItem('platera_onboarded', 'true');
+        localStorage.setItem('platera_user', JSON.stringify(user));
+        
+        setSuccess('Welcome back!');
+        setTimeout(() => redirectUser(profile.role), 800);
       } else {
-        navigate('/home');
+        const { data, error } = await supabase.auth.signUp({
+          email: form.email,
+          password: form.password,
+          options: {
+            data: {
+              full_name: form.name,
+              role: role,
+            }
+          }
+        });
+
+        if (error) throw error;
+        
+        const user = {
+          email: data.user?.email,
+          name: form.name,
+          image: `https://i.pravatar.cc/150?u=${data.user?.id}`,
+          role: role,
+        };
+
+        localStorage.setItem('platera_onboarded', 'true');
+        localStorage.setItem('platera_user', JSON.stringify(user));
+
+        setSuccess('Account created!');
+        setTimeout(() => redirectUser(role), 800);
       }
-    }, 800);
-    setLoading(false);
+    } catch (err: any) {
+      toast.error(err.message || "Authentication failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const redirectUser = (userRole: string) => {
+    if (userRole === 'chef') {
+      window.location.href = '/apps/chef/index.html';
+    } else if (userRole === 'delivery') {
+      window.location.href = '/apps/delivery/index.html';
+    } else if (userRole === 'restaurant') {
+      window.location.href = '/apps/restaurant/index.html';
+    } else {
+      navigate('/home');
+    }
   };
 
   return (

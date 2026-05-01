@@ -7,7 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
+        const SUPABASE_URL = 'https://gfhcctinvgdiirddcftc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmaGNjdGludmdkaWlyZGRjZnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NzI1ODgsImV4cCI6MjA5MzE0ODU4OH0.4tQLIo9lAfZW0ygrcQe6eLdj3aD80Dr47FZPBU3g_RU';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -137,36 +142,65 @@
     <script>
         lucide.createIcons();
 
-        // Default Orders if none in localstorage
-        const defaultOrders = [
-            { id: '8841', user: 'Jane S.', items: ['Royal Margherita Pizza', 'Extra Cheese'], status: 'new', time: '12:40 PM', total: 15500 },
-            { id: '8842', user: 'Amara K.', items: ['Signature Jollof Rice'], status: 'new', time: '12:45 PM', total: 6500 },
-            { id: '8843', user: 'Tunde O.', items: ['Seafood Gumbo', 'Pounded Yam'], status: 'prep', time: '12:30 PM', total: 24500 }
-        ];
+        let orders = [];
 
-        let orders = JSON.parse(localStorage.getItem('naija_eats_orders')) || defaultOrders;
-
-        window.onload = () => {
-            renderOrders();
+        window.onload = async () => {
+            await fetchOrders();
+            subscribeToOrders();
             renderOpsStats();
             
-            // Profile & Inventory loading (existing logic)
-            const savedProfile = localStorage.getItem('restaurant_profile');
-            if (savedProfile) {
-                const data = JSON.parse(savedProfile);
-                document.getElementById('business-name-input').value = data.name;
-                document.getElementById('business-bio-input').value = data.bio;
-                document.getElementById('logo-img-preview').src = data.logo;
-                document.getElementById('header-logo').src = data.logo;
-                document.querySelector('.business-name-header').innerText = data.name;
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                await fetchProfile(user.id);
+                await fetchInventory(user.id);
             }
-            const savedInv = localStorage.getItem('restaurant_inventory');
-            if (savedInv) inventoryItems = JSON.parse(savedInv);
-            renderInventory();
         };
+
+        async function fetchProfile(uid) {
+            const { data, error } = await supabase.from('profiles').select('*').eq('id', uid).single();
+            if (data) {
+                document.getElementById('business-name-input').value = data.business_name || 'My Kitchen';
+                document.getElementById('business-bio-input').value = data.bio || '';
+                if (data.avatar_url) {
+                    document.getElementById('logo-img-preview').src = data.avatar_url;
+                    document.getElementById('header-logo').src = data.avatar_url;
+                }
+                document.querySelector('.business-name-header').innerText = data.business_name || 'My Kitchen';
+            }
+        }
+
+        async function fetchOrders() {
+            const { data, error } = await supabase
+                .from('orders')
+                .select('*, profiles(full_name)')
+                .order('created_at', { ascending: false });
+            
+            if (data) {
+                orders = data.map(o => ({
+                    id: o.id.slice(0,4),
+                    realId: o.id,
+                    user: o.profiles?.full_name || 'Guest',
+                    items: ['Signature Meal'],
+                    status: o.status,
+                    time: new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                    total: o.total_amount
+                }));
+                renderOrders();
+            }
+        }
+
+        function subscribeToOrders() {
+            supabase
+                .channel('orders-channel')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+                    fetchOrders();
+                })
+                .subscribe();
+        }
 
         function renderOrders() {
             const list = document.getElementById('orders-list');
+            if(!list) return;
             list.innerHTML = '';
             
             orders.forEach(order => {
@@ -176,12 +210,12 @@
                 let statusColor = 'bg-ink/10 text-ink';
                 let actionBtn = '';
                 
-                if (order.status === 'new') {
+                if (order.status === 'pending') {
                     statusColor = 'bg-tomato/20 text-tomato';
-                    actionBtn = `<button onclick="updateOrderStatus(event, '${order.id}', 'prep')" class="w-full py-3 bg-tomato text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs shadow-stk-sm">Open & Start Prep</button>`;
-                } else if (order.status === 'prep') {
+                    actionBtn = `<button onclick="updateOrderStatus(event, '${order.realId}', 'preparing')" class="w-full py-3 bg-tomato text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs shadow-stk-sm">Open & Start Prep</button>`;
+                } else if (order.status === 'preparing') {
                     statusColor = 'bg-mustard text-ink';
-                    actionBtn = `<button onclick="updateOrderStatus(event, '${order.id}', 'ready')" class="w-full py-3 bg-sage text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs shadow-stk-sm">Mark as Ready</button>`;
+                    actionBtn = `<button onclick="updateOrderStatus(event, '${order.realId}', 'ready')" class="w-full py-3 bg-sage text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs shadow-stk-sm">Mark as Ready</button>`;
                 } else {
                     statusColor = 'bg-sage/20 text-sage';
                     actionBtn = `<div class="text-center py-2 text-[10px] font-black text-sage uppercase tracking-widest">Rider Notified</div>`;
@@ -205,8 +239,8 @@
                     ${actionBtn}
                 `;
                 
-                if (order.status === 'new') {
-                    card.onclick = (e) => updateOrderStatus(e, order.id, 'prep');
+                if (order.status === 'pending') {
+                    card.onclick = (e) => updateOrderStatus(e, order.realId, 'preparing');
                 }
 
                 list.appendChild(card);
@@ -215,32 +249,16 @@
             renderOpsStats();
         }
 
-        function updateOrderStatus(e, id, newStatus) {
+        async function updateOrderStatus(e, id, newStatus) {
             if (e) e.stopPropagation();
-            const idx = orders.findIndex(o => o.id === id);
-            if (idx !== -1) {
-                orders[idx].status = newStatus;
-                localStorage.setItem('naija_eats_orders', JSON.stringify(orders));
-                
-                // If marked as ready, we could technically trigger a "Broadcast" for delivery app
-                if (newStatus === 'ready') {
-                    notifyDeliveryApp(orders[idx]);
-                }
-                
-                renderOrders();
+            const { error } = await supabase
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', id);
+            
+            if (error) {
+                console.error("Update failed:", error.message);
             }
-        }
-
-        function notifyDeliveryApp(order) {
-            // Mocking a broadcast by adding to a "Delivery Queue" in localStorage
-            const deliveryQueue = JSON.parse(localStorage.getItem('naija_eats_delivery_queue')) || [];
-            deliveryQueue.push({
-                ...order,
-                pickupLocation: 'Royal Kitchen, Branch A',
-                type: 'Pickup'
-            });
-            localStorage.setItem('naija_eats_delivery_queue', JSON.stringify(deliveryQueue));
-            console.log("Delivery app notified for order:", order.id);
         }
 
         function renderOpsStats() {
@@ -253,36 +271,93 @@
             document.getElementById('ops-count').innerText = `${counts.new + counts.prep} Active Orders`;
         }
 
-        // Shared Inventory logic from previous edits
-        let inventoryItems = [
-            { id: 1, name: "Royal Margherita Pizza", price: 12500, available: true, image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=200&auto=format&fit=crop" },
-            { id: 2, name: "Seafood Gumbo", price: 18000, available: false, image: "https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?q=80&w=200&auto=format&fit=crop" }
-        ];
+        let inventoryItems = [];
 
-        function addFoodItem() {
-            const newItem = { id: Date.now(), name: "New Food Item", price: 0, available: true, image: "https://images.unsplash.com/photo-1493770348161-369560ae357d?q=80&w=200&auto=format&fit=crop" };
-            inventoryItems.unshift(newItem);
-            renderInventory();
+        async function fetchInventory(uid) {
+            const { data, error } = await supabase
+                .from('meals')
+                .select('*')
+                .eq('seller_id', uid)
+                .order('created_at', { ascending: false });
+            
+            if (data) {
+                inventoryItems = data;
+                renderInventory();
+            }
+        }
+
+        async function addFoodItem() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const newItem = {
+                seller_id: user.id,
+                title: "New Dish Name",
+                price: 0,
+                is_available: true,
+                image_url: "https://images.unsplash.com/photo-1493770348161-369560ae357d?q=80&w=200&auto=format&fit=crop"
+            };
+
+            const { data, error } = await supabase.from('meals').insert(newItem).select().single();
+            if (data) {
+                inventoryItems.unshift(data);
+                renderInventory();
+            }
         }
 
         function renderInventory() {
             const list = document.getElementById('inventory-list');
             if(!list) return;
             list.innerHTML = '';
-            inventoryItems.forEach(item => {
+            inventoryItems.forEach((item, idx) => {
                 const card = document.createElement('div');
-                card.className = `neo-card p-5 space-y-4 ${!item.available ? 'sold-out' : ''}`;
+                card.className = `neo-card p-5 space-y-4 ${!item.is_available ? 'sold-out' : ''}`;
                 card.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <img src="${item.image}" class="size-20 rounded-xl border-2 border-ink object-cover">
+                        <img src="${item.image_url}" class="size-20 rounded-xl border-2 border-ink object-cover">
                         <div class="flex-1">
-                            <input type="text" class="text-lg font-black tracking-tight bg-transparent w-full border-b border-ink/10 outline-none" value="${item.name}">
-                            <div class="flex items-center gap-2"><span class="text-xs font-black text-ink/40">₦</span><input type="number" class="text-sm font-black bg-transparent w-32 border-b border-ink/10 outline-none" value="${item.price}"></div>
+                            <input type="text" onchange="updateLocalItem(${idx}, 'title', this.value)" class="text-lg font-black tracking-tight bg-transparent w-full border-b border-ink/10 outline-none" value="${item.title}">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-black text-ink/40">₦</span>
+                                <input type="number" onchange="updateLocalItem(${idx}, 'price', this.value)" class="text-sm font-black bg-transparent w-32 border-b border-ink/10 outline-none" value="${item.price}">
+                            </div>
                         </div>
+                        <button onclick="toggleAvailability(${idx})" class="p-2 ${item.is_available ? 'text-sage' : 'text-tomato'}"><i data-lucide="${item.is_available ? 'check-circle' : 'slash'}" size="20"></i></button>
                     </div>
                 `;
                 list.appendChild(card);
             });
+            lucide.createIcons();
+        }
+
+        function updateLocalItem(idx, field, value) {
+            inventoryItems[idx][field] = value;
+        }
+
+        function toggleAvailability(idx) {
+            inventoryItems[idx].is_available = !inventoryItems[idx].is_available;
+            renderInventory();
+        }
+
+        async function saveInventory() {
+            const btn = document.getElementById('save-inv-btn');
+            const text = document.getElementById('save-inv-text');
+            text.innerText = "Syncing...";
+            
+            for (const item of inventoryItems) {
+                await supabase.from('meals').update({
+                    title: item.title,
+                    price: item.price,
+                    is_available: item.is_available
+                }).eq('id', item.id);
+            }
+            
+            text.innerText = "Inventory Synced!";
+            btn.classList.replace('bg-ink', 'bg-sage');
+            setTimeout(() => {
+                text.innerText = "Save Inventory";
+                btn.classList.replace('bg-sage', 'bg-ink');
+            }, 2000);
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('closed'); document.getElementById('overlay').classList.toggle('hidden'); }
@@ -297,11 +372,28 @@
             window.scrollTo(0, 0);
         }
 
-        function saveProfile() {
-            const data = { name: document.getElementById('business-name-input').value, bio: document.getElementById('business-bio-input').value, logo: document.getElementById('logo-img-preview').src };
-            localStorage.setItem('restaurant_profile', JSON.stringify(data));
-            document.getElementById('header-logo').src = data.logo;
-            document.querySelector('.business-name-header').innerText = data.name;
+        async function saveProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const name = document.getElementById('business-name-input').value;
+            const bio = document.getElementById('business-bio-input').value;
+            const logo = document.getElementById('logo-img-preview').src;
+
+            const { error } = await supabase
+                .from('profiles')
+                .update({ 
+                    business_name: name, 
+                    bio: bio,
+                    avatar_url: logo 
+                })
+                .eq('id', user.id);
+
+            if (!error) {
+                document.getElementById('header-logo').src = logo;
+                document.querySelector('.business-name-header').innerText = name;
+                alert("Profile saved to cloud!");
+            }
         }
 
         function handleImageUpload(event) {

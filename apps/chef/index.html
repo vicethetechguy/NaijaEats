@@ -7,7 +7,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
+        const SUPABASE_URL = 'https://gfhcctinvgdiirddcftc.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmaGNjdGludmdkaWlyZGRjZnRjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc1NzI1ODgsImV4cCI6MjA5MzE0ODU4OH0.4tQLIo9lAfZW0ygrcQe6eLdj3aD80Dr47FZPBU3g_RU';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
         tailwind.config = {
             theme: {
                 extend: {
@@ -141,29 +146,15 @@
                 <div>
                     <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Menu</h1>
                     <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">14 Active Dishes</p>
-                </div>
-                <button class="p-3 bg-mustard border-[3px] border-ink rounded-2xl shadow-stk-sm">
+                <                <button onclick="addMenuItem()" class="p-3 bg-mustard border-[3px] border-ink rounded-2xl shadow-stk-sm">
                     <i data-lucide="plus" size="20"></i>
                 </button>
             </header>
-
-            <div class="grid grid-cols-1 gap-4">
-                <div class="neo-card p-4 flex gap-4">
-                    <img src="https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=200&auto=format&fit=crop" class="size-20 rounded-xl border-2 border-ink object-cover">
-                    <div class="flex-1">
-                        <div class="flex justify-between">
-                            <p class="font-black text-lg">Egusi Special</p>
-                            <span class="text-tomato font-black">₦12,500</span>
-                        </div>
-                        <p class="text-xs text-ink/60 font-bold mb-2">Traditional melon seed soup</p>
-                        <div class="flex gap-2">
-                            <span class="text-[8px] font-black bg-sage/20 px-2 py-1 rounded-full uppercase border border-ink/10 text-sage">Traditional</span>
-                            <span class="text-[8px] font-black bg-ink text-white px-2 py-1 rounded-full uppercase">In Stock</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="grid grid-cols-1 gap-4" id="chef-menu-list">
+                <!-- Menu items injected here -->
             </div>
         </div>
+ </div>
 
         <!-- VIEW: BOOKINGS -->
         <div id="view-bookings" class="view-content space-y-8">
@@ -264,17 +255,139 @@
 
     <script>
         lucide.createIcons();
-        window.onload = () => {
-            const savedData = localStorage.getItem('chef_profile');
-            if (savedData) {
-                const data = JSON.parse(savedData);
-                document.getElementById('chef-name-input').value = data.name;
-                document.getElementById('chef-bio-input').value = data.bio;
-                document.getElementById('profile-img-preview').src = data.image;
-                document.getElementById('header-avatar').src = data.image;
-                document.querySelector('.chef-name-header').innerText = data.name;
-            }
+        window.onload = async () => {
+            await loadProfile();
+            await fetchBookings();
+            subscribeToBookings();
+            await fetchMenu();
         };
+
+        let chefMenu = [];
+        async function fetchMenu() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const { data } = await supabase
+                .from('meals')
+                .select('*')
+                .eq('seller_id', user.id)
+                .order('created_at', { ascending: false });
+            
+            if (data) {
+                chefMenu = data;
+                renderMenu();
+            }
+        }
+
+        async function addMenuItem() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) return;
+
+            const newItem = {
+                seller_id: user.id,
+                title: "New Signature Dish",
+                price: 5000,
+                is_available: true,
+                image_url: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=200&auto=format&fit=crop",
+                category: "Traditional"
+            };
+
+            const { data } = await supabase.from('meals').insert(newItem).select().single();
+            if (data) {
+                chefMenu.unshift(data);
+                renderMenu();
+            }
+        }
+
+        function renderMenu() {
+            const list = document.getElementById('chef-menu-list');
+            if(!list) return;
+            list.innerHTML = '';
+            
+            chefMenu.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = "neo-card p-4 flex gap-4 transition-all " + (item.is_available ? "" : "opacity-60 grayscale");
+                card.innerHTML = `
+                    <img src="${item.image_url}" class="size-20 rounded-xl border-2 border-ink object-cover">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start">
+                            <input type="text" onchange="updateLocalMeal(${idx}, 'title', this.value)" class="font-black text-lg bg-transparent border-b border-transparent focus:border-ink outline-none" value="${item.title}">
+                            <div class="flex items-center gap-1 text-tomato font-black">
+                                <span>₦</span>
+                                <input type="number" onchange="updateLocalMeal(${idx}, 'price', this.value)" class="w-20 bg-transparent outline-none" value="${item.price}">
+                            </div>
+                        </div>
+                        <div class="flex gap-2 mt-2">
+                            <span class="text-[8px] font-black bg-sage/20 px-2 py-1 rounded-full uppercase border border-ink/10 text-sage cursor-pointer" onclick="toggleChefMealAvail(${idx})">${item.is_available ? 'In Stock' : 'Sold Out'}</span>
+                            <button onclick="syncMeal(${idx})" class="text-[8px] font-black bg-ink text-white px-2 py-1 rounded-full uppercase">Sync Cloud</button>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+        }
+
+        function updateLocalMeal(idx, field, value) {
+            chefMenu[idx][field] = value;
+        }
+
+        function toggleChefMealAvail(idx) {
+            chefMenu[idx].is_available = !chefMenu[idx].is_available;
+            renderMenu();
+        }
+
+        async function syncMeal(idx) {
+            const item = chefMenu[idx];
+            const { error } = await supabase.from('meals').update({
+                title: item.title,
+                price: item.price,
+                is_available: item.is_available
+            }).eq('id', item.id);
+            
+            if(!error) alert("Dish synced to Cloud!");
+        }
+
+        async function fetchBookings() {
+            const { data } = await supabase
+                .from('orders')
+                .select('*, profiles(full_name, avatar_url)')
+                .order('created_at', { ascending: false });
+            
+            if (data) {
+                renderBookings(data);
+            }
+        }
+
+        function subscribeToBookings() {
+            supabase
+                .channel('chef-bookings')
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
+                    fetchBookings();
+                })
+                .subscribe();
+        }
+
+        function renderBookings(data) {
+            // Update Dashboard stats
+            const totalEarned = data.reduce((acc, o) => acc + o.total_amount, 0);
+            document.querySelector('.text-2xl.font-black.tracking-tighter').innerText = `₦${totalEarned.toLocaleString()}`;
+        }
+
+        async function loadProfile() {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { data: profile } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+                if (profile) {
+                    document.getElementById('chef-name-input').value = profile.full_name;
+                    document.getElementById('chef-bio-input').value = profile.bio || '';
+                    if (profile.avatar_url) {
+                        document.getElementById('profile-img-preview').src = profile.avatar_url;
+                        document.getElementById('header-avatar').src = profile.avatar_url;
+                    }
+                    document.querySelector('.chef-name-header').innerText = profile.full_name;
+                }
+            }
+        }
 
         function toggleSidebar() {
             const sb = document.getElementById('sidebar');
@@ -309,24 +422,36 @@
             }
         }
 
-        function saveProfile() {
+        async function saveProfile() {
             const btn = document.getElementById('save-btn');
             const text = document.getElementById('save-text');
-            const profileData = {
-                name: document.getElementById('chef-name-input').value,
-                bio: document.getElementById('chef-bio-input').value,
-                image: document.getElementById('profile-img-preview').src
-            };
-            localStorage.setItem('chef_profile', JSON.stringify(profileData));
+            const name = document.getElementById('chef-name-input').value;
+            const bio = document.getElementById('chef-bio-input').value;
+
             text.innerText = "Saving...";
             btn.disabled = true;
-            setTimeout(() => {
-                text.innerText = "Changes Saved!";
-                btn.classList.replace('bg-ink', 'bg-sage');
-                document.getElementById('header-avatar').src = profileData.image;
-                document.querySelector('.chef-name-header').innerText = profileData.name;
-                setTimeout(() => { text.innerText = "Save Changes"; btn.classList.replace('bg-sage', 'bg-ink'); btn.disabled = false; }, 2000);
-            }, 800);
+
+            const { data: { user } } = await supabase.auth.getUser();
+            if (user) {
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({ full_name: name, bio: bio })
+                    .eq('id', user.id);
+
+                if (!error) {
+                    text.innerText = "Changes Saved!";
+                    btn.classList.replace('bg-ink', 'bg-sage');
+                    document.querySelector('.chef-name-header').innerText = name;
+                    setTimeout(() => { 
+                        text.innerText = "Save Changes"; 
+                        btn.classList.replace('bg-sage', 'bg-ink'); 
+                        btn.disabled = false; 
+                    }, 2000);
+                } else {
+                    text.innerText = "Error Saving";
+                    btn.disabled = false;
+                }
+            }
         }
     </script>
 </body>
