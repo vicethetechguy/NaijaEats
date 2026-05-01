@@ -1,28 +1,21 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DetailLayout } from '@/components/Layouts';
-import { Gift, Copy, Share2, Twitter, MessageCircle, Check, Users, ArrowRight, ShieldCheck, Zap, CreditCard } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Copy, Share2, Check, Ticket, Info } from 'lucide-react';
 import { toast } from 'sonner';
 
 const Referral: React.FC = () => {
   const navigate = useNavigate();
   const [copied, setCopied] = useState(false);
-  const referralCode = "PLATERA-4242";
+  const referralCode = "NAIJAEATS-552";
 
   const handleCopy = () => {
     navigator.clipboard.writeText(referralCode);
     setCopied(true);
-    toast.success("Referral code copied!");
+    toast.success("Code copied to clipboard!");
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleShare = async () => {
-    const shareData = { title: 'Platera', text: `Use code ${referralCode} to get $20 off Platera!`, url: 'https://platera.io/join' };
-    if (navigator.share) {
-      try { await navigator.share(shareData); } catch (err) { /* ignored */ }
-    } else {
-      handleCopy();
     }
   };
 
