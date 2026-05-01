@@ -116,7 +116,7 @@
             <header><h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Analytics</h1></header>
             <div class="neo-card p-6 space-y-6">
                 <p class="text-xs font-black uppercase tracking-widest text-ink/40">Total Sales</p>
-                <p class="text-4xl font-black tracking-tighter">₦428,000</p>
+                <p class="text-4xl font-black tracking-tighter" id="total-sales-val">₦0</p>
                 <div class="h-32 w-full flex items-end gap-2"><div class="flex-1 bg-ink/10 rounded-t-lg h-24"></div><div class="flex-1 bg-tomato rounded-t-lg h-32"></div></div>
             </div>
         </div>
@@ -180,13 +180,19 @@
                     id: o.id.slice(0,4),
                     realId: o.id,
                     user: o.profiles?.full_name || 'Guest',
-                    items: ['Signature Meal'],
+                    items: ['Special Feast'],
                     status: o.status,
                     time: new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     total: o.total_amount
                 }));
                 renderOrders();
+                calculateTotalSales();
             }
+        }
+
+        function calculateTotalSales() {
+            const total = orders.reduce((acc, o) => acc + o.total, 0);
+            document.getElementById('total-sales-val').innerText = `₦${total.toLocaleString()}`;
         }
 
         function subscribeToOrders() {

@@ -22,7 +22,7 @@ const Planner: React.FC = () => {
     navigate('/meals');
   };
 
-  const total = schedule.reduce((a, m) => a + (m.price || 14.99), 0);
+  const total = schedule.reduce((a, m) => a + (m.price || 5500), 0);
 
   const Filled = ({ item }: { item: ScheduledMeal }) => (
     <div className="bg-card border-[3px] border-ink rounded-2xl shadow-stk-sm overflow-hidden h-full flex flex-col group relative">
@@ -38,7 +38,7 @@ const Planner: React.FC = () => {
       </div>
       <div className="p-2.5 flex-1 flex flex-col justify-between">
         <h4 className="font-extrabold text-xs leading-tight line-clamp-2">{item.title}</h4>
-        <p className="text-[11px] font-black text-tomato mt-1">${(item.price || 14.99).toFixed(2)}</p>
+        <p className="text-[11px] font-black text-tomato mt-1">₦{(item.price || 5500).toLocaleString()}</p>
       </div>
     </div>
   );
@@ -92,7 +92,7 @@ const Planner: React.FC = () => {
             <div className="bg-tomato text-white border-[4px] border-ink rounded-3xl shadow-stk-lg p-6 flex items-center justify-between">
               <div>
                 <p className="text-xs font-bold uppercase tracking-widest opacity-80">Weekly total</p>
-                <p className="text-3xl font-black">${total.toFixed(2)}</p>
+                <p className="text-3xl font-black">₦{total.toLocaleString()}</p>
               </div>
               <button onClick={() => navigate('/checkout')} className="bg-card text-ink border-[3px] border-ink rounded-2xl px-6 py-3 font-bold uppercase tracking-wide shadow-stk hover:translate-x-1 hover:translate-y-1 hover:shadow-stk-sm transition-all flex items-center gap-2">
                 Checkout <ArrowRight size={16} strokeWidth={3} />

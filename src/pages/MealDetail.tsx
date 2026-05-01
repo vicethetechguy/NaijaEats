@@ -1,76 +1,107 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DetailLayout } from '@/components/Layouts';
 import { Badge, CTAButton, StickerCard } from '@/components/UI';
-import { ShoppingBasket, Check, ChefHat, Clock } from 'lucide-react';
+import { ShoppingBasket, Check, ChefHat, Clock, Loader2 } from 'lucide-react';
 import { useMeals } from '@/contexts/MealContext';
+import { supabase } from '@/lib/supabase';
+
+interface MealData {
+  id: string;
+  title: string;
+  description: string;
+  price: number;
+  image_url: string;
+  seller_id: string;
+  profiles?: {
+    full_name: string;
+    avatar_url: string;
+  };
+}
 
 const MealDetail: React.FC = () => {
   const navigate = useNavigate();
   const { mealId } = useParams();
   const { targetDay, targetType, addMealToPlan, setTargetDay, setTargetType } = useMeals();
+  const [meal, setMeal] = useState<MealData | null>(null);
+  const [loading, setLoading] = useState(true);
   const [added, setAdded] = useState(false);
 
-  const meal = {
-    id: mealId || 'jollof',
-    title: 'Smoky Party Jollof',
-    chef: 'Chef Ezinne',
-    chefImg: 'https://i.pravatar.cc/200?img=32',
-    image: 'https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?q=80&w=1200&auto=format&fit=crop',
-    desc: 'Long-grain parboiled rice cooked in a rich, spicy tomato-and-pepper base, finished with a distinct smoky aroma from traditional bottom-pot steaming.',
-    prep: '45 min',
-    price: 18.99,
-    nutrition: [
-      { l: 'Calories', v: '650', u: 'kcal' },
-      { l: 'Protein', v: '24', u: 'g' },
-      { l: 'Carbs', v: '85', u: 'g' },
-      { l: 'Fats', v: '18', u: 'g' },
-    ],
-    ingredients: ['Long-grain parboiled rice', 'Scotch bonnet peppers', 'Red bell peppers', 'Premium vegetable oil', 'Nigerian seasoning blend', 'Grilled chicken portion', 'Fried sweet plantains'],
-  };
+  useEffect(() => {
+    async function getMeal() {
+      if (!mealId) return;
+      const { data, error } = await supabase
+        .from('meals')
+        .select('*, profiles(full_name, avatar_url)')
+        .eq('id', mealId)
+        .single();
+      
+      if (data) setMeal(data);
+      setLoading(false);
+    }
+    getMeal();
+  }, [mealId]);
 
   const handleAdd = () => {
+    if (!meal) return;
     const day = targetDay || 'Mon';
     const type = targetType || 'Dinner';
     addMealToPlan({
-      title: meal.title, day, type,
+      title: meal.title, 
+      day, 
+      type,
       time: type === 'Breakfast' ? '8:30 AM' : type === 'Lunch' ? '1:00 PM' : '7:30 PM',
-      image: meal.image, chefName: meal.chef, price: meal.price,
+      image: meal.image_url, 
+      chefName: meal.profiles?.full_name || 'Chef', 
+      price: meal.price,
     });
     setAdded(true);
-    setTimeout(() => { setAdded(false); setTargetDay(null); setTargetType(null); navigate('/planner'); }, 800);
+    setTimeout(() => { 
+      setAdded(false); 
+      setTargetDay(null); 
+      setTargetType(null); 
+      navigate('/planner'); 
+    }, 800);
   };
+
+  if (loading) {
+    return (
+      <DetailLayout title="Loading...">
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <Loader2 size={40} className="animate-spin text-tomato" />
+          <p className="font-black uppercase tracking-widest text-ink/40">Fetching secret recipe...</p>
+        </div>
+      </DetailLayout>
+    );
+  }
+
+  if (!meal) return <DetailLayout title="Not Found">Meal not found</DetailLayout>;
 
   return (
     <DetailLayout title={meal.title}>
       <div className="grid lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7">
           <div className="border-[4px] border-ink rounded-[32px] overflow-hidden shadow-stk-lg bg-card">
-            <img src={meal.image} alt={meal.title} className="w-full aspect-[4/3] object-cover" />
+            <img src={meal.image_url} alt={meal.title} className="w-full aspect-[4/3] object-cover" />
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <Badge text="Signature" color="orange" />
-            <Badge text={meal.prep} color="mustard" />
+            <Badge text="Fresh" color="mustard" />
             <Badge text="High Protein" color="sage" />
           </div>
           <h2 className="text-3xl sm:text-5xl font-black tracking-tighter mt-6">{meal.title}</h2>
-          <p className="mt-4 text-lg font-medium text-ink/70 leading-relaxed">{meal.desc}</p>
+          <p className="mt-4 text-lg font-medium text-ink/70 leading-relaxed">{meal.description}</p>
 
           <div className="grid grid-cols-4 gap-3 mt-8">
-            {meal.nutrition.map((n) => (
+            {[
+               { l: 'Calories', v: '650', u: 'kcal' },
+               { l: 'Protein', v: '24', u: 'g' },
+               { l: 'Carbs', v: '85', u: 'g' },
+               { l: 'Fats', v: '18', u: 'g' }
+            ].map((n) => (
               <div key={n.l} className="bg-card border-[3px] border-ink rounded-2xl p-4 text-center shadow-stk-sm">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-ink/60">{n.l}</p>
                 <p className="text-xl font-black">{n.v}<span className="text-xs font-bold text-ink/60 ml-0.5">{n.u}</span></p>
-              </div>
-            ))}
-          </div>
-
-          <h3 className="text-xs font-bold uppercase tracking-widest text-ink/60 mt-10 mb-4">Ingredients</h3>
-          <div className="grid sm:grid-cols-2 gap-3">
-            {meal.ingredients.map((i) => (
-              <div key={i} className="flex items-center gap-3 bg-card border-2 border-ink rounded-2xl px-4 py-3">
-                <span className="size-2 rounded-full bg-tomato" />
-                <span className="font-semibold text-sm">{i}</span>
               </div>
             ))}
           </div>
@@ -79,25 +110,25 @@ const MealDetail: React.FC = () => {
         <div className="lg:col-span-5 lg:sticky lg:top-32 lg:self-start space-y-6">
           <StickerCard className="p-6 flex items-center gap-4">
             <div className="size-16 rounded-2xl border-[3px] border-ink overflow-hidden shrink-0">
-              <img src={meal.chefImg} alt={meal.chef} className="w-full h-full object-cover" />
+              <img src={meal.profiles?.avatar_url || `https://i.pravatar.cc/150?u=${meal.seller_id}`} alt={meal.profiles?.full_name} className="w-full h-full object-cover" />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-1 text-tomato">
                 <ChefHat size={14} />
                 <span className="text-[10px] font-bold uppercase tracking-widest">Master chef</span>
               </div>
-              <h4 className="text-xl font-black">{meal.chef}</h4>
-              <p className="text-xs font-bold text-ink/60 uppercase">Executive Saucier</p>
+              <h4 className="text-xl font-black">{meal.profiles?.full_name || 'Partner Chef'}</h4>
+              <p className="text-xs font-bold text-ink/60 uppercase">Certified Provider</p>
             </div>
           </StickerCard>
 
           <StickerCard className="p-6">
             <div className="flex items-center justify-between mb-4">
               <span className="text-xs font-bold uppercase tracking-widest text-ink/60">Per plate</span>
-              <span className="text-3xl font-black text-tomato">${meal.price.toFixed(2)}</span>
+              <span className="text-3xl font-black text-tomato">₦{meal.price.toLocaleString()}</span>
             </div>
             <div className="flex items-center gap-2 text-sm font-bold text-ink/70 mb-5">
-              <Clock size={14} /> Ready in {meal.prep}
+              <Clock size={14} /> Ready for delivery
             </div>
             <CTAButton
               text={added ? 'Added to plan' : targetDay ? `Add to ${targetDay} ${targetType}` : 'Add to plan'}
@@ -115,4 +146,4 @@ const MealDetail: React.FC = () => {
   );
 };
 
-export default MealDetail;
+export default MealDetail;

@@ -111,7 +111,7 @@
                 <div class="neo-card p-5 bg-sage/20">
                     <i data-lucide="trending-up" class="text-sage mb-3" size="20"></i>
                     <p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Today</p>
-                    <p class="text-2xl font-black tracking-tighter">₦14,250</p>
+                    <p class="text-2xl font-black tracking-tighter" id="today-earned-val">₦0</p>
                 </div>
                 <div class="neo-card p-5 bg-mustard/20">
                     <i data-lucide="star" class="text-mustard mb-3" size="20"></i>
@@ -202,13 +202,13 @@
         <div id="view-earnings" class="view-content space-y-8">
             <header>
                 <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Earnings</h1>
-                <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Available Balance: ₦142,200</p>
+                <p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="balance-sub-val">Available Balance: ₦0</p>
             </header>
 
             <div class="neo-card p-6 bg-ink text-white relative overflow-hidden">
                 <div class="absolute bottom-0 right-0 size-32 bg-tomato/20 rounded-full blur-3xl -mb-10 -mr-10"></div>
                 <p class="text-xs font-black uppercase tracking-widest opacity-40 mb-2">Pending Payout</p>
-                <h2 class="text-5xl font-black tracking-tighter mb-8">₦84,000</h2>
+                <h2 class="text-5xl font-black tracking-tighter mb-8" id="payout-val">₦0</h2>
                 <button class="w-full py-4 bg-tomato text-white border-[3px] border-white/20 rounded-2xl font-black uppercase text-sm shadow-xl">Withdraw Funds</button>
             </div>
         </div>
@@ -370,7 +370,9 @@
         function renderBookings(data) {
             // Update Dashboard stats
             const totalEarned = data.reduce((acc, o) => acc + o.total_amount, 0);
-            document.querySelector('.text-2xl.font-black.tracking-tighter').innerText = `₦${totalEarned.toLocaleString()}`;
+            document.getElementById('today-earned-val').innerText = `₦${totalEarned.toLocaleString()}`;
+            document.getElementById('balance-sub-val').innerText = `Available Balance: ₦${totalEarned.toLocaleString()}`;
+            document.getElementById('payout-val').innerText = `₦${totalEarned.toLocaleString()}`;
         }
 
         async function loadProfile() {
