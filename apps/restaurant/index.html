@@ -76,7 +76,7 @@
     <header class="p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
         <button onclick="toggleSidebar()" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm"><i data-lucide="menu" size="24"></i></button>
         <button onclick="showView('profile')" class="flex items-center gap-3">
-            <div class="text-right"><p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Branch A</p><p class="text-sm font-black tracking-tight business-name-header">Royal Kitchen</p></div>
+            <div class="text-right"><p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Online</p><p class="text-sm font-black tracking-tight business-name-header">Kitchen</p></div>
             <div class="size-12 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm overflow-hidden"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=200&auto=format&fit=crop" id="header-logo" class="w-full h-full object-cover"></div>
         </button>
     </header>
@@ -84,7 +84,7 @@
     <main class="p-6 pb-12 max-w-3xl mx-auto w-full">
         <!-- VIEW: OPERATIONS -->
         <div id="view-ops" class="view-content space-y-8">
-            <header><h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Live Ops</h1><p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="ops-count">12 Active Orders</p></header>
+            <header><h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Live Ops</h1><p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="ops-count">0 Active Orders</p></header>
             <div class="grid grid-cols-3 gap-3">
                 <div class="neo-card p-4 bg-tomato text-white text-center"><p class="text-2xl font-black" id="count-new">0</p><p class="text-[8px] font-black uppercase tracking-widest">New</p></div>
                 <div class="neo-card p-4 bg-mustard text-ink text-center"><p class="text-2xl font-black" id="count-prep">0</p><p class="text-[8px] font-black uppercase tracking-widest">Prep</p></div>
@@ -131,8 +131,8 @@
                     <button onclick="document.getElementById('logo-upload').click()" class="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm"><i data-lucide="camera" size="16"></i></button>
                 </div>
                 <div class="space-y-4">
-                    <input type="text" id="business-name-input" class="text-2xl font-black tracking-tight bg-cream border-2 border-ink rounded-2xl px-4 py-3 w-full shadow-stk-sm" value="Royal Kitchen Ent.">
-                    <textarea id="business-bio-input" rows="4" class="w-full bg-transparent font-medium text-sm text-ink/70 resize-none outline-none" placeholder="Describe your restaurant...">Serving the finest gourmet meals since 2018.</textarea>
+                    <input type="text" id="business-name-input" class="text-2xl font-black tracking-tight bg-cream border-2 border-ink rounded-2xl px-4 py-3 w-full shadow-stk-sm" value="">
+                    <textarea id="business-bio-input" rows="4" class="w-full bg-transparent font-medium text-sm text-ink/70 resize-none outline-none" placeholder="Describe your restaurant..."></textarea>
                 </div>
             </div>
             <button onclick="saveProfile()" id="save-btn" class="w-full py-4 bg-ink text-white border-[3px] border-ink rounded-2xl font-black uppercase text-sm shadow-stk transition-all">Save Profile</button>

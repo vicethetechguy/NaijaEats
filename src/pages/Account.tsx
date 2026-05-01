@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
 import { useOnboarding } from '@/contexts/OnboardingContext';
+import { supabase } from '@/lib/supabase';
 import {
   Settings,
   History,
@@ -14,49 +15,71 @@ import {
   CreditCard,
   MapPin,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
 
 const Account: React.FC = () => {
   const navigate = useNavigate();
   const { preferences } = useOnboarding();
-  const [user, setUser] = useState({
-    name: 'Eleanor Shellstrop',
-    email: 'eleanor.s@goodplace.com',
-    image: 'https://picsum.photos/seed/eleanor/400/400',
-  });
+  const [user, setUser] = useState<{ name: string; email: string; image: string } | null>(null);
+  const [stats, setStats] = useState([
+    { label: 'Orders', value: '0' },
+    { label: 'Saved', value: '0' },
+    { label: 'Reviews', value: '0' },
+  ]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('platera_user');
-    if (savedUser) {
-      try {
-        const parsed = JSON.parse(savedUser);
-        setUser({
-          name: parsed.name || 'Eleanor Shellstrop',
-          email: parsed.email || 'eleanor.s@goodplace.com',
-          image: parsed.image || 'https://picsum.photos/seed/eleanor/400/400',
-        });
-      } catch (e) {
-        console.error('Failed to parse saved user', e);
+    async function loadData() {
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (!authUser) {
+        navigate('/auth');
+        return;
       }
+
+      // Fetch Profile
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', authUser.id)
+        .single();
+
+      if (profile) {
+        setUser({
+          name: profile.full_name || 'Valued Eater',
+          email: authUser.email || '',
+          image: profile.avatar_url || `https://ui-avatars.com/api/?name=${profile.full_name || 'User'}&background=ff4d4d&color=fff`,
+        });
+      }
+
+      // Fetch Stats
+      const { count: orderCount } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true })
+        .eq('eater_id', authUser.id);
+
+      setStats([
+        { label: 'Orders', value: String(orderCount || 0) },
+        { label: 'Saved', value: '0' },
+        { label: 'Reviews', value: '0' },
+      ]);
+
+      setLoading(false);
     }
-  }, []);
+    loadData();
+  }, [navigate]);
 
   const dietarySummary =
     preferences.dietTypes.length > 0
       ? preferences.dietTypes.join(', ')
       : 'Not set';
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
     localStorage.removeItem('platera_onboarded');
     localStorage.removeItem('platera_user');
     navigate('/');
   };
-
-  const stats = [
-    { label: 'Orders', value: '24' },
-    { label: 'Saved', value: '12' },
-    { label: 'Reviews', value: '8' },
-  ];
 
   const accountItems = [
     { title: 'Edit Profile', subtitle: 'Name, email, photo', icon: Settings, path: '/account/edit' },
@@ -68,9 +91,20 @@ const Account: React.FC = () => {
   const activityItems = [
     { title: 'Order History', subtitle: 'Track all deliveries', icon: History, path: '/orders' },
     { title: 'Notifications', subtitle: 'Alerts & updates', icon: Bell, path: '/notifications' },
-    { title: 'Subscription', subtitle: 'Premium plan', icon: ShieldCheck, path: '/pricing' },
-    { title: 'Refer a Friend', subtitle: 'Get $20 credit', icon: Gift, path: '/referral' },
+    { title: 'Subscription', subtitle: 'Naija Eats Plus', icon: ShieldCheck, path: '/pricing' },
+    { title: 'Refer a Friend', subtitle: 'Get ₦2,000 credit', icon: Gift, path: '/referral' },
   ];
+
+  if (loading) {
+    return (
+      <MainLayout title="Profile">
+        <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
+          <Loader2 className="animate-spin text-tomato" size={40} />
+          <p className="font-black uppercase tracking-widest text-ink/40">Syncing Profile...</p>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout title="Profile">
@@ -79,8 +113,8 @@ const Account: React.FC = () => {
         <section className="bg-card border-[3px] border-ink rounded-[32px] shadow-stk p-6 sm:p-8">
           <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
             <div className="relative shrink-0">
-              <div className="w-28 h-28 rounded-3xl overflow-hidden border-[3px] border-ink shadow-stk-sm">
-                <img src={user.image} alt={user.name} className="w-full h-full object-cover" />
+              <div className="w-28 h-28 rounded-3xl overflow-hidden border-[3px] border-ink shadow-stk-sm bg-cream">
+                <img src={user?.image} alt={user?.name} className="w-full h-full object-cover" />
               </div>
               <button
                 onClick={() => navigate('/account/edit')}
@@ -92,11 +126,11 @@ const Account: React.FC = () => {
             </div>
 
             <div className="flex-1 text-center sm:text-left">
-              <h1 className="text-3xl sm:text-4xl font-black tracking-tighter">{user.name}</h1>
-              <p className="text-ink/60 font-medium mt-1">{user.email}</p>
+              <h1 className="text-3xl sm:text-4xl font-black tracking-tighter">{user?.name}</h1>
+              <p className="text-ink/60 font-medium mt-1">{user?.email}</p>
               <div className="mt-4 flex flex-wrap justify-center sm:justify-start gap-2">
                 <span className="bg-mustard border-2 border-ink text-ink text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest">
-                  Platinum
+                  Standard Plan
                 </span>
                 <span className="bg-sage/20 border-2 border-ink text-ink text-[10px] font-extrabold px-3 py-1 rounded-full uppercase tracking-widest">
                   Verified
@@ -179,26 +213,6 @@ const Account: React.FC = () => {
               );
             })}
           </div>
-        </section>
-
-        {/* Subscription card */}
-        <section className="bg-tomato text-white border-[3px] border-ink rounded-[28px] shadow-stk p-6 sm:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-widest opacity-80 mb-1">
-              Family Fresh • Active
-            </p>
-            <p className="text-3xl sm:text-4xl font-black tracking-tighter">
-              $128.50
-              <span className="text-base font-semibold opacity-80"> /mo</span>
-            </p>
-            <p className="text-sm font-medium opacity-90 mt-1">Renews on Nov 12, 2025</p>
-          </div>
-          <button
-            onClick={() => navigate('/pricing')}
-            className="bg-cream text-ink border-[3px] border-ink px-6 py-3 rounded-full font-extrabold text-sm uppercase tracking-wide hover:-translate-y-0.5 transition-transform shadow-stk-sm"
-          >
-            Manage Plan
-          </button>
         </section>
 
         {/* Sign out */}
