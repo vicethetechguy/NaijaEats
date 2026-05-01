@@ -48,10 +48,17 @@ export const SiteHeader: React.FC = () => {
         <div className="flex items-center gap-2 sm:gap-8">
           <button
             onClick={() => navigate(isSignedIn ? '/home' : '/')}
-            className="text-2xl tracking-tighter text-tomato pl-2"
+            className="flex items-center gap-2 text-2xl tracking-tighter text-tomato pl-2"
           >
-            <span className="font-light">Naija</span>
-            <span className="font-black">Eats</span>
+            <img 
+              src="https://drive.google.com/uc?export=download&id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5" 
+              alt="Naija Eats Logo" 
+              className="h-8 w-auto object-contain"
+            />
+            <div className="flex">
+              <span className="font-light">Naija</span>
+              <span className="font-black">Eats</span>
+            </div>
           </button>
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold uppercase tracking-wide">
             {navLinks.map((l) => (

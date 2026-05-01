@@ -111,10 +111,17 @@ const AuthScreen = () => {
         </button>
         <button
           onClick={() => navigate('/')}
-          className="text-2xl tracking-tighter text-tomato"
+          className="flex items-center gap-2 text-2xl tracking-tighter text-tomato"
         >
-          <span className="font-light">Naija</span>
-          <span className="font-black">Eats</span>
+          <img 
+            src="https://drive.google.com/uc?export=download&id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5" 
+            alt="Logo" 
+            className="h-8 w-auto object-contain"
+          />
+          <div className="flex">
+            <span className="font-light">Naija</span>
+            <span className="font-black">Eats</span>
+          </div>
         </button>
         <div className="w-10" />
       </div>
