@@ -95,7 +95,6 @@ const ProfileEdit: React.FC = () => {
       <DetailLayout onBack={() => navigate(-1)} title="Edit Profile">
         <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
           <Loader2 className="animate-spin text-tomato" size={40} />
-          <p className="font-black uppercase tracking-widest text-ink/40">Loading Profile...</p>
         </div>
       </DetailLayout>
     );
