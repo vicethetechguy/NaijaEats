@@ -9,7 +9,7 @@ const heroImg = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=
 
 const Home: React.FC = () => {
   const navigate = useNavigate();
-  const [name, setName] = useState('Eater');
+  const [name, setName] = useState('');
   const [trending, setTrending] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [userStats, setUserStats] = useState({
@@ -69,7 +69,9 @@ const Home: React.FC = () => {
           <div className="lg:col-span-7 space-y-5">
             <Badge text="🔥 Specials today" color="mustard" />
             <h1 className="text-4xl sm:text-6xl font-black tracking-tighter leading-[0.95]">
-              Welcome back, <span className="text-tomato">{name}</span>.
+              Welcome back, <span className="text-tomato">
+                {name || <div className="inline-block w-40 h-10 bg-tomato/10 animate-pulse rounded-lg align-middle" />}
+              </span>.
             </h1>
             <p className="text-lg text-ink/70 font-medium max-w-xl">
               Ready to explore authentic Nigerian flavors? Discover what's cooking in your neighborhood today.
