@@ -2,6 +2,7 @@ import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Bell, ArrowLeft, Search, Home, CalendarDays, Package, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 /**
  * Responsive site shell for Platera.
@@ -21,10 +22,25 @@ const navLinks = [
 export const SiteHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [profile, setProfile] = React.useState<any>(null);
+
   const isActive = (to: string) =>
     to === '/home' ? location.pathname === '/home' : location.pathname.startsWith(to);
   const isLanding = location.pathname === '/';
   const isSignedIn = typeof window !== 'undefined' && !!localStorage.getItem('platera_user');
+
+  React.useEffect(() => {
+    if (isSignedIn) {
+      const loadProfile = async () => {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data } = await supabase.from('profiles').select('avatar_url, full_name').eq('id', user.id).single();
+          if (data) setProfile(data);
+        }
+      };
+      loadProfile();
+    }
+  }, [isSignedIn, location.pathname]); // Re-check when route changes
 
   return (
     <header className="sticky top-4 z-50 mx-auto max-w-7xl px-4">
@@ -73,9 +89,13 @@ export const SiteHeader: React.FC = () => {
               <button
                 onClick={() => navigate('/account')}
                 aria-label="Profile"
-                className="p-2 rounded-full border-2 border-ink bg-tomato text-white hover:bg-tomato/90 transition-colors"
+                className="size-10 rounded-full border-2 border-ink bg-mustard overflow-hidden hover:scale-105 transition-transform active:scale-95 flex items-center justify-center shadow-stk-sm"
               >
-                <User size={16} strokeWidth={2.5} />
+                {profile?.avatar_url ? (
+                  <img src={profile.avatar_url} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <User size={16} strokeWidth={2.5} />
+                )}
               </button>
             </>
           )}
