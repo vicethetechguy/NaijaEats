@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
 import { Badge, StickerCard } from '@/components/UI';
-import { Check, Plus, ChefHat, Loader2 } from 'lucide-react';
+import { Check, Plus, ChefHat, Loader2, Search } from 'lucide-react';
 import { useMeals } from '@/contexts/MealContext';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -26,6 +26,7 @@ const DiscoverMeals: React.FC = () => {
   const navigate = useNavigate();
   const { targetDay, targetType, addMealToPlan, setTargetDay, setTargetType } = useMeals();
   const [tab, setTab] = useState('All meals');
+  const [search, setSearch] = useState('');
   const [added, setAdded] = useState<string | null>(null);
   const [dbMeals, setDbMeals] = useState<Meal[]>([]);
   const [loading, setLoading] = useState(true);
@@ -47,9 +48,15 @@ const DiscoverMeals: React.FC = () => {
     fetchMeals();
   }, []);
 
-  const list = tab === 'All meals' 
-    ? dbMeals 
-    : dbMeals.filter((m) => m.category === tab);
+  const list = dbMeals.filter((m) => {
+    const matchesTab = tab === 'All meals' || m.category === tab;
+    const matchesSearch = 
+      m.title.toLowerCase().includes(search.toLowerCase()) || 
+      (m.profiles?.business_name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (m.profiles?.full_name || '').toLowerCase().includes(search.toLowerCase());
+    
+    return matchesTab && matchesSearch;
+  });
 
   const handleAdd = (e: React.MouseEvent, m: Meal) => {
     e.stopPropagation();
@@ -77,7 +84,20 @@ const DiscoverMeals: React.FC = () => {
           <p className="text-lg text-ink/70 font-medium">{targetDay ? `Adding to ${targetDay} ${targetType}` : 'Browse every kitchen in your area.'}</p>
         </header>
 
-        <div className="flex gap-3 overflow-x-auto pb-1">
+        <div className="relative">
+          <div className="absolute inset-y-0 left-5 flex items-center pointer-events-none">
+            <Search className="text-ink/40" size={20} strokeWidth={3} />
+          </div>
+          <input 
+            type="text"
+            placeholder="Search for Jollof, Egusi, or your favorite Chef..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full bg-card border-[3px] border-ink rounded-2xl py-4 pl-14 pr-6 text-base font-bold placeholder:text-ink/30 focus:bg-mustard/10 outline-none shadow-stk-sm transition-all"
+          />
+        </div>
+
+        <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar">
           {tabs.map((t) => (
             <button key={t} onClick={() => setTab(t)} className={cn('whitespace-nowrap px-5 py-2.5 rounded-full text-sm font-bold uppercase tracking-wide border-[3px] border-ink transition-all', tab === t ? 'bg-tomato text-white shadow-stk-sm' : 'bg-card text-ink hover:bg-mustard shadow-stk-sm')}>
               {t}
@@ -92,8 +112,19 @@ const DiscoverMeals: React.FC = () => {
               <p className="font-bold text-ink/40 uppercase tracking-widest text-xs">Finding fresh meals...</p>
             </div>
           ) : list.length === 0 ? (
-             <div className="col-span-full py-20 text-center">
-               <p className="font-bold text-ink/40 uppercase tracking-widest text-xs">No meals found in this category</p>
+             <div className="col-span-full py-20 text-center space-y-4">
+               <div className="size-16 bg-card border-2 border-ink rounded-full flex items-center justify-center mx-auto mb-4 opacity-40">
+                 <Search size={32} />
+               </div>
+               <p className="font-bold text-ink/40 uppercase tracking-widest text-xs">
+                 No results for "{search}" in {tab}
+               </p>
+               <button 
+                 onClick={() => {setSearch(''); setTab('All meals');}}
+                 className="text-tomato font-black uppercase tracking-widest text-[10px] hover:underline"
+               >
+                 Clear all filters
+               </button>
              </div>
           ) : (
             list.map((m) => (
