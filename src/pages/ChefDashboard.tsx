@@ -158,7 +158,14 @@ const ChefDashboard: React.FC = () => {
       
       if (error) throw error;
       setOrders(orders.map(o => o.id === orderId ? { ...o, status } : o));
-      toast.success(`Order marked as ${status}`);
+      
+      const statusMap: Record<string, string> = {
+        preparing: 'Order Accepted',
+        ready: 'Order Prepared',
+        out_for_delivery: 'Rider Dispatched'
+      };
+      
+      toast.success(statusMap[status] || `Order marked as ${status}`);
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -186,56 +193,76 @@ const ChefDashboard: React.FC = () => {
         </header>
 
         {activeTab === 'orders' && (
-          <div className="space-y-10">
+          <div className="flex gap-6 overflow-x-auto pb-8 -mx-4 px-4 sm:mx-0 sm:px-0 snap-x">
             {/* 3 Sections: Pending, Preparing, Ready */}
             {(['pending', 'preparing', 'ready'] as const).map((status) => (
-              <section key={status} className="space-y-4">
-                <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "w-3 h-3 rounded-full",
-                    status === 'pending' ? 'bg-tomato' : status === 'preparing' ? 'bg-mustard' : 'bg-sage'
-                  )} />
-                  <h2 className="text-xl font-black tracking-tight uppercase">
-                    {status} ({orders.filter(o => o.status === status).length})
-                  </h2>
+              <section key={status} className="flex-none w-[85vw] sm:w-[350px] space-y-6 snap-start">
+                <div className="flex items-center justify-between bg-white border-[3px] border-ink rounded-2xl px-5 py-3 shadow-stk-sm">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-3 h-3 rounded-full animate-pulse",
+                      status === 'pending' ? 'bg-tomato' : status === 'preparing' ? 'bg-mustard' : 'bg-sage'
+                    )} />
+                    <h2 className="text-sm font-black tracking-widest uppercase">
+                      {status}
+                    </h2>
+                  </div>
+                  <span className="bg-ink text-white px-2 py-0.5 rounded-lg text-[10px] font-black">
+                    {orders.filter(o => o.status === status).length}
+                  </span>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                   {orders.filter(o => o.status === status).length === 0 ? (
-                    <div className="col-span-full py-10 bg-ink/5 border-2 border-dashed border-ink/20 rounded-[32px] text-center">
-                      <p className="text-xs font-bold text-ink/40 uppercase tracking-widest">No {status} orders</p>
+                    <div className="py-20 bg-ink/5 border-2 border-dashed border-ink/20 rounded-[32px] text-center">
+                      <Package size={32} className="mx-auto text-ink/10 mb-3" />
+                      <p className="text-[10px] font-bold text-ink/40 uppercase tracking-widest px-4">No {status} tickets</p>
                     </div>
                   ) : (
                     orders.filter(o => o.status === status).map((order) => (
-                      <div key={order.id} className="bg-white border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4">
+                      <div key={order.id} className="bg-white border-[3px] border-ink rounded-[32px] p-5 shadow-stk space-y-4 hover:translate-y-[-2px] transition-transform">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="text-[10px] font-black text-ink/40 uppercase tracking-widest mb-1">Order #{order.id.slice(0, 8)}</p>
-                            <h3 className="text-xl font-black tracking-tight">{order.profiles?.full_name || 'Customer'}</h3>
+                            <p className="text-[10px] font-black text-ink/40 uppercase tracking-widest mb-1">#{order.id.slice(0, 5)}</p>
+                            <h3 className="text-lg font-black tracking-tight leading-none">{order.profiles?.full_name || 'Customer'}</h3>
                           </div>
-                          <span className="text-[10px] font-black text-ink/40">{new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          <span className="text-[9px] font-black text-ink/40 bg-cream px-2 py-1 rounded-md border border-ink/5">
+                            {new Date(order.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </span>
                         </div>
                         
-                        <div className="flex justify-between items-center pt-4 border-t border-dashed border-ink/10">
-                          <p className="text-lg font-black tracking-tighter">₦{order.total_amount?.toLocaleString()}</p>
-                          <div className="flex gap-2">
-                            {order.status === 'pending' && (
-                              <button 
-                                onClick={() => updateOrderStatus(order.id, 'preparing')}
-                                className="bg-mustard border-2 border-ink px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-stk-sm"
-                              >
-                                Start Cooking
-                              </button>
-                            )}
-                            {order.status === 'preparing' && (
-                              <button 
-                                onClick={() => updateOrderStatus(order.id, 'ready')}
-                                className="bg-sage border-2 border-ink px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-stk-sm text-white"
-                              >
-                                Mark Ready
-                              </button>
-                            )}
-                          </div>
+                        <div className="space-y-2">
+                           <div className="flex justify-between text-sm font-bold">
+                              <span className="text-ink/60">Total</span>
+                              <span>₦{order.total_amount?.toLocaleString()}</span>
+                           </div>
+                        </div>
+
+                        <div className="pt-4 border-t border-dashed border-ink/10">
+                          {order.status === 'pending' && (
+                            <button 
+                              onClick={() => updateOrderStatus(order.id, 'preparing')}
+                              className="w-full bg-tomato text-white border-2 border-ink py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-stk-sm hover:bg-tomato/90"
+                            >
+                              Accept Order
+                            </button>
+                          )}
+                          {order.status === 'preparing' && (
+                            <button 
+                              onClick={() => updateOrderStatus(order.id, 'ready')}
+                              className="w-full bg-mustard text-ink border-2 border-ink py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-stk-sm hover:bg-mustard/90"
+                            >
+                              Prepared
+                            </button>
+                          )}
+                          {order.status === 'ready' && (
+                            <button 
+                              onClick={() => updateOrderStatus(order.id, 'out_for_delivery')}
+                              className="w-full bg-sage text-white border-2 border-ink py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-stk-sm hover:bg-sage/90"
+                            >
+                              Go
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))
