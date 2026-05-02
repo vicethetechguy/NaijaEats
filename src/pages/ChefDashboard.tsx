@@ -34,6 +34,7 @@ const ChefDashboard: React.FC = () => {
   const { profile, refreshProfile } = useUser();
   const [meals, setMeals] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
+  const [payouts, setPayouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   
   const activeTab = 
@@ -104,6 +105,14 @@ const ChefDashboard: React.FC = () => {
         .order('created_at', { ascending: false });
       
       if (ordersData) setOrders(ordersData);
+
+      const { data: payoutsData } = await supabase
+        .from('payouts')
+        .select('*')
+        .eq('user_id', profile.id)
+        .order('created_at', { ascending: false });
+      
+      if (payoutsData) setPayouts(payoutsData);
     } catch (error: any) {
       toast.error('Error fetching data');
     } finally {
@@ -399,14 +408,33 @@ const ChefDashboard: React.FC = () => {
                    <h2 className="text-5xl font-black tracking-tighter">₦{(orders.filter(o => o.status === 'delivered').reduce((acc, o) => acc + (o.total_amount || 0), 0) * 0.85).toLocaleString()}</h2>
                 </div>
 
-                <form onSubmit={(e) => {
+                <form onSubmit={async (e) => {
                   e.preventDefault();
+                  if (!withdrawAmount || !profile) return;
+                  
                   setIsWithdrawing(true);
-                  setTimeout(() => {
-                    setIsWithdrawing(false);
+                  try {
+                    const { data, error } = await supabase
+                      .from('payouts')
+                      .insert({
+                        user_id: profile.id,
+                        amount: parseFloat(withdrawAmount),
+                        status: 'pending',
+                        bank_details: editProfile.payment
+                      })
+                      .select()
+                      .single();
+
+                    if (error) throw error;
+                    
+                    setPayouts([data, ...payouts]);
                     toast.success('Withdrawal request submitted! Funds will arrive in 24 hours.');
                     navigate('/chef/wallet');
-                  }, 1500);
+                  } catch (error: any) {
+                    toast.error(error.message);
+                  } finally {
+                    setIsWithdrawing(false);
+                  }
                 }} className="space-y-6">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Amount to Withdraw (₦)</label>
@@ -451,29 +479,38 @@ const ChefDashboard: React.FC = () => {
                    <h3 className="font-black uppercase tracking-widest text-sm flex items-center gap-2"><History size={18} /> Past Withdrawals</h3>
                 </div>
                 <div className="divide-y-2 divide-ink/10">
-                   {[
-                     { date: 'Oct 28, 2024', amount: '12,500', status: 'Completed', ref: 'TRX-9821' },
-                     { date: 'Oct 21, 2024', amount: '8,400', status: 'Completed', ref: 'TRX-7742' },
-                     { date: 'Oct 14, 2024', amount: '15,000', status: 'Completed', ref: 'TRX-3310' },
-                     { date: 'Oct 07, 2024', amount: '6,200', status: 'Completed', ref: 'TRX-1109' },
-                   ].map((tx, i) => (
-                     <div key={i} className="p-6 flex items-center justify-between hover:bg-cream/50 transition-colors">
-                        <div className="flex items-center gap-4">
-                           <div className="size-12 bg-sage/20 border-2 border-ink rounded-xl flex items-center justify-center text-sage">
-                              <History size={20} />
-                           </div>
-                           <div>
-                              <p className="font-black tracking-tight">₦{tx.amount}</p>
-                              <p className="text-[10px] font-bold text-ink/40 uppercase tracking-widest">{tx.date} • {tx.ref}</p>
-                           </div>
-                        </div>
-                        <div className="text-right">
-                           <span className="bg-sage text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border-2 border-ink shadow-stk-xs">
-                              {tx.status}
-                           </span>
-                        </div>
+                   {payouts.length === 0 ? (
+                     <div className="p-12 text-center text-ink/20 font-black uppercase tracking-widest text-xs">
+                        No payout history found
                      </div>
-                   ))}
+                   ) : (
+                     payouts.map((tx, i) => (
+                       <div key={tx.id || i} className="p-6 flex items-center justify-between hover:bg-cream/50 transition-colors">
+                          <div className="flex items-center gap-4">
+                             <div className={cn(
+                               "size-12 border-2 border-ink rounded-xl flex items-center justify-center",
+                               tx.status === 'completed' ? "bg-sage/20 text-sage" : "bg-mustard/20 text-mustard"
+                             )}>
+                                <History size={20} />
+                             </div>
+                             <div>
+                                <p className="font-black tracking-tight">₦{tx.amount?.toLocaleString()}</p>
+                                <p className="text-[10px] font-bold text-ink/40 uppercase tracking-widest">
+                                  {new Date(tx.created_at).toLocaleDateString()} • {tx.id?.slice(0, 8)}
+                                </p>
+                             </div>
+                          </div>
+                          <div className="text-right">
+                             <span className={cn(
+                               "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border-2 border-ink shadow-stk-xs",
+                               tx.status === 'completed' ? "bg-sage text-white" : "bg-mustard text-ink"
+                             )}>
+                                {tx.status}
+                             </span>
+                          </div>
+                       </div>
+                     ))
+                   )}
                 </div>
              </div>
           </div>
