@@ -67,8 +67,8 @@
         </div>
         <div class="flex items-center gap-2 sm:gap-3">
           <button onclick="window.location.href='/'" class="p-2 rounded-full border-2 border-ink bg-cream hover:bg-mustard transition-colors shadow-stk-sm"><i data-lucide="log-out" size="16"></i></button>
-          <button onclick="showView('profile')" class="size-10 rounded-full border-2 border-ink bg-mustard overflow-hidden hover:scale-105 transition-transform flex items-center justify-center shadow-stk-sm">
-            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=200&auto=format&fit=crop" id="header-logo" class="w-full h-full object-cover">
+          <button onclick="showView('profile')" class="size-10 rounded-full border-2 border-ink bg-mustard overflow-hidden hover:scale-105 transition-transform flex items-center justify-center shadow-stk-sm" id="header-logo-container">
+            <i data-lucide="store" size="20" class="text-ink/60"></i>
           </button>
         </div>
       </div>
@@ -114,14 +114,20 @@
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Tap an order to start preparing</p>
             </header>
             <div class="space-y-4" id="orders-list">
-                <!-- Orders injected here -->
+                <div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40">
+                    <p class="text-xs font-black uppercase tracking-widest">No Active Orders</p>
+                </div>
             </div>
         </div>
 
         <!-- VIEW: INVENTORY -->
         <div id="view-inventory" class="view-content space-y-8">
             <header class="flex justify-between items-end"><div><h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Inventory</h1><p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Menu Management</p></div><button onclick="addFoodItem()" class="p-3 bg-mustard border-[3px] border-ink rounded-2xl shadow-stk-sm transition-transform"><i data-lucide="plus" size="20"></i></button></header>
-            <div class="space-y-4" id="inventory-list"></div>
+            <div class="space-y-4" id="inventory-list">
+                <div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40">
+                    <p class="text-xs font-black uppercase tracking-widest">No Items in Inventory</p>
+                </div>
+            </div>
             <button onclick="saveInventory()" id="save-inv-btn" class="w-full py-4 bg-ink text-white border-[3px] border-ink rounded-2xl font-black uppercase text-sm shadow-stk transition-all flex items-center justify-center gap-2"><span id="save-inv-text">Save Inventory</span></button>
         </div>
 
@@ -131,7 +137,6 @@
             <div class="neo-card p-6 space-y-6">
                 <p class="text-xs font-black uppercase tracking-widest text-ink/40">Total Sales</p>
                 <p class="text-3xl sm:text-4xl font-black tracking-tighter" id="total-sales-val">₦0</p>
-                <div class="h-32 w-full flex items-end gap-2"><div class="flex-1 bg-ink/10 rounded-t-lg h-24"></div><div class="flex-1 bg-tomato rounded-t-lg h-32"></div></div>
             </div>
         </div>
 
@@ -140,7 +145,11 @@
             <header><h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Business Profile</h1></header>
             <div class="neo-card p-6 text-center space-y-6">
                 <div class="relative inline-block group">
-                    <div class="size-32 rounded-[32px] border-[4px] border-ink shadow-stk mx-auto overflow-hidden"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=200&auto=format&fit=crop" id="logo-img-preview" class="w-full h-full object-cover"></div>
+                    <div class="size-32 rounded-[32px] border-[4px] border-ink shadow-stk mx-auto overflow-hidden">
+                        <div id="logo-img-preview-container" class="w-full h-full bg-cream flex items-center justify-center">
+                            <i data-lucide="store" size="40" class="text-ink/40"></i>
+                        </div>
+                    </div>
                     <input type="file" id="logo-upload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
                     <button onclick="document.getElementById('logo-upload').click()" class="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm"><i data-lucide="camera" size="16"></i></button>
                 </div>
@@ -176,9 +185,10 @@
                 document.getElementById('business-name-input').value = data.business_name || 'My Kitchen';
                 document.getElementById('business-bio-input').value = data.bio || '';
                 if (data.avatar_url) {
-                    document.getElementById('logo-img-preview').src = data.avatar_url;
-                    const headerLogo = document.getElementById('header-logo');
-                    if (headerLogo) headerLogo.src = data.avatar_url;
+                    const headerLogoContainer = document.getElementById('header-logo-container');
+                    if (headerLogoContainer) headerLogoContainer.innerHTML = `<img src="${data.avatar_url}" id="header-logo" class="w-full h-full object-cover">`;
+                    const previewContainer = document.getElementById('logo-img-preview-container');
+                    if (previewContainer) previewContainer.innerHTML = `<img src="${data.avatar_url}" id="logo-img-preview" class="w-full h-full object-cover">`;
                 }
                 const nameHeader = document.querySelector('.business-name-header');
                 if (nameHeader) nameHeader.innerText = data.business_name || 'My Kitchen';
@@ -196,7 +206,7 @@
                     id: o.id.slice(0,4),
                     realId: o.id,
                     user: o.profiles?.full_name || 'Guest',
-                    items: ['Special Feast'],
+                    items: ['Custom Order Items'],
                     status: o.status,
                     time: new Date(o.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
                     total: o.total_amount
@@ -223,6 +233,10 @@
         function renderOrders() {
             const list = document.getElementById('orders-list');
             if(!list) return;
+            if (orders.length === 0) {
+                list.innerHTML = '<div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40"><p class="text-xs font-black uppercase tracking-widest">No Active Orders</p></div>';
+                return;
+            }
             list.innerHTML = '';
             
             orders.forEach(order => {
@@ -312,12 +326,17 @@
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
+            const title = prompt("Enter new item name:");
+            if (!title) return;
+            const priceStr = prompt("Enter price (₦):");
+            if (!priceStr) return;
+
             const newItem = {
                 seller_id: user.id,
-                title: "New Dish Name",
-                price: 0,
+                title: title,
+                price: parseInt(priceStr) || 0,
                 is_available: true,
-                image_url: "https://images.unsplash.com/photo-1493770348161-369560ae357d?q=80&w=200&auto=format&fit=crop"
+                image_url: ""
             };
 
             const { data, error } = await supabase.from('meals').insert(newItem).select().single();
@@ -330,13 +349,17 @@
         function renderInventory() {
             const list = document.getElementById('inventory-list');
             if(!list) return;
+            if (inventoryItems.length === 0) {
+                list.innerHTML = '<div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40"><p class="text-xs font-black uppercase tracking-widest">No Items in Inventory</p></div>';
+                return;
+            }
             list.innerHTML = '';
             inventoryItems.forEach((item, idx) => {
                 const card = document.createElement('div');
                 card.className = `neo-card p-5 space-y-4 ${!item.is_available ? 'sold-out' : ''}`;
                 card.innerHTML = `
                     <div class="flex items-center gap-4">
-                        <img src="${item.image_url}" class="size-20 rounded-xl border-2 border-ink object-cover">
+                        ${item.image_url ? `<img src="${item.image_url}" class="size-20 rounded-xl border-2 border-ink object-cover">` : `<div class="size-20 rounded-xl border-2 border-ink bg-cream flex items-center justify-center"><i data-lucide="package" class="text-ink/40"></i></div>`}
                         <div class="flex-1">
                             <input type="text" onchange="updateLocalItem(${idx}, 'title', this.value)" class="text-lg font-black tracking-tight bg-transparent w-full border-b border-ink/10 outline-none" value="${item.title}">
                             <div class="flex items-center gap-2">
@@ -411,7 +434,9 @@
 
             const name = document.getElementById('business-name-input').value;
             const bio = document.getElementById('business-bio-input').value;
-            const logo = document.getElementById('logo-img-preview').src;
+            let logo = "";
+            const logoImg = document.getElementById('logo-img-preview');
+            if (logoImg) logo = logoImg.src;
 
             const { error } = await supabase
                 .from('profiles')
@@ -423,8 +448,8 @@
                 .eq('id', user.id);
 
             if (!error) {
-                const headerLogo = document.getElementById('header-logo');
-                if (headerLogo) headerLogo.src = logo;
+                const headerLogoContainer = document.getElementById('header-logo-container');
+                if (headerLogoContainer && logo) headerLogoContainer.innerHTML = `<img src="${logo}" id="header-logo" class="w-full h-full object-cover">`;
                 const nameHeader = document.querySelector('.business-name-header');
                 if (nameHeader) nameHeader.innerText = name;
                 alert("Profile saved to cloud!");
@@ -433,7 +458,14 @@
 
         function handleImageUpload(event) {
             const file = event.target.files[0];
-            if (file) { const reader = new FileReader(); reader.onload = (e) => { document.getElementById('logo-img-preview').src = e.target.result; }; reader.readAsDataURL(file); }
+            if (file) { 
+                const reader = new FileReader(); 
+                reader.onload = (e) => { 
+                    const previewContainer = document.getElementById('logo-img-preview-container');
+                    if (previewContainer) previewContainer.innerHTML = `<img src="${e.target.result}" id="logo-img-preview" class="w-full h-full object-cover">`; 
+                }; 
+                reader.readAsDataURL(file); 
+            }
         }
     </script>
 </body>

@@ -63,8 +63,8 @@
         </div>
         <div class="flex items-center gap-2 sm:gap-3">
           <button onclick="window.location.href='/'" class="p-2 rounded-full border-2 border-ink bg-cream hover:bg-mustard transition-colors shadow-stk-sm"><i data-lucide="log-out" size="16"></i></button>
-          <button onclick="showView('profile')" class="size-10 rounded-full border-2 border-ink bg-mustard overflow-hidden hover:scale-105 transition-transform flex items-center justify-center shadow-stk-sm">
-            <img src="https://i.pravatar.cc/150?u=chef" id="header-avatar" class="w-full h-full object-cover">
+          <button onclick="showView('profile')" class="size-10 rounded-full border-2 border-ink bg-mustard overflow-hidden hover:scale-105 transition-transform flex items-center justify-center shadow-stk-sm" id="header-avatar-container">
+            <i data-lucide="user" size="20" class="text-ink/60"></i>
           </button>
         </div>
       </div>
@@ -114,8 +114,10 @@
                     <h2 class="text-xs font-black uppercase tracking-[0.2em] text-ink/40">Active Prep</h2>
                     <span class="size-2 bg-tomato rounded-full animate-pulse"></span>
                 </div>
-                <div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40">
-                    <p class="text-xs font-black uppercase tracking-widest">No Active Prep</p>
+                <div id="active-prep-list" class="space-y-3">
+                    <div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40">
+                        <p class="text-xs font-black uppercase tracking-widest">No Active Prep</p>
+                    </div>
                 </div>
             </section>
         </div>
@@ -144,17 +146,9 @@
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Upcoming Chef Slots</p>
             </header>
 
-            <div class="space-y-6">
-                <div class="p-4 border-l-[6px] border-mustard bg-white neo-card shadow-none border-t-0 border-r-0 border-b-0 rounded-l-none">
-                    <p class="text-[10px] font-black text-ink/40 uppercase mb-1">Tomorrow, Oct 25</p>
-                    <p class="text-xl font-black mb-3">Dinner Experience • 6 Guests</p>
-                    <div class="flex -space-x-3 mb-4">
-                        <img src="https://i.pravatar.cc/150?u=1" class="size-8 rounded-full border-2 border-ink bg-white">
-                        <img src="https://i.pravatar.cc/150?u=2" class="size-8 rounded-full border-2 border-ink bg-white">
-                        <img src="https://i.pravatar.cc/150?u=3" class="size-8 rounded-full border-2 border-ink bg-white">
-                        <div class="size-8 rounded-full border-2 border-ink bg-mustard flex items-center justify-center text-[10px] font-black">+3</div>
-                    </div>
-                    <button onclick="showView('guests')" class="w-full py-3 bg-ink text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs">Manage Guest List</button>
+            <div class="space-y-6" id="bookings-list">
+                <div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40">
+                    <p class="text-xs font-black uppercase tracking-widest">No Bookings Yet</p>
                 </div>
             </div>
         </div>
@@ -168,13 +162,9 @@
                     <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Dinner Exp • Oct 25</p>
                 </div>
             </header>
-            <div class="space-y-4">
-                <div class="neo-card p-4 flex items-center justify-between">
-                    <div class="flex items-center gap-3">
-                        <img src="https://i.pravatar.cc/150?u=1" class="size-12 rounded-xl border-2 border-ink">
-                        <div><p class="font-black">Amara Kalu</p><p class="text-[10px] font-bold text-ink/40 uppercase">Eater • 2 Guests</p></div>
-                    </div>
-                    <span class="bg-sage/20 text-sage text-[10px] font-black uppercase px-2 py-1 rounded-full border border-sage/10">Confirmed</span>
+            <div class="space-y-4" id="guests-list">
+                <div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40">
+                    <p class="text-xs font-black uppercase tracking-widest">No Guests</p>
                 </div>
             </div>
         </div>
@@ -190,7 +180,7 @@
                 <div class="absolute bottom-0 right-0 size-32 bg-tomato/20 rounded-full blur-3xl -mb-10 -mr-10"></div>
                 <p class="text-xs font-black uppercase tracking-widest opacity-40 mb-2">Pending Payout</p>
                 <h2 class="text-4xl sm:text-5xl font-black tracking-tighter mb-8" id="payout-val">₦0</h2>
-                <button class="w-full py-4 bg-tomato text-white border-[3px] border-white/20 rounded-2xl font-black uppercase text-sm shadow-xl">Withdraw Funds</button>
+                <button onclick="alert('Withdrawal request sent!')" class="w-full py-4 bg-tomato text-white border-[3px] border-white/20 rounded-2xl font-black uppercase text-sm shadow-xl">Withdraw Funds</button>
             </div>
         </div>
 
@@ -204,7 +194,9 @@
             <div class="neo-card p-6 text-center space-y-4">
                 <div class="relative inline-block group">
                     <div class="size-32 rounded-[32px] border-[4px] border-ink shadow-stk mx-auto overflow-hidden">
-                        <img src="https://i.pravatar.cc/150?u=chef" id="profile-img-preview" class="w-full h-full object-cover">
+                        <div id="profile-img-preview-container" class="w-full h-full bg-cream flex items-center justify-center">
+                            <i data-lucide="user" size="40" class="text-ink/40"></i>
+                        </div>
                     </div>
                     <input type="file" id="profile-upload" class="hidden" accept="image/*" onchange="handleImageUpload(event)">
                     <button onclick="document.getElementById('profile-upload').click()" class="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm active:scale-90 transition-transform">
@@ -264,12 +256,17 @@
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) return;
 
+            const title = prompt("Enter new dish name:");
+            if (!title) return;
+            const priceStr = prompt("Enter price (₦):");
+            if (!priceStr) return;
+            
             const newItem = {
                 seller_id: user.id,
-                title: "New Signature Dish",
-                price: 5000,
+                title: title,
+                price: parseInt(priceStr) || 0,
                 is_available: true,
-                image_url: "https://images.unsplash.com/photo-1551183053-bf91a1d81141?q=80&w=200&auto=format&fit=crop",
+                image_url: "",
                 category: "Traditional"
             };
 
@@ -289,7 +286,7 @@
                 const card = document.createElement('div');
                 card.className = "neo-card p-4 flex gap-4 transition-all " + (item.is_available ? "" : "opacity-60 grayscale");
                 card.innerHTML = `
-                    <img src="${item.image_url}" class="size-20 rounded-xl border-2 border-ink object-cover">
+                    ${item.image_url ? `<img src="${item.image_url}" class="size-20 rounded-xl border-2 border-ink object-cover">` : `<div class="size-20 rounded-xl border-2 border-ink bg-cream flex items-center justify-center"><i data-lucide="utensils" class="text-ink/40"></i></div>`}
                     <div class="flex-1">
                         <div class="flex justify-between items-start">
                             <input type="text" onchange="updateLocalMeal(${idx}, 'title', this.value)" class="font-black text-lg bg-transparent border-b border-transparent focus:border-ink outline-none" value="${item.title}">
@@ -349,11 +346,52 @@
         }
 
         function renderBookings(data) {
+            const list = document.getElementById('bookings-list');
+            if(list) {
+                list.innerHTML = '';
+                if(data.length === 0) {
+                    list.innerHTML = '<div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40"><p class="text-xs font-black uppercase tracking-widest">No Bookings Yet</p></div>';
+                } else {
+                    data.forEach(order => {
+                        const date = new Date(order.created_at).toLocaleDateString();
+                        const customerName = order.profiles?.full_name || 'Guest';
+                        list.innerHTML += `
+                        <div class="p-4 border-l-[6px] border-mustard bg-white neo-card shadow-none border-t-0 border-r-0 border-b-0 rounded-l-none mb-4">
+                            <p class="text-[10px] font-black text-ink/40 uppercase mb-1">${date}</p>
+                            <p class="text-xl font-black mb-3">Order #${order.id.slice(0,4)} • ${customerName}</p>
+                            <p class="text-sm font-bold text-ink/70 mb-4">Total: ₦${order.total_amount}</p>
+                            <button class="w-full py-3 bg-ink text-white border-[3px] border-ink rounded-xl font-black uppercase text-xs opacity-50 cursor-not-allowed">Manage Guest List</button>
+                        </div>
+                        `;
+                    });
+                }
+            }
+
+            const activePrep = document.getElementById('active-prep-list');
+            if (activePrep) {
+                const prepOrders = data.filter(o => o.status === 'preparing');
+                activePrep.innerHTML = '';
+                if (prepOrders.length === 0) {
+                    activePrep.innerHTML = '<div class="neo-card p-4 text-center border-dashed border-ink/20 opacity-40"><p class="text-xs font-black uppercase tracking-widest">No Active Prep</p></div>';
+                } else {
+                    prepOrders.forEach(o => {
+                        const customerName = o.profiles?.full_name || 'Guest';
+                        activePrep.innerHTML += `
+                        <div class="neo-card p-4 flex justify-between items-center bg-mustard/10 border-mustard">
+                            <div><p class="font-black text-sm">Order #${o.id.slice(0,4)}</p><p class="text-[10px] font-bold text-ink/40 uppercase">${customerName}</p></div>
+                            <span class="text-[10px] font-black uppercase tracking-widest bg-white px-2 py-1 rounded-full border-2 border-ink">Prep</span>
+                        </div>
+                        `;
+                    });
+                }
+            }
+
             // Update Dashboard stats
             const totalEarned = data.reduce((acc, o) => acc + o.total_amount, 0);
             document.getElementById('today-earned-val').innerText = `₦${totalEarned.toLocaleString()}`;
             document.getElementById('balance-sub-val').innerText = `Available Balance: ₦${totalEarned.toLocaleString()}`;
             document.getElementById('payout-val').innerText = `₦${totalEarned.toLocaleString()}`;
+            lucide.createIcons();
         }
 
         async function loadProfile() {
@@ -406,7 +444,10 @@
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => { document.getElementById('profile-img-preview').src = e.target.result; };
+                reader.onload = (e) => { 
+                    const profileImgContainer = document.getElementById('profile-img-preview-container');
+                    if (profileImgContainer) profileImgContainer.innerHTML = `<img src="${e.target.result}" id="profile-img-preview" class="w-full h-full object-cover">`; 
+                };
                 reader.readAsDataURL(file);
             }
         }
