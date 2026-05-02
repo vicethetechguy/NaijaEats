@@ -45,12 +45,44 @@ const ProfileEdit: React.FC = () => {
     loadProfile();
   }, [navigate]);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [uploading, setUploading] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setProfile(prev => ({ ...prev, image: reader.result as string }));
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('meal-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('meal-images')
+        .getPublicUrl(filePath);
+
+      setProfile(prev => ({ ...prev, image: publicUrl }));
+      
+      // Update DB immediately for avatar
+      await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      toast.success('Avatar updated!');
+    } catch (err: any) {
+      toast.error('Error uploading image: ' + err.message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -71,14 +103,6 @@ const ProfileEdit: React.FC = () => {
         .eq('id', user.id);
 
       if (error) throw error;
-
-      // Update local cache for immediate UI feedback
-      const localUser = JSON.parse(localStorage.getItem('platera_user') || '{}');
-      localStorage.setItem('platera_user', JSON.stringify({
-        ...localUser,
-        name: profile.name,
-        image: profile.image
-      }));
 
       setIsSaving(false);
       setIsSaved(true);
@@ -105,11 +129,17 @@ const ProfileEdit: React.FC = () => {
       <div className="p-8 space-y-12 pb-32">
         <div className="flex flex-col items-center gap-6">
           <div className="relative group cursor-pointer" onClick={() => fileInputRef.current?.click()}>
-            <div className="w-32 h-32 rounded-[48px] overflow-hidden border-[4px] border-ink shadow-stk relative bg-cream">
-              <img src={profile.image} className="w-full h-full object-cover group-hover:opacity-40 transition-all duration-300" alt="Profile" />
-              <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-ink/20">
-                <Camera className="text-ink" size={32} />
-              </div>
+            <div className="w-32 h-32 rounded-[48px] overflow-hidden border-[4px] border-ink shadow-stk relative bg-cream flex items-center justify-center">
+              {uploading ? (
+                <Loader2 className="animate-spin text-tomato" size={32} />
+              ) : (
+                <>
+                  <img src={profile.image} className="w-full h-full object-cover group-hover:opacity-40 transition-all duration-300" alt="Profile" />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-ink/20">
+                    <Camera className="text-ink" size={32} />
+                  </div>
+                </>
+              )}
             </div>
             <div className="absolute -bottom-2 -right-2 p-3 bg-tomato text-white border-[3px] border-ink rounded-2xl shadow-stk-sm group-hover:scale-110 transition-transform">
               <Camera size={16} />

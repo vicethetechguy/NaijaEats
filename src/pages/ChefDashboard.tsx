@@ -200,16 +200,16 @@ const ChefDashboard: React.FC = () => {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `meal-images/${fileName}`;
+      const filePath = `meals/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('meals')
+        .from('meal-images')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('meals')
+        .from('meal-images')
         .getPublicUrl(filePath);
 
       setNewMeal({ ...newMeal, image_url: publicUrl });

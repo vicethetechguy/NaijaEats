@@ -78,6 +78,46 @@ const RestaurantDashboard: React.FC = () => {
     }
   };
 
+  const [uploading, setUploading] = useState(false);
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${profile.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('meal-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('meal-images')
+        .getPublicUrl(filePath);
+
+      setEditBusiness({ ...editBusiness, avatar_url: publicUrl });
+      
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profile.id);
+
+      if (updateError) throw updateError;
+      
+      toast.success('Profile image updated!');
+      refreshProfile();
+    } catch (error: any) {
+      toast.error('Error uploading image: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleUpdateBusiness = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!profile) return;
@@ -333,17 +373,26 @@ const RestaurantDashboard: React.FC = () => {
           <div className="max-w-2xl mx-auto bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-8">
             <form onSubmit={handleUpdateBusiness} className="space-y-6">
               <div className="text-center space-y-4">
-                <div className="relative inline-block">
+                <div className="relative inline-block group">
                   <div className="size-32 bg-cream border-4 border-ink rounded-[40px] overflow-hidden shadow-stk mx-auto flex items-center justify-center">
-                    {editBusiness.avatar_url ? (
+                    {uploading ? (
+                      <Loader2 className="animate-spin text-tomato" size={32} />
+                    ) : editBusiness.avatar_url ? (
                       <img src={editBusiness.avatar_url} className="w-full h-full object-cover" />
                     ) : (
                       <Store size={48} className="text-ink/10" />
                     )}
                   </div>
-                  <button type="button" className="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm hover:scale-110 transition-transform">
+                  <label className="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm hover:scale-110 transition-transform cursor-pointer">
                     <Camera size={16} />
-                  </button>
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={uploading}
+                    />
+                  </label>
                 </div>
                 <h2 className="text-2xl font-black tracking-tighter uppercase">Business Profile</h2>
               </div>

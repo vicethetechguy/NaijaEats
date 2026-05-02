@@ -126,8 +126,12 @@ const Home: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {trending.map((m) => (
                 <StickerCard key={m.id} onClick={() => navigate(`/meals/${m.id}`)} className="overflow-hidden group">
-                  <div className="aspect-square border-b-[3px] border-ink overflow-hidden">
-                    <img src={m.image_url} alt={m.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                  <div className="aspect-square border-b-[3px] border-ink overflow-hidden bg-cream flex items-center justify-center">
+                    {m.image_url ? (
+                      <img src={m.image_url} alt={m.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                    ) : (
+                      <ChefHat size={48} className="text-ink/10" />
+                    )}
                   </div>
                   <div className="p-3 sm:p-5 space-y-1 sm:space-y-2">
                     <Badge text={`₦${Number(m.price).toLocaleString()}`} color="mustard" className="text-[7px] sm:text-[10px] px-2 py-0.5" />

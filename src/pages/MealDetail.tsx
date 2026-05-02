@@ -81,8 +81,12 @@ const MealDetail: React.FC = () => {
     <DetailLayout title={meal.title}>
       <div className="grid lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7">
-          <div className="border-[4px] border-ink rounded-[32px] overflow-hidden shadow-stk-lg bg-card">
-            <img src={meal.image_url} alt={meal.title} className="w-full aspect-[4/3] object-cover" />
+          <div className="border-[4px] border-ink rounded-[32px] overflow-hidden shadow-stk-lg bg-card aspect-[4/3] flex items-center justify-center">
+            {meal.image_url ? (
+              <img src={meal.image_url} alt={meal.title} className="w-full h-full object-cover" />
+            ) : (
+              <ChefHat size={80} className="text-ink/10" />
+            )}
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
             <Badge text="Signature" color="orange" />
@@ -109,16 +113,20 @@ const MealDetail: React.FC = () => {
 
         <div className="lg:col-span-5 lg:sticky lg:top-32 lg:self-start space-y-6">
           <StickerCard className="p-6 flex items-center gap-4">
-            <div className="size-16 rounded-2xl border-[3px] border-ink overflow-hidden shrink-0">
-              <img src={meal.profiles?.avatar_url || `https://i.pravatar.cc/150?u=${meal.seller_id}`} alt={meal.profiles?.full_name} className="w-full h-full object-cover" />
+            <div className="size-16 rounded-2xl border-[3px] border-ink overflow-hidden shrink-0 bg-cream flex items-center justify-center">
+              {meal.profiles?.avatar_url ? (
+                <img src={meal.profiles.avatar_url} alt={meal.profiles?.full_name} className="w-full h-full object-cover" />
+              ) : (
+                <ChefHat size={32} className="text-ink/10" />
+              )}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-1 text-tomato">
                 <ChefHat size={14} />
                 <span className="text-[10px] font-bold tracking-wider">Master chef</span>
               </div>
-              <h4 className="text-xl font-black">{meal.profiles?.full_name || 'Partner chef'}</h4>
-              <p className="text-xs font-bold text-ink/60">Certified provider</p>
+              <h4 className="text-xl font-black">{meal.profiles?.business_name || meal.profiles?.full_name || 'Partner chef'}</h4>
+              <p className="text-xs font-bold text-ink/60">{meal.profiles?.business_name ? 'Certified Restaurant' : 'Certified Private Chef'}</p>
             </div>
           </StickerCard>
 

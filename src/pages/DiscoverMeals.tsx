@@ -129,8 +129,12 @@ const DiscoverMeals: React.FC = () => {
           ) : (
             list.map((m) => (
               <StickerCard key={m.id} onClick={() => navigate(`/meals/${m.id}`)} className="overflow-hidden flex flex-col group">
-                <div className="aspect-square relative border-b-[3px] border-ink overflow-hidden">
-                  <img src={m.image_url} alt={m.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                <div className="aspect-square relative border-b-[3px] border-ink overflow-hidden bg-cream flex items-center justify-center">
+                  {m.image_url ? (
+                    <img src={m.image_url} alt={m.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                  ) : (
+                    <ChefHat size={64} className="text-ink/10" />
+                  )}
                   <div className="absolute top-2 left-2 sm:top-4 sm:left-4"><Badge text={m.category || "New"} color="orange" className="text-[7px] sm:text-[10px] px-2 py-0.5 sm:px-3 sm:py-1" /></div>
                 </div>
                 <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-3 flex-1 flex flex-col">
