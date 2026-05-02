@@ -34,8 +34,8 @@
     </script>
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #fffdf5; color: #1a1a1a; }
-        .sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar.closed { transform: translateX(-100%); }
+        
+        
         .neo-card { background: white; border: 3px solid #1a1a1a; border-radius: 24px; box-shadow: 6px 6px 0px 0px #1a1a1a; transition: all 0.2s ease; }
         .view-content { display: none; }
         .view-content.active { display: block; animation: fadeIn 0.3s ease-out; }
@@ -48,44 +48,54 @@
 <body class="min-h-screen">
     <input type="file" id="item-image-upload" class="hidden" accept="image/*" onchange="handleItemImageChange(event)">
     
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 w-72 bg-cream border-r-[3px] border-ink z-50 p-6 flex flex-col closed">
-        <div class="flex justify-between items-center mb-12">
-            <div class="flex items-center gap-2 text-2xl tracking-tighter text-tomato">
-                <img src="https://drive.google.com/thumbnail?id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5&sz=w200" class="h-8 w-auto object-contain" alt="Logo">
-                <div class="flex items-center">
-                    <span class="font-light">Naija</span><span class="font-black">Eats</span>
-                </div>
-                <span class="block text-[10px] font-black text-ink uppercase tracking-widest -mt-1">Merchant Portal</span>
-            </div>
-            <button onclick="toggleSidebar()" class="p-2 border-2 border-ink rounded-xl bg-white shadow-stk-sm"><i data-lucide="x" size="20"></i></button>
+    <!-- Desktop Header & Bottom Dock -->
+    <header class="sticky top-4 z-50 mx-auto max-w-7xl px-4 mb-8">
+      <div class="bg-white border-[3px] border-ink rounded-full px-3 sm:px-6 py-2.5 flex items-center justify-between shadow-stk">
+        <div class="flex items-center gap-2 sm:gap-8">
+          <button onclick="window.location.href='/'" class="flex items-center gap-2 text-xl sm:text-2xl tracking-tighter text-tomato pl-2">
+            <img src="https://drive.google.com/thumbnail?id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5&sz=w200" alt="Logo" class="h-8 w-auto object-contain"/>
+            <div class="flex items-center"><span class="font-light">Naija</span><span class="font-black">Eats</span></div>
+            <span class="hidden lg:block text-[10px] font-black text-ink uppercase tracking-widest ml-2 -mt-1">Merchant Portal</span>
+          </button>
+          <nav class="hidden lg:flex items-center gap-6">
+            <button onclick="showView('ops')" class="desktop-nav-link text-tomato hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="ops">Operations</button>
+            <button onclick="showView('orders')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="orders">Live Orders</button>
+            <button onclick="showView('inventory')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="inventory">Inventory</button>
+            <button onclick="showView('analytics')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="analytics">Analytics</button>
+            <button onclick="showView('profile')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="profile">Profile</button>
+          </nav>
         </div>
-        <nav class="flex-1 space-y-3">
-            <button onclick="showView('ops')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-mustard border-2 border-ink rounded-2xl transition-all font-black text-sm uppercase tracking-wide" data-view="ops"><i data-lucide="layers" size="20"></i> Operations</button>
-            <button onclick="showView('orders')" class="nav-link w-full flex items-center gap-4 p-4 bg-mustard border-2 border-ink rounded-2xl shadow-stk-sm font-black text-sm uppercase tracking-wide transition-all" data-view="orders"><i data-lucide="clipboard-list" size="20"></i> Live Orders</button>
-            <button onclick="showView('inventory')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-mustard border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="inventory"><i data-lucide="package" size="20"></i> Inventory</button>
-            <button onclick="showView('analytics')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-mustard border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="analytics"><i data-lucide="bar-chart-3" size="20"></i> Analytics</button>
-            <button onclick="showView('profile')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-mustard border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="profile"><i data-lucide="store" size="20"></i> Profile</button>
-        </nav>
-
-        <div class="mt-auto pt-6 border-t-2 border-dashed border-ink/20">
-            <button onclick="window.location.href='/'" class="w-full flex items-center gap-4 p-4 text-tomato font-black text-sm uppercase tracking-wide">
-                <i data-lucide="log-out" size="20"></i> Log Out
-            </button>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="window.location.href='/'" class="p-2 rounded-full border-2 border-ink bg-cream hover:bg-mustard transition-colors shadow-stk-sm"><i data-lucide="log-out" size="16"></i></button>
+          <button onclick="showView('profile')" class="size-10 rounded-full border-2 border-ink bg-mustard overflow-hidden hover:scale-105 transition-transform flex items-center justify-center shadow-stk-sm">
+            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=200&auto=format&fit=crop" id="header-logo" class="w-full h-full object-cover">
+          </button>
         </div>
-    </aside>
-
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40 hidden"></div>
-
-    <header class="p-4 sm:p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
-        <button onclick="toggleSidebar()" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm"><i data-lucide="menu" size="24"></i></button>
-        <button onclick="showView('profile')" class="flex items-center gap-3">
-            <div class="text-right"><p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Online</p><p class="text-sm font-black tracking-tight business-name-header">Kitchen</p></div>
-            <div class="size-12 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm overflow-hidden"><img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=200&auto=format&fit=crop" id="header-logo" class="w-full h-full object-cover"></div>
-        </button>
+      </div>
     </header>
 
-    <main class="p-4 sm:p-6 pb-12 max-w-3xl mx-auto w-full">
+    <!-- Mobile Bottom Dock -->
+    <div class="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md">
+      <div class="bg-white border-[3px] border-ink rounded-2xl px-2 py-2 shadow-stk flex items-center justify-center gap-1 overflow-x-auto">
+        <button onclick="showView('ops')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 bg-mustard text-ink border-ink px-3" data-view="ops">
+          <i data-lucide="layers" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="">Operations</span>
+        </button>
+        <button onclick="showView('orders')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="orders">
+          <i data-lucide="clipboard-list" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Live Orders</span>
+        </button>
+        <button onclick="showView('inventory')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="inventory">
+          <i data-lucide="package" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Inventory</span>
+        </button>
+        <button onclick="showView('analytics')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="analytics">
+          <i data-lucide="bar-chart-3" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Analytics</span>
+        </button>
+        <button onclick="showView('profile')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="profile">
+          <i data-lucide="store" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Profile</span>
+        </button>
+      </div>
+    </div>
+
+    <main class="p-4 sm:p-6 pb-28 lg:pb-12 max-w-3xl mx-auto w-full">
         <!-- VIEW: OPERATIONS -->
         <div id="view-ops" class="view-content space-y-8">
             <header><h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Live Ops</h1><p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="ops-count">0 Active Orders</p></header>
@@ -167,9 +177,11 @@
                 document.getElementById('business-bio-input').value = data.bio || '';
                 if (data.avatar_url) {
                     document.getElementById('logo-img-preview').src = data.avatar_url;
-                    document.getElementById('header-logo').src = data.avatar_url;
+                    const headerLogo = document.getElementById('header-logo');
+                    if (headerLogo) headerLogo.src = data.avatar_url;
                 }
-                document.querySelector('.business-name-header').innerText = data.business_name || 'My Kitchen';
+                const nameHeader = document.querySelector('.business-name-header');
+                if (nameHeader) nameHeader.innerText = data.business_name || 'My Kitchen';
             }
         }
 
@@ -370,15 +382,26 @@
             }, 2000);
         }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('closed'); document.getElementById('overlay').classList.toggle('hidden'); }
+        
         function showView(viewId) {
             document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + viewId).classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(link => {
-                if (link.dataset.view === viewId) { link.classList.add('bg-mustard', 'shadow-stk-sm'); }
-                else { link.classList.remove('bg-mustard', 'shadow-stk-sm'); }
+            
+            document.querySelectorAll('.desktop-nav-link').forEach(link => {
+                if (link.dataset.view === viewId) { link.classList.add('text-tomato'); link.classList.remove('text-ink'); }
+                else { link.classList.remove('text-tomato'); link.classList.add('text-ink'); }
             });
-            if (!document.getElementById('sidebar').classList.contains('closed')) toggleSidebar();
+
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                const textSpan = link.querySelector('.nav-text');
+                if (link.dataset.view === viewId) {
+                    link.className = 'mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 bg-mustard text-ink border-ink px-3';
+                    if (textSpan) textSpan.style.display = 'inline';
+                } else {
+                    link.className = 'mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11';
+                    if (textSpan) textSpan.style.display = 'none';
+                }
+            });
             window.scrollTo(0, 0);
         }
 
@@ -400,8 +423,10 @@
                 .eq('id', user.id);
 
             if (!error) {
-                document.getElementById('header-logo').src = logo;
-                document.querySelector('.business-name-header').innerText = name;
+                const headerLogo = document.getElementById('header-logo');
+                if (headerLogo) headerLogo.src = logo;
+                const nameHeader = document.querySelector('.business-name-header');
+                if (nameHeader) nameHeader.innerText = name;
                 alert("Profile saved to cloud!");
             }
         }

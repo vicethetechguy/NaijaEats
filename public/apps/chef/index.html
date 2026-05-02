@@ -34,8 +34,8 @@
     </script>
     <style>
         body { font-family: 'Outfit', sans-serif; background-color: #fffdf5; color: #1a1a1a; }
-        .sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .sidebar.closed { transform: translateX(-100%); }
+        
+        
         .neo-card { background: white; border: 3px solid #1a1a1a; border-radius: 24px; box-shadow: 6px 6px 0px 0px #1a1a1a; }
         .view-content { display: none; }
         .view-content.active { display: block; animation: fadeIn 0.3s ease-out; }
@@ -44,63 +44,54 @@
     </style>
 </head>
 <body class="min-h-screen">
-    <!-- Sidebar -->
-    <aside id="sidebar" class="sidebar fixed inset-y-0 left-0 w-72 bg-cream border-r-[3px] border-ink z-50 p-6 flex flex-col closed">
-        <div class="flex justify-between items-center mb-12">
-            <div class="flex items-center gap-2 text-2xl tracking-tighter text-tomato">
-                <img src="https://drive.google.com/thumbnail?id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5&sz=w200" class="h-8 w-auto object-contain" alt="Logo">
-                <div class="flex items-center">
-                    <span class="font-light">Naija</span><span class="font-black">Eats</span>
-                </div>
-                <span class="block text-[10px] font-black text-ink uppercase tracking-widest -mt-1">Chef Console</span>
-            </div>
-            <button onclick="toggleSidebar()" class="p-2 border-2 border-ink rounded-xl bg-white shadow-stk-sm">
-                <i data-lucide="x" size="20"></i>
-            </button>
+    <!-- Desktop Header & Bottom Dock -->
+    <header class="sticky top-4 z-50 mx-auto max-w-7xl px-4 mb-8">
+      <div class="bg-white border-[3px] border-ink rounded-full px-3 sm:px-6 py-2.5 flex items-center justify-between shadow-stk">
+        <div class="flex items-center gap-2 sm:gap-8">
+          <button onclick="window.location.href='/'" class="flex items-center gap-2 text-xl sm:text-2xl tracking-tighter text-tomato pl-2">
+            <img src="https://drive.google.com/thumbnail?id=19gaJsJHKStb_0MvwcmSCaCdt6EUeb-K5&sz=w200" alt="Logo" class="h-8 w-auto object-contain"/>
+            <div class="flex items-center"><span class="font-light">Naija</span><span class="font-black">Eats</span></div>
+            <span class="hidden lg:block text-[10px] font-black text-ink uppercase tracking-widest ml-2 -mt-1">Chef Console</span>
+          </button>
+          <nav class="hidden lg:flex items-center gap-6">
+            <button onclick="showView('dashboard')" class="desktop-nav-link text-tomato hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="dashboard">Dashboard</button>
+            <button onclick="showView('menu')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="menu">Menu</button>
+            <button onclick="showView('bookings')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="bookings">Bookings</button>
+            <button onclick="showView('earnings')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="earnings">Earnings</button>
+            <button onclick="showView('profile')" class="desktop-nav-link text-ink hover:text-tomato transition-colors font-bold tracking-wide text-sm" data-view="profile">Profile</button>
+          </nav>
         </div>
-
-        <nav class="flex-1 space-y-3">
-            <button onclick="showView('dashboard')" class="nav-link w-full flex items-center gap-4 p-4 bg-mustard border-2 border-ink rounded-2xl shadow-stk-sm font-black text-sm uppercase tracking-wide transition-all" data-view="dashboard">
-                <i data-lucide="layout-dashboard" size="20"></i> Dashboard
-            </button>
-            <button onclick="showView('menu')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="menu">
-                <i data-lucide="utensils" size="20"></i> My Menu
-            </button>
-            <button onclick="showView('bookings')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="bookings">
-                <i data-lucide="calendar" size="20"></i> Bookings
-            </button>
-            <button onclick="showView('earnings')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="earnings">
-                <i data-lucide="wallet" size="20"></i> Earnings
-            </button>
-            <button onclick="showView('profile')" class="nav-link w-full flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-ink rounded-2xl transition-all font-bold text-sm uppercase tracking-wide" data-view="profile">
-                <i data-lucide="user-circle" size="20"></i> Profile
-            </button>
-        </nav>
-
-        <div class="mt-auto pt-6 border-t-2 border-dashed border-ink/20">
-            <button onclick="window.location.href='/'" class="w-full flex items-center gap-4 p-4 text-tomato font-black text-sm uppercase tracking-wide">
-                <i data-lucide="log-out" size="20"></i> Log Out
-            </button>
+        <div class="flex items-center gap-2 sm:gap-3">
+          <button onclick="window.location.href='/'" class="p-2 rounded-full border-2 border-ink bg-cream hover:bg-mustard transition-colors shadow-stk-sm"><i data-lucide="log-out" size="16"></i></button>
+          <button onclick="showView('profile')" class="size-10 rounded-full border-2 border-ink bg-mustard overflow-hidden hover:scale-105 transition-transform flex items-center justify-center shadow-stk-sm">
+            <img src="https://i.pravatar.cc/150?u=chef" id="header-avatar" class="w-full h-full object-cover">
+          </button>
         </div>
-    </aside>
-
-    <!-- Overlay -->
-    <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40 hidden"></div>
-
-    <!-- Top Bar -->
-    <header class="p-4 sm:p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
-        <button onclick="toggleSidebar()" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm hover:-translate-y-0.5 active:translate-y-0.5 transition-all">
-            <i data-lucide="menu" size="24"></i>
-        </button>
-        <button onclick="showView('profile')" class="flex items-center gap-3 text-left">
-            <div class="text-right"><p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Online</p><p class="text-sm font-black tracking-tight business-name-header"></p></div>
-            <div class="size-12 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm overflow-hidden">
-                <img src="https://i.pravatar.cc/150?u=chef" id="header-avatar" class="w-full h-full object-cover">
-            </div>
-        </button>
+      </div>
     </header>
 
-    <main class="p-4 sm:p-6 pb-12 max-w-3xl mx-auto w-full">
+    <!-- Mobile Bottom Dock -->
+    <div class="lg:hidden fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-1.5rem)] max-w-md">
+      <div class="bg-white border-[3px] border-ink rounded-2xl px-2 py-2 shadow-stk flex items-center justify-center gap-1 overflow-x-auto">
+        <button onclick="showView('dashboard')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 bg-mustard text-ink border-ink px-3" data-view="dashboard">
+          <i data-lucide="layout-dashboard" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="">Dashboard</span>
+        </button>
+        <button onclick="showView('menu')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="menu">
+          <i data-lucide="utensils" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Menu</span>
+        </button>
+        <button onclick="showView('bookings')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="bookings">
+          <i data-lucide="calendar" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Bookings</span>
+        </button>
+        <button onclick="showView('earnings')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="earnings">
+          <i data-lucide="wallet" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Earnings</span>
+        </button>
+        <button onclick="showView('profile')" class="mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11" data-view="profile">
+          <i data-lucide="user-circle" size="18" stroke-width="2.5"></i><span class="nav-text text-xs font-extrabold tracking-wide whitespace-nowrap" style="display:none">Profile</span>
+        </button>
+      </div>
+    </div>
+
+    <main class="p-4 sm:p-6 pb-28 lg:pb-12 max-w-3xl mx-auto w-full">
         <!-- VIEW: DASHBOARD -->
         <div id="view-dashboard" class="view-content active space-y-8">
             <header><h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Live Ops</h1><p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="ops-count">0 Active Orders</p></header>
@@ -135,7 +126,8 @@
                 <div>
                     <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Menu</h1>
                     <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">14 Active Dishes</p>
-                <                <button onclick="addMenuItem()" class="p-3 bg-mustard border-[3px] border-ink rounded-2xl shadow-stk-sm">
+                </div>
+                <button onclick="addMenuItem()" class="p-3 bg-mustard border-[3px] border-ink rounded-2xl shadow-stk-sm">
                     <i data-lucide="plus" size="20"></i>
                 </button>
             </header>
@@ -375,7 +367,8 @@
                         document.getElementById('profile-img-preview').src = profile.avatar_url;
                         document.getElementById('header-avatar').src = profile.avatar_url;
                     }
-                    document.querySelector('.chef-name-header').innerText = profile.full_name;
+                    const nameHeader = document.querySelector('.chef-name-header');
+                    if (nameHeader) nameHeader.innerText = profile.full_name;
                 }
             }
         }
@@ -390,17 +383,22 @@
         function showView(viewId) {
             document.querySelectorAll('.view-content').forEach(v => v.classList.remove('active'));
             document.getElementById('view-' + viewId).classList.add('active');
-            document.querySelectorAll('.nav-link').forEach(link => {
+            
+            document.querySelectorAll('.desktop-nav-link').forEach(link => {
+                if (link.dataset.view === viewId) { link.classList.add('text-tomato'); link.classList.remove('text-ink'); }
+                else { link.classList.remove('text-tomato'); link.classList.add('text-ink'); }
+            });
+
+            document.querySelectorAll('.mobile-nav-link').forEach(link => {
+                const textSpan = link.querySelector('.nav-text');
                 if (link.dataset.view === viewId) {
-                    link.classList.add('bg-mustard', 'shadow-stk-sm');
-                    link.classList.remove('hover:bg-cream', 'border-transparent');
+                    link.className = 'mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 bg-mustard text-ink border-ink px-3';
+                    if (textSpan) textSpan.style.display = 'inline';
                 } else {
-                    link.classList.remove('bg-mustard', 'shadow-stk-sm');
-                    link.classList.add('hover:bg-cream', 'border-transparent');
+                    link.className = 'mobile-nav-link flex items-center justify-center gap-1.5 h-11 rounded-xl transition-all duration-300 ease-out border-2 shrink-0 text-ink border-transparent hover:bg-mustard/30 w-11';
+                    if (textSpan) textSpan.style.display = 'none';
                 }
             });
-            const sb = document.getElementById('sidebar');
-            if (!sb.classList.contains('closed')) toggleSidebar();
             window.scrollTo(0, 0);
         }
 
@@ -432,7 +430,8 @@
                 if (!error) {
                     text.innerText = "Changes Saved!";
                     btn.classList.replace('bg-ink', 'bg-sage');
-                    document.querySelector('.chef-name-header').innerText = name;
+                    const nameHeader = document.querySelector('.chef-name-header');
+                    if (nameHeader) nameHeader.innerText = name;
                     setTimeout(() => { 
                         text.innerText = "Save Changes"; 
                         btn.classList.replace('bg-sage', 'bg-ink'); 
