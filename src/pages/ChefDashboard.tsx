@@ -17,7 +17,11 @@ import {
   DollarSign,
   Wallet,
   TrendingUp,
-  CreditCard
+  CreditCard,
+  History,
+  ArrowLeft,
+  Banknote,
+  ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -32,6 +36,8 @@ const ChefDashboard: React.FC = () => {
   
   const activeTab = 
     pathname.includes('/menu') ? 'menu' : 
+    pathname.includes('/wallet/withdraw') ? 'wallet-withdraw' :
+    pathname.includes('/wallet/history') ? 'wallet-history' :
     pathname.includes('/wallet') ? 'wallet' : 
     pathname.includes('/profile') ? 'profile' : 'orders';
   
@@ -47,6 +53,10 @@ const ChefDashboard: React.FC = () => {
   const [newMeal, setNewMeal] = useState({ title: '', price: '', category: 'Main Dishes', image_url: '' });
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  // Wallet state
+  const [withdrawAmount, setWithdrawAmount] = useState('');
+  const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   const categories = ['Main Dishes', 'Soups & Stews', 'Swallows', 'Grills & Sides', 'Drinks', 'Desserts'];
 
@@ -225,14 +235,26 @@ const ChefDashboard: React.FC = () => {
             <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">
               {activeTab === 'orders' ? 'Kitchen Orders' : 
                activeTab === 'menu' ? 'My Menu' : 
-               activeTab === 'wallet' ? 'Earnings' : 'Your Profile'}
+               activeTab === 'wallet' ? 'Earnings' : 
+               activeTab === 'wallet-withdraw' ? 'Withdraw Cash' :
+               activeTab === 'wallet-history' ? 'Payout History' : 'Your Profile'}
             </h1>
             <p className="text-ink/60 font-bold text-sm mt-2">
               {activeTab === 'orders' ? 'Manage your active and pending orders.' : 
                activeTab === 'menu' ? 'Update your dishes and pricing.' : 
-               activeTab === 'wallet' ? 'Track your income and withdrawals.' : 'Personalize your chef identity.'}
+               activeTab === 'wallet' ? 'Track your income and withdrawals.' : 
+               activeTab === 'wallet-withdraw' ? 'Enter amount to transfer to your bank.' :
+               activeTab === 'wallet-history' ? 'Review your previous earnings transfers.' : 'Personalize your chef identity.'}
             </p>
           </div>
+          {(activeTab === 'wallet-withdraw' || activeTab === 'wallet-history') && (
+            <button 
+              onClick={() => navigate('/chef/wallet')}
+              className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-ink/40 hover:text-ink transition-colors"
+            >
+              <ArrowLeft size={16} /> Back to Wallet
+            </button>
+          )}
         </header>
 
         {activeTab === 'orders' && (
@@ -326,8 +348,8 @@ const ChefDashboard: React.FC = () => {
                 <p className="text-xs font-black uppercase tracking-widest opacity-60 mb-2">Total Earnings</p>
                 <h2 className="text-6xl font-black tracking-tighter mb-8">₦{(orders.filter(o => o.status === 'delivered').reduce((acc, o) => acc + (o.total_amount || 0), 0) * 0.85).toLocaleString()}</h2>
                 <div className="flex flex-wrap gap-4">
-                  <button onClick={() => toast.success('Withdrawal requested!')} className="bg-mustard text-ink border-2 border-ink px-6 py-3 rounded-2xl font-black uppercase text-xs tracking-widest shadow-stk-sm">Withdraw Cash</button>
-                  <button className="bg-white/10 hover:bg-white/20 border-2 border-white/20 px-6 py-3 rounded-2xl font-black uppercase text-xs tracking-widest transition-colors">Payout History</button>
+                  <button onClick={() => navigate('/chef/wallet/withdraw')} className="bg-mustard text-ink border-2 border-ink px-6 py-3 rounded-2xl font-black uppercase text-xs tracking-widest shadow-stk-sm">Withdraw Cash</button>
+                  <button onClick={() => navigate('/chef/wallet/history')} className="bg-white/10 hover:bg-white/20 border-2 border-white/20 px-6 py-3 rounded-2xl font-black uppercase text-xs tracking-widest transition-colors">Payout History</button>
                 </div>
               </div>
             </div>
@@ -348,6 +370,94 @@ const ChefDashboard: React.FC = () => {
                 <h3 className="text-3xl font-black tracking-tighter">₦{(orders.filter(o => ['preparing', 'ready', 'out_for_delivery'].includes(o.status)).reduce((acc, o) => acc + (o.total_amount || 0), 0) * 0.85).toLocaleString()}</h3>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'wallet-withdraw' && (
+          <div className="max-w-2xl mx-auto space-y-8">
+             <div className="bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-8">
+                <div className="text-center space-y-2">
+                   <p className="text-[10px] font-black uppercase tracking-widest text-ink/40">Available for Withdrawal</p>
+                   <h2 className="text-5xl font-black tracking-tighter">₦{(orders.filter(o => o.status === 'delivered').reduce((acc, o) => acc + (o.total_amount || 0), 0) * 0.85).toLocaleString()}</h2>
+                </div>
+
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  setIsWithdrawing(true);
+                  setTimeout(() => {
+                    setIsWithdrawing(false);
+                    toast.success('Withdrawal request submitted! Funds will arrive in 24 hours.');
+                    navigate('/chef/wallet');
+                  }, 1500);
+                }} className="space-y-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Amount to Withdraw (₦)</label>
+                    <div className="relative">
+                       <span className="absolute left-4 top-1/2 -translate-y-1/2 font-black text-xl">₦</span>
+                       <input 
+                        type="number" 
+                        required
+                        placeholder="0"
+                        value={withdrawAmount}
+                        onChange={(e) => setWithdrawAmount(e.target.value)}
+                        max={orders.filter(o => o.status === 'delivered').reduce((acc, o) => acc + (o.total_amount || 0), 0) * 0.85}
+                        className="w-full bg-cream border-2 border-ink rounded-2xl pl-10 pr-4 py-4 font-black text-xl outline-none focus:bg-mustard/10 transition-colors"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="bg-sage/10 border-2 border-sage/20 rounded-2xl p-4 flex gap-4">
+                     <ShieldCheck className="text-sage shrink-0" size={24} />
+                     <div>
+                        <p className="text-xs font-black uppercase tracking-widest text-sage">Secure Transfer</p>
+                        <p className="text-[10px] font-bold text-ink/60">Funds will be sent to your registered bank account: **** 5678 (Kuda Bank)</p>
+                     </div>
+                  </div>
+
+                  <button 
+                    type="submit"
+                    disabled={isWithdrawing || !withdrawAmount}
+                    className="w-full bg-ink text-white border-[3px] border-ink rounded-2xl py-5 font-black uppercase text-sm shadow-stk flex items-center justify-center gap-2 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all disabled:opacity-50"
+                  >
+                    {isWithdrawing ? <><div className="size-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Processing...</> : <><Banknote size={20} /> Confirm Withdrawal</>}
+                  </button>
+                </form>
+             </div>
+          </div>
+        )}
+
+        {activeTab === 'wallet-history' && (
+          <div className="max-w-3xl mx-auto space-y-6">
+             <div className="bg-white border-[3px] border-ink rounded-[32px] overflow-hidden shadow-stk">
+                <div className="p-6 border-b-2 border-ink bg-cream">
+                   <h3 className="font-black uppercase tracking-widest text-sm flex items-center gap-2"><History size={18} /> Past Withdrawals</h3>
+                </div>
+                <div className="divide-y-2 divide-ink/10">
+                   {[
+                     { date: 'Oct 28, 2024', amount: '12,500', status: 'Completed', ref: 'TRX-9821' },
+                     { date: 'Oct 21, 2024', amount: '8,400', status: 'Completed', ref: 'TRX-7742' },
+                     { date: 'Oct 14, 2024', amount: '15,000', status: 'Completed', ref: 'TRX-3310' },
+                     { date: 'Oct 07, 2024', amount: '6,200', status: 'Completed', ref: 'TRX-1109' },
+                   ].map((tx, i) => (
+                     <div key={i} className="p-6 flex items-center justify-between hover:bg-cream/50 transition-colors">
+                        <div className="flex items-center gap-4">
+                           <div className="size-12 bg-sage/20 border-2 border-ink rounded-xl flex items-center justify-center text-sage">
+                              <History size={20} />
+                           </div>
+                           <div>
+                              <p className="font-black tracking-tight">₦{tx.amount}</p>
+                              <p className="text-[10px] font-bold text-ink/40 uppercase tracking-widest">{tx.date} • {tx.ref}</p>
+                           </div>
+                        </div>
+                        <div className="text-right">
+                           <span className="bg-sage text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border-2 border-ink shadow-stk-xs">
+                              {tx.status}
+                           </span>
+                        </div>
+                     </div>
+                   ))}
+                </div>
+             </div>
           </div>
         )}
 

@@ -84,6 +84,8 @@ const App = () => (
               <Route path="/chef" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
               <Route path="/chef/menu" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
               <Route path="/chef/wallet" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
+              <Route path="/chef/wallet/withdraw" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
+              <Route path="/chef/wallet/history" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
               <Route path="/chef/profile" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
               <Route path="/restaurant" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
               <Route path="/delivery" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
