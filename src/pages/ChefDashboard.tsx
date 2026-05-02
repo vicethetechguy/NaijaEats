@@ -25,7 +25,9 @@ import {
   Power,
   Info,
   TrendingUp,
-  Wallet
+  Wallet,
+  UtensilsCrossed as Utensils,
+  Store
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -65,7 +67,8 @@ const ChefDashboard: React.FC = () => {
 
   // New Meal Form state
   const [isAddingMeal, setIsAddingMeal] = useState(false);
-  const [newMeal, setNewMeal] = useState({ title: '', price: '', category: 'Main Dishes', image_url: '' });
+  const [editingMeal, setEditingMeal] = useState<any>(null);
+  const [newMeal, setNewMeal] = useState({ title: '', price: '', category: 'Main Dishes', image_url: '', description: '' });
   const [uploading, setUploading] = useState(false);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
 
@@ -93,30 +96,29 @@ const ChefDashboard: React.FC = () => {
     if (!profile) return;
     setLoading(true);
     try {
-      const { data: mealsData } = await supabase
-        .from('meals')
-        .select('*')
-        .eq('seller_id', profile.id)
-        .order('created_at', { ascending: false });
-      
-      if (mealsData) setMeals(mealsData);
+      const [mealsRes, ordersRes, payoutsRes] = await Promise.all([
+        supabase
+          .from('meals')
+          .select('*')
+          .eq('seller_id', profile.id)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('orders')
+          .select('*')
+          .or(`seller_id.eq.${profile.id},items->0->chef_id.eq.${profile.id}`)
+          .order('created_at', { ascending: false }),
+        supabase
+          .from('payouts')
+          .select('*')
+          .eq('chef_id', profile.id)
+          .order('created_at', { ascending: false })
+      ]);
 
-      const { data: ordersData } = await supabase
-        .from('orders')
-        .select('*, profiles(full_name)')
-        .order('created_at', { ascending: false });
-      
-      if (ordersData) setOrders(ordersData);
-
-      const { data: payoutsData } = await supabase
-        .from('payouts')
-        .select('*')
-        .eq('user_id', profile.id)
-        .order('created_at', { ascending: false });
-      
-      if (payoutsData) setPayouts(payoutsData);
-    } catch (error: any) {
-      toast.error('Error fetching data');
+      if (mealsRes.data) setMeals(mealsRes.data);
+      if (ordersRes.data) setOrders(ordersRes.data);
+      if (payoutsRes.data) setPayouts(payoutsRes.data);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
     } finally {
       setLoading(false);
     }
@@ -230,28 +232,62 @@ const ChefDashboard: React.FC = () => {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('meals')
-        .insert({
-          title: newMeal.title,
-          price: parseInt(newMeal.price) || 0,
-          seller_id: profile?.id,
-          is_available: true,
-          category: newMeal.category,
-          image_url: newMeal.image_url
-        })
-        .select()
-        .single();
-      
-      if (error) throw error;
-      setMeals([data, ...meals]);
-      setNewMeal({ title: '', price: '', category: 'Main Dishes', image_url: '' });
+      if (editingMeal) {
+        const { data, error } = await supabase
+          .from('meals')
+          .update({
+            title: newMeal.title,
+            price: parseInt(newMeal.price) || 0,
+            category: newMeal.category,
+            image_url: newMeal.image_url,
+            description: newMeal.description
+          })
+          .eq('id', editingMeal.id)
+          .select()
+          .single();
+        
+        if (error) throw error;
+        setMeals(meals.map(m => m.id === editingMeal.id ? data : m));
+        toast.success('Dish updated successfully');
+        setEditingMeal(null);
+      } else {
+        const { data, error } = await supabase
+          .from('meals')
+          .insert({
+            title: newMeal.title,
+            price: parseInt(newMeal.price) || 0,
+            seller_id: profile?.id,
+            is_available: true,
+            category: newMeal.category,
+            image_url: newMeal.image_url,
+            description: newMeal.description
+          })
+          .select()
+          .single();
+        
+        if (error) throw error;
+        setMeals([data, ...meals]);
+        toast.success('Dish added to catalog');
+      }
+      setNewMeal({ title: '', price: '', category: 'Main Dishes', image_url: '', description: '' });
       setImagePreview(null);
       setIsAddingMeal(false);
-      toast.success('Dish added to catalog');
     } catch (error: any) {
       toast.error(error.message);
     }
+  };
+
+  const startEditing = (meal: any) => {
+    setEditingMeal(meal);
+    setNewMeal({
+      title: meal.title,
+      price: String(meal.price),
+      category: meal.category || 'Main Dishes',
+      image_url: meal.image_url || '',
+      description: meal.description || ''
+    });
+    setImagePreview(meal.image_url || null);
+    setIsAddingMeal(true);
   };
 
   const toggleAvailability = async (mealId: string, current: boolean) => {
@@ -297,7 +333,7 @@ const ChefDashboard: React.FC = () => {
         <header className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
             <div className="inline-flex items-center gap-2 bg-mustard border-2 border-ink px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest mb-3 shadow-stk-sm">
-              <ChefHat size={14} /> Chef Portal
+              <Store size={14} /> Chef Portal
             </div>
             <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">
               {activeTab === 'orders' ? 'Kitchen Orders' : 
@@ -561,7 +597,14 @@ const ChefDashboard: React.FC = () => {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-black tracking-tighter uppercase">Your Menu</h2>
               <button 
-                onClick={() => setIsAddingMeal(!isAddingMeal)}
+                onClick={() => {
+                  setIsAddingMeal(!isAddingMeal);
+                  if (editingMeal) {
+                    setEditingMeal(null);
+                    setNewMeal({ title: '', price: '', category: 'Main Dishes', image_url: '', description: '' });
+                    setImagePreview(null);
+                  }
+                }}
                 className="bg-ink text-white border-2 border-ink px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-stk-sm flex items-center gap-2"
               >
                 {isAddingMeal ? 'Cancel' : <><Plus size={14} /> Add Item</>}
@@ -633,6 +676,17 @@ const ChefDashboard: React.FC = () => {
                         ))}
                       </select>
                     </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Description</label>
+                      <textarea 
+                        placeholder="Describe your dish (ingredients, spice level, etc.)"
+                        value={newMeal.description}
+                        onChange={(e) => setNewMeal({...newMeal, description: e.target.value})}
+                        className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none resize-none"
+                        rows={3}
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -641,7 +695,7 @@ const ChefDashboard: React.FC = () => {
                   disabled={uploading}
                   className="w-full bg-ink text-white border-2 border-ink py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-stk-sm disabled:opacity-50"
                 >
-                  {uploading ? 'Processing Image...' : 'Add to Catalog'}
+                  {uploading ? 'Processing Image...' : editingMeal ? 'Update Item' : 'Add to Catalog'}
                 </button>
               </form>
             )}
@@ -670,7 +724,7 @@ const ChefDashboard: React.FC = () => {
                               {meal.image_url ? (
                                 <img src={meal.image_url} className="w-full h-full object-cover" />
                               ) : (
-                                <ChefHat size={32} />
+                                <Utensils size={32} />
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -694,15 +748,23 @@ const ChefDashboard: React.FC = () => {
                                 {meal.is_available ? 'Available' : 'Sold Out'}
                               </span>
                             </div>
-                            <button 
-                              onClick={() => toggleAvailability(meal.id, meal.is_available)}
-                              className={cn(
-                                "border-2 border-ink px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-stk-sm transition-all active:scale-95",
-                                meal.is_available ? "bg-tomato/10 text-tomato" : "bg-sage/10 text-sage"
-                              )}
-                            >
-                              {meal.is_available ? 'Set Out of Stock' : 'Set Available'}
-                            </button>
+                            <div className="flex items-center gap-2">
+                              <button 
+                                onClick={() => startEditing(meal)}
+                                className="border-2 border-ink px-3 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-stk-sm bg-mustard/10 text-ink hover:bg-mustard transition-colors"
+                              >
+                                Edit
+                              </button>
+                              <button 
+                                onClick={() => toggleAvailability(meal.id, meal.is_available)}
+                                className={cn(
+                                  "border-2 border-ink px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-stk-sm transition-all active:scale-95",
+                                  meal.is_available ? "bg-tomato/10 text-tomato" : "bg-sage/10 text-sage"
+                                )}
+                              >
+                                {meal.is_available ? 'Set Out of Stock' : 'Set Available'}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}

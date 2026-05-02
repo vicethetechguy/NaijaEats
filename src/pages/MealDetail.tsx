@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DetailLayout } from '@/components/Layouts';
 import { Badge, CTAButton, StickerCard } from '@/components/UI';
-import { ShoppingBasket, Check, ChefHat, Clock, Loader2 } from 'lucide-react';
+import { ShoppingBasket, Check, UtensilsCrossed as Utensils, Clock, Loader2, Store } from 'lucide-react';
 import { useMeals } from '@/contexts/MealContext';
 import { supabase } from '@/lib/supabase';
 
@@ -85,7 +85,7 @@ const MealDetail: React.FC = () => {
             {meal.image_url ? (
               <img src={meal.image_url} alt={meal.title} className="w-full h-full object-cover" />
             ) : (
-              <ChefHat size={80} className="text-ink/10" />
+              <Utensils size={80} className="text-ink/10" />
             )}
           </div>
           <div className="mt-6 flex flex-wrap gap-2">
@@ -117,13 +117,13 @@ const MealDetail: React.FC = () => {
               {meal.profiles?.avatar_url ? (
                 <img src={meal.profiles.avatar_url} alt={meal.profiles?.full_name} className="w-full h-full object-cover" />
               ) : (
-                <ChefHat size={32} className="text-ink/10" />
+                <Utensils size={32} className="text-ink/10" />
               )}
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-1 text-tomato">
-                <ChefHat size={14} />
-                <span className="text-[10px] font-bold tracking-wider">Master chef</span>
+                <Store size={14} />
+                <span className="text-[10px] font-black tracking-widest uppercase">Certified Kitchen</span>
               </div>
               <h4 className="text-xl font-black">{meal.profiles?.business_name || meal.profiles?.full_name || 'Partner chef'}</h4>
               <p className="text-xs font-bold text-ink/60">{meal.profiles?.business_name ? 'Certified Restaurant' : 'Certified Private Chef'}</p>

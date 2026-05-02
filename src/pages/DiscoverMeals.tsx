@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
 import { Badge, StickerCard } from '@/components/UI';
-import { Check, Plus, ChefHat, Loader2, Search } from 'lucide-react';
+import { Check, Plus, UtensilsCrossed as Utensils, Loader2, Search } from 'lucide-react';
 import { useMeals } from '@/contexts/MealContext';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
@@ -36,7 +36,7 @@ const DiscoverMeals: React.FC = () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('meals')
-        .select('*, profiles(full_name, business_name)')
+        .select('*, profiles(full_name, business_name, avatar_url)')
         .eq('is_available', true);
       
       if (data) {
@@ -133,13 +133,22 @@ const DiscoverMeals: React.FC = () => {
                   {m.image_url ? (
                     <img src={m.image_url} alt={m.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                   ) : (
-                    <ChefHat size={64} className="text-ink/10" />
+                    <Utensils size={64} className="text-ink/10" />
                   )}
                   <div className="absolute top-2 left-2 sm:top-4 sm:left-4"><Badge text={m.category || "New"} color="orange" className="text-[7px] sm:text-[10px] px-2 py-0.5 sm:px-3 sm:py-1" /></div>
                 </div>
                 <div className="p-3 sm:p-5 space-y-1.5 sm:space-y-3 flex-1 flex flex-col">
-                  <div className="flex items-center gap-1.5 text-ink/60 text-[8px] sm:text-xs font-bold tracking-wide">
-                    <ChefHat size={12} className="sm:w-[14px] sm:h-[14px]" /> {m.profiles?.business_name || m.profiles?.full_name || 'Chef'}
+                  <div className="flex items-center gap-2 text-ink/60 text-[8px] sm:text-xs font-bold tracking-wide">
+                    <div className="size-5 sm:size-7 rounded-full border-2 border-ink overflow-hidden bg-cream shrink-0">
+                      {m.profiles?.avatar_url ? (
+                        <img src={m.profiles.avatar_url} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-ink/5">
+                          <Utensils size={12} className="text-ink/20" />
+                        </div>
+                      )}
+                    </div>
+                    <span className="truncate">{m.profiles?.business_name || m.profiles?.full_name || 'Chef'}</span>
                   </div>
                   <h3 className="text-sm sm:text-lg font-black leading-tight line-clamp-2">{m.title}</h3>
                   <p className="text-[10px] sm:text-sm text-ink/70 font-medium line-clamp-1 sm:line-clamp-2 flex-1">{m.description}</p>

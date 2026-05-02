@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { DetailLayout } from '@/components/Layouts';
-import { MapPin, CheckCircle2, ChefHat, Info, Calendar, Receipt, CreditCard, ChevronRight } from 'lucide-react';
+import { MapPin, CheckCircle2, UtensilsCrossed as Utensils, Info, Calendar, Receipt, CreditCard, ChevronRight } from 'lucide-react';
 import { CTAButton } from '@/components/UI';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -121,7 +121,7 @@ const OrderDetails: React.FC = () => {
                       <h5 className="font-black text-ink text-base tracking-tight leading-tight">{item.title}</h5>
                       <div className="flex items-center gap-2">
                         <div className="p-1 bg-sage/20 border border-sage/30 rounded-md">
-                          <ChefHat size={10} className="text-sage" />
+                          <Utensils size={10} className="text-sage" />
                         </div>
                         <span className="text-[9px] font-black text-ink/50 tracking-wider">{item.chef}</span>
                       </div>

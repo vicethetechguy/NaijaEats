@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
 import { Badge, StickerCard } from '@/components/UI';
-import { ChefHat, ArrowRight, Truck, Flame, Loader2 } from 'lucide-react';
+import { UtensilsCrossed as Utensils, ArrowRight, Truck, Flame, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 const heroImg = 'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=1200&auto=format&fit=crop';
@@ -52,7 +52,7 @@ const Home: React.FC = () => {
       // Load Trending Meals
       const { data: meals } = await supabase
         .from('meals')
-        .select('*, profiles(full_name, business_name)')
+        .select('*, profiles(full_name, business_name, avatar_url)')
         .eq('is_available', true)
         .limit(4);
       
@@ -95,7 +95,7 @@ const Home: React.FC = () => {
         <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { l: 'Calories', v: userStats.calories, s: 'Estimated', icon: Flame, c: 'bg-tomato text-white' },
-            { l: 'Protein', v: userStats.protein, s: 'On track', icon: ChefHat, c: 'bg-sage text-white' },
+            { l: 'Protein', v: userStats.protein, s: 'On track', icon: Utensils, c: 'bg-sage text-white' },
             { l: 'Meals', v: userStats.mealsThisWeek, s: 'This week', icon: Truck, c: 'bg-mustard text-ink' },
             { l: 'Saved', v: userStats.totalSaved, s: 'vs eating out', icon: ArrowRight, c: 'bg-ink text-cream' },
           ].map((s) => {
@@ -130,13 +130,24 @@ const Home: React.FC = () => {
                     {m.image_url ? (
                       <img src={m.image_url} alt={m.title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
                     ) : (
-                      <ChefHat size={48} className="text-ink/10" />
+                      <Utensils size={48} className="text-ink/10" />
                     )}
                   </div>
                   <div className="p-3 sm:p-5 space-y-1 sm:space-y-2">
                     <Badge text={`₦${Number(m.price).toLocaleString()}`} color="mustard" className="text-[7px] sm:text-[10px] px-2 py-0.5" />
                     <h3 className="text-sm sm:text-xl font-black leading-tight line-clamp-1 sm:line-clamp-2">{m.title}</h3>
-                    <p className="text-[10px] sm:text-sm font-medium text-ink/60">By {m.profiles?.business_name || m.profiles?.full_name || 'Chef'}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="size-5 rounded-full border border-ink overflow-hidden bg-cream shrink-0">
+                        {m.profiles?.avatar_url ? (
+                          <img src={m.profiles.avatar_url} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center bg-ink/5">
+                            <Utensils size={10} className="text-ink/20" />
+                          </div>
+                        )}
+                      </div>
+                      <p className="text-[10px] sm:text-xs font-bold text-ink/60 truncate">By {m.profiles?.business_name || m.profiles?.full_name || 'Chef'}</p>
+                    </div>
                   </div>
                 </StickerCard>
               ))}
