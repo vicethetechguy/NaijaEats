@@ -147,6 +147,44 @@ const ChefDashboard: React.FC = () => {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !profile) return;
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${profile.id}-${Math.random()}.${fileExt}`;
+      const filePath = `avatars/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('meal-images')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('meal-images')
+        .getPublicUrl(filePath);
+
+      setEditProfile({ ...editProfile, avatar_url: publicUrl });
+      
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profile.id);
+
+      if (updateError) throw updateError;
+      
+      toast.success('Profile image updated!');
+      refreshProfile();
+    } catch (error: any) {
+      toast.error('Error uploading image: ' + error.message);
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -708,15 +746,24 @@ const ChefDashboard: React.FC = () => {
               <div className="flex flex-col sm:flex-row items-center gap-8">
                 <div className="relative">
                   <div className="size-32 bg-cream border-4 border-ink rounded-[40px] overflow-hidden shadow-stk flex items-center justify-center">
-                    {editProfile.avatar_url ? (
+                    {uploading ? (
+                      <div className="animate-spin size-8 border-4 border-tomato border-t-transparent rounded-full" />
+                    ) : editProfile.avatar_url ? (
                       <img src={editProfile.avatar_url} className="w-full h-full object-cover" />
                     ) : (
                       <ChefHat size={48} className="text-ink/10" />
                     )}
                   </div>
-                  <button className="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm hover:scale-110 transition-transform">
+                  <label className="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm hover:scale-110 transition-transform cursor-pointer">
                     <Camera size={16} />
-                  </button>
+                    <input 
+                      type="file" 
+                      className="hidden" 
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={uploading}
+                    />
+                  </label>
                 </div>
                 
                 <div className="flex-1 text-center sm:text-left space-y-4">
