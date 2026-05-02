@@ -87,7 +87,7 @@
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40 hidden"></div>
 
     <!-- Top Bar -->
-    <header class="p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
+    <header class="p-4 sm:p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
         <button onclick="toggleSidebar()" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm hover:-translate-y-0.5 transition-all">
             <i data-lucide="menu" size="24"></i>
         </button>
@@ -102,7 +102,7 @@
         </button>
     </header>
 
-    <main class="p-6 pb-12 max-w-lg mx-auto w-full">
+    <main class="p-4 sm:p-6 pb-12 max-w-lg mx-auto w-full">
         <!-- VIEW: MAP -->
         <div id="view-map" class="view-content active space-y-8">
             <section class="neo-card h-80 overflow-hidden relative">
@@ -124,7 +124,7 @@
         <!-- VIEW: HISTORY -->
         <div id="view-history" class="view-content space-y-8">
             <header>
-                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Deliveries</h1>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Deliveries</h1>
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="history-count">0 Completed Today</p>
             </header>
             <div class="space-y-4" id="history-list"></div>
@@ -133,15 +133,15 @@
         <!-- VIEW: PAY -->
         <div id="view-pay" class="view-content space-y-8">
             <header>
-                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Pay</h1>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Pay</h1>
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Earnings this week</p>
             </header>
             <div class="neo-card p-6 bg-tomato text-white text-center">
                 <p class="text-xs font-black uppercase tracking-widest opacity-60 mb-2">Available Balance</p>
-                <h2 class="text-5xl font-black tracking-tighter mb-6" id="balance-total">₦0</h2>
+                <h2 class="text-4xl sm:text-5xl font-black tracking-tighter mb-6" id="balance-total">₦0</h2>
                 <button class="w-full py-4 bg-white text-tomato border-[3px] border-ink rounded-2xl font-black uppercase text-sm shadow-xl">Cash Out Now</button>
             </div>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="neo-card p-5 bg-mustard/20">
                     <p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Base Pay</p>
                     <p class="text-2xl font-black tracking-tighter" id="base-pay">₦0</p>
@@ -156,7 +156,7 @@
         <!-- VIEW: PROFILE -->
         <div id="view-profile" class="view-content space-y-8">
             <header>
-                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Rider Profile</h1>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Rider Profile</h1>
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Manage your identity</p>
             </header>
 
@@ -193,7 +193,7 @@
         <!-- VIEW: SETTINGS -->
         <div id="view-settings" class="view-content space-y-8">
             <header>
-                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Settings</h1>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Settings</h1>
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">App Preferences</p>
             </header>
             <div class="neo-card divide-y-2 divide-ink/5">
@@ -325,10 +325,10 @@
                 card.innerHTML = `
                     <div class="relative z-10">
                         <span class="bg-ink text-white text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-full mb-3 inline-block">Flash Offer</span>
-                        <h2 class="text-3xl font-black tracking-tighter leading-none mb-1">+₦${payAmount.toLocaleString()}</h2>
+                        <h2 class="text-2xl sm:text-3xl font-black tracking-tighter leading-none mb-1">+₦${payAmount.toLocaleString()}</h2>
                         <p class="text-sm font-bold opacity-80 mb-2">From: Local Merchant</p>
                         <p class="text-[10px] font-black uppercase tracking-widest opacity-60 mb-6">Drop: ${order.profiles?.full_name || 'Customer'}</p>
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                             <button onclick="ignoreOffer('${order.id}')" class="py-4 bg-white border-[3px] border-ink rounded-2xl font-black uppercase text-xs shadow-stk-sm">Ignore</button>
                             <button onclick="acceptOffer('${order.id}')" class="py-4 bg-ink text-white border-[3px] border-ink rounded-2xl font-black uppercase text-xs shadow-stk-sm">Accept</button>
                         </div>

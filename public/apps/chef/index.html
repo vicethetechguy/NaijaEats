@@ -88,7 +88,7 @@
     <div id="overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-ink/40 backdrop-blur-sm z-40 hidden"></div>
 
     <!-- Top Bar -->
-    <header class="p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
+    <header class="p-4 sm:p-6 flex justify-between items-center sticky top-0 bg-cream/80 backdrop-blur-md z-30 border-b-2 border-ink/5">
         <button onclick="toggleSidebar()" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm hover:-translate-y-0.5 active:translate-y-0.5 transition-all">
             <i data-lucide="menu" size="24"></i>
         </button>
@@ -100,12 +100,12 @@
         </button>
     </header>
 
-    <main class="p-6 pb-12">
+    <main class="p-4 sm:p-6 pb-12 max-w-3xl mx-auto w-full">
         <!-- VIEW: DASHBOARD -->
         <div id="view-dashboard" class="view-content active space-y-8">
-            <header><h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Live Ops</h1><p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="ops-count">0 Active Orders</p></header>
+            <header><h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Live Ops</h1><p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="ops-count">0 Active Orders</p></header>
 
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div class="neo-card p-5 bg-sage/20">
                     <i data-lucide="trending-up" class="text-sage mb-3" size="20"></i>
                     <p class="text-[10px] font-black text-ink/40 uppercase tracking-widest">Today</p>
@@ -133,7 +133,7 @@
         <div id="view-menu" class="view-content space-y-8">
             <header class="flex justify-between items-end">
                 <div>
-                    <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Menu</h1>
+                    <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Menu</h1>
                     <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">14 Active Dishes</p>
                 <                <button onclick="addMenuItem()" class="p-3 bg-mustard border-[3px] border-ink rounded-2xl shadow-stk-sm">
                     <i data-lucide="plus" size="20"></i>
@@ -148,7 +148,7 @@
         <!-- VIEW: BOOKINGS -->
         <div id="view-bookings" class="view-content space-y-8">
             <header>
-                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Bookings</h1>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Bookings</h1>
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Upcoming Chef Slots</p>
             </header>
 
@@ -172,7 +172,7 @@
             <header class="flex items-center gap-4">
                 <button onclick="showView('bookings')" class="p-3 bg-white border-[3px] border-ink rounded-2xl shadow-stk-sm"><i data-lucide="arrow-left" size="20"></i></button>
                 <div>
-                    <h1 class="text-4xl font-black tracking-tighter leading-none mb-1 uppercase">Guest List</h1>
+                    <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-1 uppercase">Guest List</h1>
                     <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Dinner Exp • Oct 25</p>
                 </div>
             </header>
@@ -190,14 +190,14 @@
         <!-- VIEW: EARNINGS -->
         <div id="view-earnings" class="view-content space-y-8">
             <header>
-                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Earnings</h1>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">Earnings</h1>
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest" id="balance-sub-val">Available Balance: ₦0</p>
             </header>
 
             <div class="neo-card p-6 bg-ink text-white relative overflow-hidden">
                 <div class="absolute bottom-0 right-0 size-32 bg-tomato/20 rounded-full blur-3xl -mb-10 -mr-10"></div>
                 <p class="text-xs font-black uppercase tracking-widest opacity-40 mb-2">Pending Payout</p>
-                <h2 class="text-5xl font-black tracking-tighter mb-8" id="payout-val">₦0</h2>
+                <h2 class="text-4xl sm:text-5xl font-black tracking-tighter mb-8" id="payout-val">₦0</h2>
                 <button class="w-full py-4 bg-tomato text-white border-[3px] border-white/20 rounded-2xl font-black uppercase text-sm shadow-xl">Withdraw Funds</button>
             </div>
         </div>
@@ -205,7 +205,7 @@
         <!-- VIEW: PROFILE -->
         <div id="view-profile" class="view-content space-y-8">
             <header>
-                <h1 class="text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Profile</h1>
+                <h1 class="text-3xl sm:text-4xl font-black tracking-tighter leading-none mb-2 uppercase">My Profile</h1>
                 <p class="text-ink/60 font-bold uppercase text-xs tracking-widest">Public Chef Profile</p>
             </header>
 
@@ -220,7 +220,7 @@
                     </button>
                 </div>
                 <div class="space-y-2">
-                    <input type="text" id="chef-name-input" class="text-3xl font-black tracking-tight text-center bg-transparent border-b-2 border-ink/10 focus:border-tomato w-full" value="Chef Ezinne">
+                    <input type="text" id="chef-name-input" class="text-2xl sm:text-3xl font-black tracking-tight text-center bg-transparent border-b-2 border-ink/10 focus:border-tomato w-full" value="Chef Ezinne">
                     <p class="text-ink/60 font-bold uppercase text-[10px] tracking-widest">Traditional West African Cuisine</p>
                 </div>
                 <div class="flex justify-center gap-2">
