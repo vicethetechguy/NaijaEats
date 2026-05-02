@@ -23,7 +23,9 @@ import {
   Lock,
   Bell,
   Power,
-  Info
+  Info,
+  TrendingUp,
+  Wallet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
