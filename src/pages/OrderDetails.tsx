@@ -201,7 +201,7 @@ const OrderDetails: React.FC = () => {
 
             <div className="flex flex-col gap-4 pt-4">
               <CTAButton text="Reorder this box" style="orange" onClick={() => navigate('/planner')} className="h-14 text-sm" />
-              <button className="flex items-center justify-center gap-2 py-4 text-[10px] font-black tracking-widest text-ink/40 hover:text-tomato transition-all group">
+              <button onClick={() => alert('Issue report dialog opened.')} className="flex items-center justify-center gap-2 py-4 text-[10px] font-black tracking-widest text-ink/40 hover:text-tomato transition-all group">
                 <Info size={14} className="group-hover:rotate-12 transition-transform" /> 
                 Report an issue
               </button>

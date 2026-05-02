@@ -26,10 +26,10 @@ const Notifications: React.FC = () => {
             </h2>
           </div>
           <div className="flex items-center gap-2">
-            <button className="p-2.5 bg-white border-2 border-ink rounded-xl hover:bg-cream transition-colors shadow-stk-sm active:translate-y-0.5 active:shadow-none">
+            <button onClick={() => setNotifs(notifs.map(n => ({...n, unread: false})))} className="p-2.5 bg-white border-2 border-ink rounded-xl hover:bg-cream transition-colors shadow-stk-sm active:translate-y-0.5 active:shadow-none">
               <CheckCheck size={18} className="text-ink" />
             </button>
-            <button className="p-2.5 bg-white border-2 border-ink rounded-xl hover:bg-cream transition-colors shadow-stk-sm active:translate-y-0.5 active:shadow-none">
+            <button onClick={() => alert('Settings opened')} className="p-2.5 bg-white border-2 border-ink rounded-xl hover:bg-cream transition-colors shadow-stk-sm active:translate-y-0.5 active:shadow-none">
               <Settings size={18} className="text-ink" />
             </button>
           </div>

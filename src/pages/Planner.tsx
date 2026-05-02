@@ -65,8 +65,8 @@ const Planner: React.FC = () => {
             <p className="text-lg text-ink/70 font-medium mt-2">Oct 23 — 28 • {schedule.length} meals scheduled</p>
           </div>
           <div className="flex gap-2">
-            <button className="size-11 rounded-full bg-card border-[3px] border-ink flex items-center justify-center hover:bg-mustard transition-colors shadow-stk-sm"><ChevronLeft size={18} strokeWidth={3} /></button>
-            <button className="size-11 rounded-full bg-card border-[3px] border-ink flex items-center justify-center hover:bg-mustard transition-colors shadow-stk-sm"><ChevronRight size={18} strokeWidth={3} /></button>
+            <button onClick={() => alert('Previous week')} className="size-11 rounded-full bg-card border-[3px] border-ink flex items-center justify-center hover:bg-mustard transition-colors shadow-stk-sm"><ChevronLeft size={18} strokeWidth={3} /></button>
+            <button onClick={() => alert('Next week')} className="size-11 rounded-full bg-card border-[3px] border-ink flex items-center justify-center hover:bg-mustard transition-colors shadow-stk-sm"><ChevronRight size={18} strokeWidth={3} /></button>
           </div>
         </header>
 

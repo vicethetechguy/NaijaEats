@@ -27,6 +27,9 @@ import Pricing from "./pages/Pricing";
 import Referral from "./pages/Referral";
 import ProfileEdit from "./pages/ProfileEdit";
 import VerifyEmail from "./pages/VerifyEmail";
+import ChefDashboard from "./pages/ChefDashboard";
+import RestaurantDashboard from "./pages/RestaurantDashboard";
+import DeliveryDashboard from "./pages/DeliveryDashboard";
 import NotFound from "./pages/NotFound";
 
 import { UserProvider } from "@/contexts/UserContext";
@@ -76,6 +79,11 @@ const App = () => (
               <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
               <Route path="/pricing" element={<ProtectedRoute><Pricing /></ProtectedRoute>} />
               <Route path="/referral" element={<ProtectedRoute><Referral /></ProtectedRoute>} />
+              
+              {/* Role Portals */}
+              <Route path="/chef" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
+              <Route path="/restaurant" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
+              <Route path="/delivery" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

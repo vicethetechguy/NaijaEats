@@ -51,7 +51,7 @@ const DeliveryTrack: React.FC = () => {
           <TacticalMap />
           <div className="absolute right-6 top-6 flex flex-col gap-3 z-40">
             <div className="flex flex-col bg-secondary/90 backdrop-blur-xl border border-border rounded-2xl shadow-2xl overflow-hidden">
-              <button className="p-4 text-muted-foreground hover:text-foreground transition-colors border-b border-border active:bg-muted">
+              <button onClick={() => alert('Recentering map...')} className="p-4 text-muted-foreground hover:text-foreground transition-colors border-b border-border active:bg-muted">
                 <Target size={20} />
               </button>
             </div>
@@ -85,10 +85,10 @@ const DeliveryTrack: React.FC = () => {
           </div>
 
           <div className="flex gap-3">
-            <button className="flex-[2] py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95">
+            <button onClick={() => alert('Calling driver...')} className="flex-[2] py-4 bg-primary text-primary-foreground rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-3 hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95">
               <Phone size={18} /> Call Musa
             </button>
-            <button className="flex-1 py-4 bg-muted text-foreground border border-border rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center hover:bg-muted/80 transition-all active:scale-95">
+            <button onClick={() => alert('Messaging driver...')} className="flex-1 py-4 bg-muted text-foreground border border-border rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center hover:bg-muted/80 transition-all active:scale-95">
               <MessageCircle size={18} />
             </button>
           </div>

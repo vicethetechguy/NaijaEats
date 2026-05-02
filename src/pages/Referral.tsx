@@ -106,7 +106,7 @@ const Referral: React.FC = () => {
           </div>
         </div>
 
-        <button className="w-full py-5 bg-ink text-white border-[4px] border-ink rounded-[28px] font-black text-sm tracking-wide shadow-stk flex items-center justify-center gap-3 hover:bg-tomato transition-colors">
+        <button onClick={() => alert('Share native dialog triggered')} className="w-full py-5 bg-ink text-white border-[4px] border-ink rounded-[28px] font-black text-sm tracking-wide shadow-stk flex items-center justify-center gap-3 hover:bg-tomato transition-colors">
           <Share2 size={20} strokeWidth={3} />
           Invite friends now
         </button>

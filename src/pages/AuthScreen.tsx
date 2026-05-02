@@ -88,11 +88,11 @@ const AuthScreen = () => {
 
   const redirectUser = (userRole: string) => {
     if (userRole === 'chef') {
-      window.location.href = '/apps/chef/index.html';
+      navigate('/chef');
     } else if (userRole === 'delivery') {
-      window.location.href = '/apps/delivery/index.html';
+      navigate('/delivery');
     } else if (userRole === 'restaurant') {
-      window.location.href = '/apps/restaurant/index.html';
+      navigate('/restaurant');
     } else {
       navigate('/home');
     }

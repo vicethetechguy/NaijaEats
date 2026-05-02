@@ -12,23 +12,42 @@ import { useUser } from '@/contexts/UserContext';
  * No phone mockup frame.
  */
 
-const navLinks = [
-  { to: '/home', label: 'Home' },
-  { to: '/meals', label: 'Discover' },
-  { to: '/planner', label: 'Planner' },
-  { to: '/orders', label: 'Orders' },
-  { to: '/pricing', label: 'Plans' },
-];
+const navLinks = {
+  eater: [
+    { to: '/home', label: 'Home' },
+    { to: '/meals', label: 'Discover' },
+    { to: '/planner', label: 'Planner' },
+    { to: '/orders', label: 'Orders' },
+    { to: '/pricing', label: 'Plans' },
+  ],
+  chef: [
+    { to: '/chef', label: 'Dashboard' },
+    { to: '/orders', label: 'Customer Orders' },
+  ],
+  restaurant: [
+    { to: '/restaurant', label: 'Dashboard' },
+    { to: '/orders', label: 'Store Orders' },
+  ],
+  delivery: [
+    { to: '/delivery', label: 'Active Jobs' },
+    { to: '/orders', label: 'History' },
+  ]
+};
 
 export const SiteHeader: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { profile } = useUser();
+  const role = (profile?.role as keyof typeof navLinks) || 'eater';
 
   const isActive = (to: string) =>
-    to === '/home' ? location.pathname === '/home' : location.pathname.startsWith(to);
+    to === '/home' || to === '/chef' || to === '/restaurant' || to === '/delivery' 
+      ? location.pathname === to 
+      : location.pathname.startsWith(to);
+  
   const isLanding = location.pathname === '/';
   const isSignedIn = !!profile;
+  const currentNav = navLinks[role] || navLinks.eater;
 
   return (
     <header className="sticky top-4 z-50 mx-auto max-w-7xl px-4">
@@ -48,7 +67,7 @@ export const SiteHeader: React.FC = () => {
             </div>
           </button>
           <nav className="hidden lg:flex items-center gap-6 text-sm font-bold tracking-wide">
-            {navLinks.map((l) => (
+            {currentNav.map((l) => (
               <button
                 key={l.to}
                 onClick={() => navigate(l.to)}
@@ -121,26 +140,26 @@ export const SiteFooter: React.FC = () => (
         <div>
           <h5 className="font-bold text-xs tracking-wider text-mustard mb-5">Community</h5>
           <ul className="space-y-3 font-medium text-cream/80 text-sm">
-            <li><a href="#" className="hover:text-white">Join as chef</a></li>
-            <li><a href="#" className="hover:text-white">Food quality</a></li>
-            <li><a href="#" className="hover:text-white">Neighborhood tips</a></li>
+            <li><a onClick={(e) => { e.preventDefault(); alert('Chef onboarding coming soon'); }} href="#" className="hover:text-white">Join as chef</a></li>
+            <li><a onClick={(e) => { e.preventDefault(); alert('Food quality guidelines'); }} href="#" className="hover:text-white">Food quality</a></li>
+            <li><a onClick={(e) => { e.preventDefault(); alert('Neighborhood tips loaded'); }} href="#" className="hover:text-white">Neighborhood tips</a></li>
           </ul>
         </div>
         <div>
           <h5 className="font-bold text-xs tracking-wider text-sage mb-5">Support</h5>
           <ul className="space-y-3 font-medium text-cream/80 text-sm">
-            <li><a href="#" className="hover:text-white">Help center</a></li>
-            <li><a href="#" className="hover:text-white">Order issues</a></li>
-            <li><a href="#" className="hover:text-white">Safety</a></li>
+            <li><a onClick={(e) => { e.preventDefault(); alert('Help center opened'); }} href="#" className="hover:text-white">Help center</a></li>
+            <li><a onClick={(e) => { e.preventDefault(); alert('Report issue dialog'); }} href="#" className="hover:text-white">Order issues</a></li>
+            <li><a onClick={(e) => { e.preventDefault(); alert('Safety protocols'); }} href="#" className="hover:text-white">Safety</a></li>
           </ul>
         </div>
       </div>
       <div className="pt-8 border-t border-cream/10 flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-cream/40 text-xs font-medium">© 2024 Naija Eats Social Club. Built with hunger.</p>
         <div className="flex gap-6 text-cream/40 text-xs font-bold tracking-wider">
-          <a href="#" className="hover:text-white">Instagram</a>
-          <a href="#" className="hover:text-white">Twitter</a>
-          <a href="#" className="hover:text-white">Threads</a>
+          <a onClick={(e) => { e.preventDefault(); window.open('https://instagram.com', '_blank'); }} href="#" className="hover:text-white">Instagram</a>
+          <a onClick={(e) => { e.preventDefault(); window.open('https://twitter.com', '_blank'); }} href="#" className="hover:text-white">Twitter</a>
+          <a onClick={(e) => { e.preventDefault(); window.open('https://threads.net', '_blank'); }} href="#" className="hover:text-white">Threads</a>
         </div>
       </div>
     </div>
@@ -150,15 +169,33 @@ export const SiteFooter: React.FC = () => (
 export const MobileBottomDock: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const items = [
+  const { profile } = useUser();
+  const role = profile?.role || 'eater';
+
+  const items = role === 'eater' ? [
     { to: '/home', label: 'Home', icon: Home },
     { to: '/meals', label: 'Browse', icon: Search },
     { to: '/planner', label: 'Plan', icon: CalendarDays },
     { to: '/orders', label: 'Orders', icon: Package },
     { to: '/account', label: 'You', icon: User },
+  ] : role === 'chef' ? [
+    { to: '/chef', label: 'Home', icon: Home },
+    { to: '/orders', label: 'Orders', icon: Package },
+    { to: '/account', label: 'You', icon: User },
+  ] : role === 'restaurant' ? [
+    { to: '/restaurant', label: 'Home', icon: Home },
+    { to: '/orders', label: 'Orders', icon: Package },
+    { to: '/account', label: 'You', icon: User },
+  ] : [
+    { to: '/delivery', label: 'Jobs', icon: Bike },
+    { to: '/orders', label: 'History', icon: Package },
+    { to: '/account', label: 'You', icon: User },
   ];
+
   const isActive = (to: string) =>
-    to === '/home' ? location.pathname === '/home' : location.pathname.startsWith(to);
+    to === '/home' || to === '/chef' || to === '/restaurant' || to === '/delivery' 
+      ? location.pathname === to 
+      : location.pathname.startsWith(to);
 
   const [expanded, setExpanded] = React.useState<string | null>(null);
 
