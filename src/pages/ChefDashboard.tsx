@@ -133,18 +133,22 @@ const ChefDashboard: React.FC = () => {
     if (!profile) return;
     
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
+        const updateData: any = {
           full_name: editProfile.name,
           business_name: editProfile.business_name,
           bio: editProfile.bio,
           avatar_url: editProfile.avatar_url,
-          is_online: editProfile.is_online,
-          notifications: editProfile.notifications,
           payment_details: editProfile.payment
-        })
-        .eq('id', profile.id);
+        };
+        
+        // Only include columns if they exist in the profile object
+        if ('is_online' in (profile as any)) updateData.is_online = editProfile.is_online;
+        if ('notifications' in (profile as any)) updateData.notifications = editProfile.notifications;
+
+        const { error } = await supabase
+          .from('profiles')
+          .update(updateData)
+          .eq('id', profile.id);
       
       if (error) throw error;
       toast.success('Settings updated successfully');
@@ -165,13 +169,13 @@ const ChefDashboard: React.FC = () => {
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('meal-images')
+        .from('meals')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('meal-images')
+        .from('meals')
         .getPublicUrl(filePath);
 
       setEditProfile({ ...editProfile, avatar_url: publicUrl });
@@ -206,17 +210,17 @@ const ChefDashboard: React.FC = () => {
     setUploading(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
+      const fileName = `${profile?.id}-${Math.random()}.${fileExt}`;
       const filePath = `meals/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('meal-images')
+        .from('meals')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('meal-images')
+        .from('meals')
         .getPublicUrl(filePath);
 
       setNewMeal({ ...newMeal, image_url: publicUrl });

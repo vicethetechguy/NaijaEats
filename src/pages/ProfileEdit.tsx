@@ -61,13 +61,13 @@ const ProfileEdit: React.FC = () => {
       const filePath = `avatars/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
-        .from('meal-images')
+        .from('meals')
         .upload(filePath, file);
 
       if (uploadError) throw uploadError;
 
       const { data: { publicUrl } } = supabase.storage
-        .from('meal-images')
+        .from('meals')
         .getPublicUrl(filePath);
 
       setProfile(prev => ({ ...prev, image: publicUrl }));
