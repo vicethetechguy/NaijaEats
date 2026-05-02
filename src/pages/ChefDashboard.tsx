@@ -51,6 +51,7 @@ const ChefDashboard: React.FC = () => {
   // Profile edit state
   const [editProfile, setEditProfile] = useState({
     name: '',
+    business_name: '',
     bio: '',
     avatar_url: '',
     is_online: true,
@@ -77,17 +78,20 @@ const ChefDashboard: React.FC = () => {
   const [isWithdrawing, setIsWithdrawing] = useState(false);
 
   const categories = ['Main Dishes', 'Soups & Stews', 'Swallows', 'Grills & Sides', 'Drinks', 'Desserts'];
+  const hasInitialized = React.useRef(false);
 
   useEffect(() => {
-    if (profile) {
+    if (profile && !hasInitialized.current) {
       setEditProfile({
         name: profile.full_name || '',
+        business_name: profile.business_name || '',
         bio: profile.bio || '',
         avatar_url: profile.avatar_url || '',
         is_online: profile.is_online ?? true,
         notifications: profile.notifications || { orders: true, payouts: true },
         payment: profile.payment_details || { bank_name: '', account_number: '', account_name: '' }
       });
+      hasInitialized.current = true;
       fetchData();
     }
   }, [profile]);
@@ -133,6 +137,7 @@ const ChefDashboard: React.FC = () => {
         .from('profiles')
         .update({
           full_name: editProfile.name,
+          business_name: editProfile.business_name,
           bio: editProfile.bio,
           avatar_url: editProfile.avatar_url,
           is_online: editProfile.is_online,
@@ -830,7 +835,7 @@ const ChefDashboard: React.FC = () => {
                 
                 <div className="flex-1 text-center sm:text-left space-y-4">
                    <div className="space-y-1">
-                      <h2 className="text-3xl font-black tracking-tighter uppercase">{editProfile.name || 'Set Chef Name'}</h2>
+                      <h2 className="text-3xl font-black tracking-tighter uppercase">{editProfile.business_name || editProfile.name || 'Set Chef Name'}</h2>
                       <div className="flex items-center justify-center sm:justify-start gap-2">
                          <span className="flex items-center gap-1 bg-sage/10 text-sage px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border border-sage/20">
                             <Shield size={10} /> Verified Chef
@@ -854,14 +859,26 @@ const ChefDashboard: React.FC = () => {
               </div>
 
               <form onSubmit={handleUpdateProfile} className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Chef Name</label>
-                  <input 
-                    type="text" 
-                    value={editProfile.name}
-                    onChange={(e) => setEditProfile({...editProfile, name: e.target.value})}
-                    className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none focus:bg-mustard/10 transition-colors"
-                  />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Chef Name</label>
+                    <input 
+                      type="text" 
+                      value={editProfile.name}
+                      onChange={(e) => setEditProfile({...editProfile, name: e.target.value})}
+                      className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none focus:bg-mustard/10 transition-colors"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Kitchen / Business Name</label>
+                    <input 
+                      type="text" 
+                      value={editProfile.business_name}
+                      onChange={(e) => setEditProfile({...editProfile, business_name: e.target.value})}
+                      className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none focus:bg-mustard/10 transition-colors"
+                    />
+                  </div>
                 </div>
 
                 <div className="space-y-2">
