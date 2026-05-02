@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
 import { supabase } from '@/lib/supabase';
 import { useUser } from '@/contexts/UserContext';
@@ -17,11 +17,17 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const DeliveryDashboard: React.FC = () => {
-  const { profile } = useUser();
-  const [activeTab, setActiveTab] = useState<'active' | 'history' | 'earnings'>('active');
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const { profile, refreshProfile } = useUser();
   const [activeDeliveries, setActiveDeliveries] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const activeTab = 
+    pathname.includes('/history') ? 'history' : 
+    pathname.includes('/earnings') ? 'earnings' : 
+    pathname.includes('/profile') ? 'profile' : 'active';
 
   useEffect(() => {
     if (profile) {
@@ -97,24 +103,15 @@ const DeliveryDashboard: React.FC = () => {
               <Bike size={14} /> Rider Portal
             </div>
             <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">
-              Hey, {profile?.full_name?.split(' ')[0] || 'Rider'}
+              {activeTab === 'active' ? 'Active Jobs' : 
+               activeTab === 'history' ? 'Delivery History' : 
+               activeTab === 'earnings' ? 'My Earnings' : 'Rider Profile'}
             </h1>
-            <p className="text-ink/60 font-bold text-sm mt-2">You are currently <span className="text-sage">Online</span>.</p>
-          </div>
-          
-          <div className="flex bg-white border-2 border-ink rounded-2xl p-1 shadow-stk-sm">
-            {(['active', 'history', 'earnings'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
-                  activeTab === tab ? "bg-ink text-white" : "text-ink/40 hover:text-ink"
-                )}
-              >
-                {tab}
-              </button>
-            ))}
+            <p className="text-ink/60 font-bold text-sm mt-2">
+               {activeTab === 'active' ? 'Find and manage your current deliveries.' : 
+                activeTab === 'history' ? 'Review your completed trips.' : 
+                activeTab === 'earnings' ? 'Track your income and payouts.' : 'Manage your rider identity.'}
+            </p>
           </div>
         </header>
 
@@ -262,6 +259,38 @@ const DeliveryDashboard: React.FC = () => {
                 <h3 className="text-3xl font-black tracking-tighter">₦0</h3>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === 'profile' && (
+          <div className="max-w-2xl mx-auto bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-8 text-center">
+             <div className="size-32 bg-cream border-4 border-ink rounded-[40px] overflow-hidden shadow-stk mx-auto flex items-center justify-center">
+                {profile?.avatar_url ? (
+                   <img src={profile.avatar_url} className="w-full h-full object-cover" />
+                ) : (
+                   <User size={48} className="text-ink/10" />
+                )}
+             </div>
+             <div className="space-y-2">
+                <h2 className="text-3xl font-black tracking-tighter uppercase">{profile?.full_name}</h2>
+                <p className="text-ink/40 font-bold uppercase text-xs tracking-widest">Registered Rider</p>
+             </div>
+             
+             <div className="p-6 bg-sage/5 border-2 border-dashed border-sage/20 rounded-[32px] flex items-center justify-center gap-4 text-sage">
+                <CheckCircle2 size={24} />
+                <p className="font-black uppercase tracking-widest text-xs">Background Checked & Verified</p>
+             </div>
+
+             <button 
+                onClick={() => {
+                  localStorage.removeItem('platera_user');
+                  navigate('/auth');
+                  toast.success('Signed out successfully');
+                }}
+                className="w-full bg-tomato text-white border-[3px] border-ink rounded-2xl py-5 font-black uppercase text-sm shadow-stk flex items-center justify-center hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all"
+             >
+                Sign Out
+             </button>
           </div>
         )}
       </div>

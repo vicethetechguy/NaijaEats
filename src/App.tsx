@@ -88,7 +88,13 @@ const App = () => (
               <Route path="/chef/wallet/history" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
               <Route path="/chef/profile" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
               <Route path="/restaurant" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
+              <Route path="/restaurant/inventory" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
+              <Route path="/restaurant/orders" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
+              <Route path="/restaurant/profile" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
               <Route path="/delivery" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
+              <Route path="/delivery/history" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
+              <Route path="/delivery/earnings" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
+              <Route path="/delivery/profile" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
               
               <Route path="*" element={<NotFound />} />
             </Routes>

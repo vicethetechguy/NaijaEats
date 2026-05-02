@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { MainLayout } from '@/components/Layouts';
 import { supabase } from '@/lib/supabase';
 import { useUser } from '@/contexts/UserContext';
@@ -18,11 +18,17 @@ import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
 const RestaurantDashboard: React.FC = () => {
+  const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { profile, refreshProfile } = useUser();
-  const [activeTab, setActiveTab] = useState<'sales' | 'inventory' | 'business'>('sales');
   const [inventory, setInventory] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  const activeTab = 
+    pathname.includes('/inventory') ? 'inventory' : 
+    pathname.includes('/orders') ? 'orders' : 
+    pathname.includes('/profile') ? 'profile' : 'sales';
   
   // Business edit state
   const [editBusiness, setEditBusiness] = useState({
@@ -149,24 +155,15 @@ const RestaurantDashboard: React.FC = () => {
               <Store size={14} /> Restaurant Portal
             </div>
             <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">
-              {profile?.business_name || profile?.full_name || 'My Restaurant'}
+              {activeTab === 'sales' ? 'Overview' : 
+               activeTab === 'inventory' ? 'Inventory' : 
+               activeTab === 'orders' ? 'Store Orders' : 'Business Profile'}
             </h1>
-            <p className="text-ink/60 font-bold text-sm mt-2">Operational dashboard & analytics.</p>
-          </div>
-          
-          <div className="flex bg-white border-2 border-ink rounded-2xl p-1 shadow-stk-sm">
-            {(['sales', 'inventory', 'business'] as const).map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={cn(
-                  "px-6 py-2 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
-                  activeTab === tab ? "bg-ink text-white" : "text-ink/40 hover:text-ink"
-                )}
-              >
-                {tab}
-              </button>
-            ))}
+            <p className="text-ink/60 font-bold text-sm mt-2">
+               {activeTab === 'sales' ? 'Your business performance at a glance.' : 
+                activeTab === 'inventory' ? 'Manage your available menu items.' : 
+                activeTab === 'orders' ? 'Track and fulfill customer orders.' : 'Manage your business identity.'}
+            </p>
           </div>
         </header>
 
@@ -294,7 +291,44 @@ const RestaurantDashboard: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'business' && (
+        {activeTab === 'orders' && (
+          <div className="space-y-6">
+             <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-black tracking-tighter uppercase">All Orders</h2>
+                <div className="h-[2px] bg-ink/10 flex-1" />
+             </div>
+             <div className="space-y-4">
+                {orders.length === 0 ? (
+                  <div className="py-20 text-center bg-ink/5 border-2 border-dashed border-ink/20 rounded-[40px]">
+                    <p className="text-ink/40 font-bold uppercase text-xs tracking-widest">No orders yet</p>
+                  </div>
+                ) : (
+                  orders.map((order) => (
+                    <div key={order.id} className="bg-white border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4">
+                       <div className="flex justify-between items-start">
+                          <div>
+                             <p className="text-[10px] font-black text-ink/40 uppercase tracking-widest mb-1">Order #{order.id.slice(0, 8)}</p>
+                             <h3 className="text-xl font-black tracking-tight">{order.profiles?.full_name || 'Customer'}</h3>
+                          </div>
+                          <span className={cn(
+                             "px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border-2 border-ink",
+                             order.status === 'delivered' ? 'bg-sage text-white' : 'bg-mustard text-ink'
+                          )}>
+                             {order.status}
+                          </span>
+                       </div>
+                       <div className="flex justify-between items-center pt-4 border-t border-dashed border-ink/10">
+                          <p className="text-lg font-black tracking-tighter">₦{order.total_amount?.toLocaleString()}</p>
+                          <p className="text-[10px] font-bold text-ink/40 uppercase">{new Date(order.created_at).toLocaleString()}</p>
+                       </div>
+                    </div>
+                  ))
+                )}
+             </div>
+          </div>
+        )}
+
+        {activeTab === 'profile' && (
           <div className="max-w-2xl mx-auto bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-8">
             <form onSubmit={handleUpdateBusiness} className="space-y-6">
               <div className="text-center space-y-4">

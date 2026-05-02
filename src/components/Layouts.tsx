@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bell, ArrowLeft, Search, Home, CalendarDays, Package, User, ChefHat, Wallet } from 'lucide-react';
+import { Bell, ArrowLeft, Search, Home, CalendarDays, Package, User, ChefHat, Wallet, Bike, Store } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useUser } from '@/contexts/UserContext';
@@ -27,12 +27,16 @@ const navLinks = {
     { to: '/chef/profile', label: 'You' },
   ],
   restaurant: [
-    { to: '/restaurant', label: 'Dashboard' },
-    { to: '/orders', label: 'Store Orders' },
+    { to: '/restaurant', label: 'Home' },
+    { to: '/restaurant/inventory', label: 'Inventory' },
+    { to: '/restaurant/orders', label: 'Orders' },
+    { to: '/restaurant/profile', label: 'You' },
   ],
   delivery: [
     { to: '/delivery', label: 'Active Jobs' },
-    { to: '/orders', label: 'History' },
+    { to: '/delivery/history', label: 'History' },
+    { to: '/delivery/earnings', label: 'Earnings' },
+    { to: '/delivery/profile', label: 'You' },
   ]
 };
 
@@ -187,12 +191,14 @@ export const MobileBottomDock: React.FC = () => {
     { to: '/chef/profile', label: 'You', icon: User },
   ] : role === 'restaurant' ? [
     { to: '/restaurant', label: 'Home', icon: Home },
-    { to: '/orders', label: 'Orders', icon: Package },
-    { to: '/account', label: 'You', icon: User },
+    { to: '/restaurant/inventory', label: 'Inventory', icon: Package },
+    { to: '/restaurant/orders', label: 'Orders', icon: CalendarDays },
+    { to: '/restaurant/profile', label: 'You', icon: User },
   ] : [
     { to: '/delivery', label: 'Jobs', icon: Bike },
-    { to: '/orders', label: 'History', icon: Package },
-    { to: '/account', label: 'You', icon: User },
+    { to: '/delivery/history', label: 'History', icon: Package },
+    { to: '/delivery/earnings', label: 'Wallet', icon: Wallet },
+    { to: '/delivery/profile', label: 'You', icon: User },
   ];
 
   const isActive = (to: string) =>
