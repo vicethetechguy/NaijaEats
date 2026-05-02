@@ -31,6 +31,10 @@ const RestaurantDashboard: React.FC = () => {
     avatar_url: ''
   });
 
+  // New Item Form state
+  const [isAddingItem, setIsAddingItem] = useState(false);
+  const [newItem, setNewItem] = useState({ title: '', price: '' });
+
   useEffect(() => {
     if (profile) {
       setEditBusiness({
@@ -89,19 +93,19 @@ const RestaurantDashboard: React.FC = () => {
     }
   };
 
-  const handleAddInventory = async () => {
-    const title = prompt('Enter item name:');
-    if (!title) return;
-    const priceStr = prompt('Enter price (₦):');
-    if (!priceStr) return;
-    const price = parseInt(priceStr) || 0;
+  const handleAddInventory = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newItem.title || !newItem.price) {
+      toast.error('Please enter both title and price');
+      return;
+    }
 
     try {
       const { data, error } = await supabase
         .from('meals')
         .insert({
-          title,
-          price,
+          title: newItem.title,
+          price: parseInt(newItem.price) || 0,
           seller_id: profile?.id,
           is_available: true,
           category: 'Restaurant'
@@ -111,6 +115,8 @@ const RestaurantDashboard: React.FC = () => {
       
       if (error) throw error;
       setInventory([data, ...inventory]);
+      setNewItem({ title: '', price: '' });
+      setIsAddingItem(false);
       toast.success('Item added to inventory');
     } catch (error: any) {
       toast.error(error.message);
@@ -218,12 +224,45 @@ const RestaurantDashboard: React.FC = () => {
             <div className="flex justify-between items-center">
               <h2 className="text-2xl font-black tracking-tighter uppercase">Menu Inventory</h2>
               <button 
-                onClick={handleAddInventory}
+                onClick={() => setIsAddingItem(!isAddingItem)}
                 className="bg-ink text-white border-2 border-ink px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-stk-sm flex items-center gap-2"
               >
-                <Plus size={14} /> Add Item
+                {isAddingItem ? 'Cancel' : <><Plus size={14} /> Add Item</>}
               </button>
             </div>
+
+            {isAddingItem && (
+              <form onSubmit={handleAddInventory} className="bg-sage/10 border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4 animate-fade-in">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Item Name</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. Suya Platter"
+                      value={newItem.title}
+                      onChange={(e) => setNewItem({...newItem, title: e.target.value})}
+                      className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Price (₦)</label>
+                    <input 
+                      type="number" 
+                      placeholder="3500"
+                      value={newItem.price}
+                      onChange={(e) => setNewItem({...newItem, price: e.target.value})}
+                      className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none"
+                    />
+                  </div>
+                </div>
+                <button 
+                  type="submit"
+                  className="w-full bg-ink text-white border-2 border-ink py-3 rounded-xl font-black uppercase text-xs tracking-widest shadow-stk-sm"
+                >
+                  Add to Inventory
+                </button>
+              </form>
+            )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {inventory.map((item) => (

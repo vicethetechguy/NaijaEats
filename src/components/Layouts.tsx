@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bell, ArrowLeft, Search, Home, CalendarDays, Package, User } from 'lucide-react';
+import { Bell, ArrowLeft, Search, Home, CalendarDays, Package, User, ChefHat, Wallet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/lib/supabase';
 import { useUser } from '@/contexts/UserContext';
@@ -21,8 +21,10 @@ const navLinks = {
     { to: '/pricing', label: 'Plans' },
   ],
   chef: [
-    { to: '/chef', label: 'Dashboard' },
-    { to: '/orders', label: 'Customer Orders' },
+    { to: '/chef', label: 'Orders' },
+    { to: '/chef/menu', label: 'Menus' },
+    { to: '/chef/wallet', label: 'Wallet' },
+    { to: '/chef/profile', label: 'You' },
   ],
   restaurant: [
     { to: '/restaurant', label: 'Dashboard' },
@@ -179,9 +181,10 @@ export const MobileBottomDock: React.FC = () => {
     { to: '/orders', label: 'Orders', icon: Package },
     { to: '/account', label: 'You', icon: User },
   ] : role === 'chef' ? [
-    { to: '/chef', label: 'Home', icon: Home },
-    { to: '/orders', label: 'Orders', icon: Package },
-    { to: '/account', label: 'You', icon: User },
+    { to: '/chef', label: 'Orders', icon: Package },
+    { to: '/chef/menu', label: 'Menus', icon: ChefHat },
+    { to: '/chef/wallet', label: 'Wallet', icon: Wallet },
+    { to: '/chef/profile', label: 'You', icon: User },
   ] : role === 'restaurant' ? [
     { to: '/restaurant', label: 'Home', icon: Home },
     { to: '/orders', label: 'Orders', icon: Package },

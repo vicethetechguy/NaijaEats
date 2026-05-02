@@ -82,6 +82,9 @@ const App = () => (
               
               {/* Role Portals */}
               <Route path="/chef" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
+              <Route path="/chef/menu" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
+              <Route path="/chef/wallet" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
+              <Route path="/chef/profile" element={<ProtectedRoute><ChefDashboard /></ProtectedRoute>} />
               <Route path="/restaurant" element={<ProtectedRoute><RestaurantDashboard /></ProtectedRoute>} />
               <Route path="/delivery" element={<ProtectedRoute><DeliveryDashboard /></ProtectedRoute>} />
               

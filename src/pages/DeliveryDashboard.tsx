@@ -36,11 +36,11 @@ const DeliveryDashboard: React.FC = () => {
       const { data: readyOrders } = await supabase
         .from('orders')
         .select('*, profiles(full_name, address)')
-        .eq('status', 'ready');
+        .in('status', ['ready', 'out_for_delivery']);
       
       if (readyOrders) setActiveDeliveries(readyOrders);
 
-      // Fetch delivery history (mocking with 'delivered' orders for now)
+      // Fetch delivery history
       const { data: historyData } = await supabase
         .from('orders')
         .select('*, profiles(full_name)')
@@ -141,13 +141,44 @@ const DeliveryDashboard: React.FC = () => {
             </div>
 
             <div className="space-y-4">
-              <h2 className="text-xl font-black tracking-tighter uppercase ml-2">Available Offers</h2>
-              {activeDeliveries.length === 0 ? (
+              <h2 className="text-xl font-black tracking-tighter uppercase ml-2">Active Tasks</h2>
+              {activeDeliveries.filter(o => o.status === 'out_for_delivery').length > 0 ? (
+                activeDeliveries.filter(o => o.status === 'out_for_delivery').map((order) => (
+                  <div key={order.id} className="bg-white border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-widest text-ink/40 mb-1">In Progress</p>
+                        <h3 className="text-2xl font-black tracking-tight leading-none">Deliver to {order.profiles?.full_name}</h3>
+                      </div>
+                      <div className="bg-sage text-white px-4 py-2 rounded-2xl font-black text-xl tracking-tighter shadow-stk-sm">
+                        ₦1,500
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 text-ink/60">
+                      <MapIcon size={16} />
+                      <p className="text-sm font-bold truncate">{order.profiles?.address || 'Customer Location'}</p>
+                    </div>
+                    <button 
+                      onClick={() => completeOrder(order.id)}
+                      className="w-full bg-sage text-white border-2 border-ink py-4 rounded-2xl font-black uppercase text-xs tracking-widest shadow-stk-sm hover:translate-y-0.5 transition-all"
+                    >
+                      Mark as Delivered
+                    </button>
+                  </div>
+                ))
+              ) : (
+                <div className="py-8 text-center bg-ink/5 border-2 border-dashed border-ink/20 rounded-[40px]">
+                  <p className="text-ink/40 font-bold uppercase text-xs tracking-widest">No active tasks</p>
+                </div>
+              )}
+
+              <h2 className="text-xl font-black tracking-tighter uppercase ml-2 mt-8">Available Offers</h2>
+              {activeDeliveries.filter(o => o.status === 'ready').length === 0 ? (
                 <div className="py-12 text-center bg-ink/5 border-2 border-dashed border-ink/20 rounded-[40px]">
                   <p className="text-ink/40 font-bold uppercase text-xs tracking-widest">Searching for nearby orders...</p>
                 </div>
               ) : (
-                activeDeliveries.map((order) => (
+                activeDeliveries.filter(o => o.status === 'ready').map((order) => (
                   <div key={order.id} className="bg-mustard border-[3px] border-ink rounded-[32px] p-6 shadow-stk relative overflow-hidden group">
                     <div className="relative z-10 space-y-4">
                       <div className="flex justify-between items-start">
