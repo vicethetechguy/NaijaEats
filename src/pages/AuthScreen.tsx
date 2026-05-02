@@ -87,15 +87,7 @@ const AuthScreen = () => {
   };
 
   const redirectUser = (userRole: string) => {
-    if (userRole === 'chef') {
-      window.location.href = '/apps/chef/index.html';
-    } else if (userRole === 'delivery') {
-      window.location.href = '/apps/delivery/index.html';
-    } else if (userRole === 'restaurant') {
-      window.location.href = '/apps/restaurant/index.html';
-    } else {
-      navigate('/home');
-    }
+    navigate('/home');
   };
 
   return (
