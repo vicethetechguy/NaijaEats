@@ -44,7 +44,11 @@ const ChefDashboard: React.FC = () => {
 
   // New Meal Form state
   const [isAddingMeal, setIsAddingMeal] = useState(false);
-  const [newMeal, setNewMeal] = useState({ title: '', price: '' });
+  const [newMeal, setNewMeal] = useState({ title: '', price: '', category: 'Main Dishes', image_url: '' });
+  const [uploading, setUploading] = useState(false);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  const categories = ['Main Dishes', 'Soups & Stews', 'Swallows', 'Grills & Sides', 'Drinks', 'Desserts'];
 
   useEffect(() => {
     if (profile) {
@@ -104,6 +108,43 @@ const ChefDashboard: React.FC = () => {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Create a local preview
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setUploading(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `meal-images/${fileName}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('meals')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('meals')
+        .getPublicUrl(filePath);
+
+      setNewMeal({ ...newMeal, image_url: publicUrl });
+      toast.success('Image uploaded successfully');
+    } catch (error: any) {
+      console.error('Error uploading image:', error);
+      toast.error('Image upload failed. Please try again.');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleAddMeal = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMeal.title || !newMeal.price) {
@@ -119,16 +160,18 @@ const ChefDashboard: React.FC = () => {
           price: parseInt(newMeal.price) || 0,
           seller_id: profile?.id,
           is_available: true,
-          category: 'Chef Special'
+          category: newMeal.category,
+          image_url: newMeal.image_url
         })
         .select()
         .single();
       
       if (error) throw error;
       setMeals([data, ...meals]);
-      setNewMeal({ title: '', price: '' });
+      setNewMeal({ title: '', price: '', category: 'Main Dishes', image_url: '' });
+      setImagePreview(null);
       setIsAddingMeal(false);
-      toast.success('Dish added to menu');
+      toast.success('Dish added to catalog');
     } catch (error: any) {
       toast.error(error.message);
     }
@@ -321,80 +364,172 @@ const ChefDashboard: React.FC = () => {
             </div>
 
             {isAddingMeal && (
-              <form onSubmit={handleAddMeal} className="bg-mustard/10 border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4 animate-fade-in">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Dish Name</label>
-                    <input 
-                      type="text" 
-                      placeholder="e.g. Smoky Jollof Rice"
-                      value={newMeal.title}
-                      onChange={(e) => setNewMeal({...newMeal, title: e.target.value})}
-                      className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none"
-                    />
+              <form onSubmit={handleAddMeal} className="bg-mustard/10 border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-6 animate-fade-in">
+                <div className="flex flex-col sm:flex-row gap-6">
+                  {/* Image Upload Area */}
+                  <div className="w-full sm:w-40">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1 block mb-2">Food Image</label>
+                    <div className="relative aspect-square bg-white border-2 border-dashed border-ink/20 rounded-2xl flex flex-col items-center justify-center overflow-hidden group cursor-pointer hover:border-tomato/40 transition-colors">
+                      {imagePreview ? (
+                        <img src={imagePreview} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="text-center p-4">
+                          <Camera size={24} className="mx-auto text-ink/20 mb-2" />
+                          <p className="text-[8px] font-bold text-ink/40">Upload Photo</p>
+                        </div>
+                      )}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        onChange={handleImageUpload}
+                        className="absolute inset-0 opacity-0 cursor-pointer"
+                      />
+                      {uploading && (
+                        <div className="absolute inset-0 bg-white/80 flex items-center justify-center">
+                          <div className="size-5 border-2 border-tomato border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="space-y-1">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Price (₦)</label>
-                    <input 
-                      type="number" 
-                      placeholder="2500"
-                      value={newMeal.price}
-                      onChange={(e) => setNewMeal({...newMeal, price: e.target.value})}
-                      className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none"
-                    />
+
+                  <div className="flex-1 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Dish Name</label>
+                        <input 
+                          type="text" 
+                          placeholder="e.g. Smoky Jollof Rice"
+                          value={newMeal.title}
+                          onChange={(e) => setNewMeal({...newMeal, title: e.target.value})}
+                          className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none"
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Price (₦)</label>
+                        <input 
+                          type="number" 
+                          placeholder="2500"
+                          value={newMeal.price}
+                          onChange={(e) => setNewMeal({...newMeal, price: e.target.value})}
+                          className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Catalog Category</label>
+                      <select 
+                        value={newMeal.category}
+                        onChange={(e) => setNewMeal({...newMeal, category: e.target.value})}
+                        className="w-full bg-white border-2 border-ink rounded-xl px-4 py-2 font-bold outline-none appearance-none"
+                      >
+                        {categories.map(c => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </div>
                   </div>
                 </div>
+
                 <button 
                   type="submit"
-                  className="w-full bg-ink text-white border-2 border-ink py-3 rounded-xl font-black uppercase text-xs tracking-widest shadow-stk-sm"
+                  disabled={uploading}
+                  className="w-full bg-ink text-white border-2 border-ink py-4 rounded-xl font-black uppercase text-xs tracking-widest shadow-stk-sm disabled:opacity-50"
                 >
-                  Confirm Add Dish
+                  {uploading ? 'Processing Image...' : 'Add to Catalog'}
                 </button>
               </form>
             )}
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {meals.map((meal) => (
-                <div key={meal.id} className={cn(
-                  "bg-white border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4",
-                  !meal.is_available && "opacity-60"
-                )}>
-                  <div className="flex gap-4">
-                    <div className="w-20 h-20 bg-cream border-2 border-ink rounded-2xl flex items-center justify-center text-ink/20 overflow-hidden shrink-0">
-                      {meal.image_url ? (
-                        <img src={meal.image_url} className="w-full h-full object-cover" />
-                      ) : (
-                        <ChefHat size={32} />
-                      )}
+            <div className="space-y-12">
+              {categories.map((cat) => {
+                const catMeals = meals.filter(m => m.category === cat);
+                if (catMeals.length === 0) return null;
+
+                return (
+                  <section key={cat} className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-xl font-black tracking-tight uppercase whitespace-nowrap">{cat}</h3>
+                      <div className="h-[2px] bg-ink/10 w-full" />
+                      <span className="text-[10px] font-black text-ink/40">{catMeals.length}</span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg font-black tracking-tight truncate">{meal.title}</h3>
-                      <p className="text-xl font-black text-tomato tracking-tighter">₦{meal.price?.toLocaleString()}</p>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {catMeals.map((meal) => (
+                        <div key={meal.id} className={cn(
+                          "bg-white border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4 transition-all",
+                          !meal.is_available && "opacity-60 grayscale-[0.5]"
+                        )}>
+                          <div className="flex gap-4">
+                            <div className="w-24 h-24 bg-cream border-2 border-ink rounded-2xl flex items-center justify-center text-ink/20 overflow-hidden shrink-0 shadow-stk-sm">
+                              {meal.image_url ? (
+                                <img src={meal.image_url} className="w-full h-full object-cover" />
+                              ) : (
+                                <ChefHat size={32} />
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3 className="text-lg font-black tracking-tight truncate">{meal.title}</h3>
+                              <p className="text-xl font-black text-tomato tracking-tighter">₦{meal.price?.toLocaleString()}</p>
+                              <div className="mt-2 flex flex-wrap gap-2">
+                                <span className="bg-ink/5 text-ink/40 px-2 py-0.5 rounded-lg text-[8px] font-black uppercase tracking-widest">
+                                  {meal.category}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-between items-center pt-4 border-t border-dashed border-ink/10">
+                            <div className="flex items-center gap-2">
+                              <span className={cn(
+                                "w-2 h-2 rounded-full",
+                                meal.is_available ? "bg-sage" : "bg-tomato"
+                              )} />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-ink/40">
+                                {meal.is_available ? 'Available' : 'Sold Out'}
+                              </span>
+                            </div>
+                            <button 
+                              onClick={() => toggleAvailability(meal.id, meal.is_available)}
+                              className={cn(
+                                "border-2 border-ink px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-stk-sm transition-all active:scale-95",
+                                meal.is_available ? "bg-tomato/10 text-tomato" : "bg-sage/10 text-sage"
+                              )}
+                            >
+                              {meal.is_available ? 'Set Out of Stock' : 'Set Available'}
+                            </button>
+                          </div>
+                        </div>
+                      ))}
                     </div>
-                  </div>
-                  
-                  <div className="flex justify-between items-center pt-4 border-t border-dashed border-ink/10">
-                    <div className="flex items-center gap-2">
-                      <span className={cn(
-                        "w-2 h-2 rounded-full",
-                        meal.is_available ? "bg-sage" : "bg-tomato"
-                      )} />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-ink/40">
-                        {meal.is_available ? 'Available' : 'Sold Out'}
-                      </span>
+                  </section>
+                );
+              })}
+
+              {meals.filter(m => !categories.includes(m.category)).length > 0 && (
+                 <section className="space-y-4">
+                    <div className="flex items-center gap-4">
+                      <h3 className="text-xl font-black tracking-tight uppercase whitespace-nowrap">Others</h3>
+                      <div className="h-[2px] bg-ink/10 w-full" />
                     </div>
-                    <button 
-                      onClick={() => toggleAvailability(meal.id, meal.is_available)}
-                      className={cn(
-                        "border-2 border-ink px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest shadow-stk-sm transition-all",
-                        meal.is_available ? "bg-tomato/10 text-tomato" : "bg-sage/10 text-sage"
-                      )}
-                    >
-                      {meal.is_available ? 'Set Out of Stock' : 'Set Available'}
-                    </button>
-                  </div>
-                </div>
-              ))}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                      {meals.filter(m => !categories.includes(m.category)).map((meal) => (
+                        <div key={meal.id} className="bg-white border-[3px] border-ink rounded-[32px] p-6 shadow-stk space-y-4">
+                           {/* Simple card for legacy items */}
+                           <div className="flex gap-4">
+                            <div className="w-16 h-16 bg-cream border-2 border-ink rounded-2xl flex items-center justify-center overflow-hidden shrink-0">
+                              {meal.image_url ? <img src={meal.image_url} className="w-full h-full object-cover" /> : <ChefHat size={24} />}
+                            </div>
+                            <div>
+                              <h3 className="font-black tracking-tight">{meal.title}</h3>
+                              <p className="font-black text-tomato">₦{meal.price?.toLocaleString()}</p>
+                            </div>
+                           </div>
+                        </div>
+                      ))}
+                    </div>
+                 </section>
+              )}
             </div>
           </div>
         )}
