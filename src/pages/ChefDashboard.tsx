@@ -14,14 +14,16 @@ import {
   Camera, 
   Save,
   Trash2,
-  DollarSign,
-  Wallet,
-  TrendingUp,
+  ShieldCheck,
   CreditCard,
   History,
   ArrowLeft,
   Banknote,
-  ShieldCheck
+  ShieldCheck as Shield,
+  Lock,
+  Bell,
+  Power,
+  Info
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -45,7 +47,17 @@ const ChefDashboard: React.FC = () => {
   const [editProfile, setEditProfile] = useState({
     name: '',
     bio: '',
-    avatar_url: ''
+    avatar_url: '',
+    is_online: true,
+    notifications: {
+      orders: true,
+      payouts: true
+    },
+    payment: {
+      bank_name: '',
+      account_number: '',
+      account_name: ''
+    }
   });
 
   // New Meal Form state
@@ -65,7 +77,10 @@ const ChefDashboard: React.FC = () => {
       setEditProfile({
         name: profile.full_name || '',
         bio: profile.bio || '',
-        avatar_url: profile.avatar_url || ''
+        avatar_url: profile.avatar_url || '',
+        is_online: profile.is_online ?? true,
+        notifications: profile.notifications || { orders: true, payouts: true },
+        payment: profile.payment_details || { bank_name: '', account_number: '', account_name: '' }
       });
       fetchData();
     }
@@ -106,12 +121,15 @@ const ChefDashboard: React.FC = () => {
         .update({
           full_name: editProfile.name,
           bio: editProfile.bio,
-          avatar_url: editProfile.avatar_url
+          avatar_url: editProfile.avatar_url,
+          is_online: editProfile.is_online,
+          notifications: editProfile.notifications,
+          payment_details: editProfile.payment
         })
         .eq('id', profile.id);
       
       if (error) throw error;
-      toast.success('Profile updated successfully');
+      toast.success('Settings updated successfully');
       refreshProfile();
     } catch (error: any) {
       toast.error(error.message);
@@ -645,51 +663,192 @@ const ChefDashboard: React.FC = () => {
         )}
 
         {activeTab === 'profile' && (
-          <div className="max-w-2xl mx-auto bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-8">
-            <div className="text-center space-y-4">
-              <div className="relative inline-block">
-                <div className="size-32 bg-cream border-4 border-ink rounded-[40px] overflow-hidden shadow-stk mx-auto flex items-center justify-center">
-                  {editProfile.avatar_url ? (
-                    <img src={editProfile.avatar_url} className="w-full h-full object-cover" />
-                  ) : (
-                    <ChefHat size={48} className="text-ink/10" />
-                  )}
+          <div className="max-w-3xl mx-auto space-y-8 pb-20">
+            {/* Identity & Status */}
+            <div className="bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-8">
+              <div className="flex flex-col sm:flex-row items-center gap-8">
+                <div className="relative">
+                  <div className="size-32 bg-cream border-4 border-ink rounded-[40px] overflow-hidden shadow-stk flex items-center justify-center">
+                    {editProfile.avatar_url ? (
+                      <img src={editProfile.avatar_url} className="w-full h-full object-cover" />
+                    ) : (
+                      <ChefHat size={48} className="text-ink/10" />
+                    )}
+                  </div>
+                  <button className="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm hover:scale-110 transition-transform">
+                    <Camera size={16} />
+                  </button>
                 </div>
-                <button className="absolute -bottom-2 -right-2 p-2 bg-tomato text-white border-2 border-ink rounded-full shadow-stk-sm hover:scale-110 transition-transform">
-                  <Camera size={16} />
-                </button>
+                
+                <div className="flex-1 text-center sm:text-left space-y-4">
+                   <div className="space-y-1">
+                      <h2 className="text-3xl font-black tracking-tighter uppercase">{editProfile.name || 'Set Chef Name'}</h2>
+                      <div className="flex items-center justify-center sm:justify-start gap-2">
+                         <span className="flex items-center gap-1 bg-sage/10 text-sage px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-widest border border-sage/20">
+                            <Shield size={10} /> Verified Chef
+                         </span>
+                         <span className="text-[9px] font-black text-ink/40 uppercase tracking-widest">UID: {profile?.id.slice(0, 8)}</span>
+                      </div>
+                   </div>
+
+                   <div className="flex items-center justify-center sm:justify-start gap-3">
+                      <button 
+                        onClick={() => setEditProfile({...editProfile, is_online: !editProfile.is_online})}
+                        className={cn(
+                          "px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border-2 border-ink shadow-stk-sm transition-all",
+                          editProfile.is_online ? "bg-sage text-white" : "bg-ink/5 text-ink/40"
+                        )}
+                      >
+                        {editProfile.is_online ? '● Kitchen Open' : '○ Kitchen Closed'}
+                      </button>
+                   </div>
+                </div>
               </div>
-              <h2 className="text-2xl font-black tracking-tighter uppercase">Edit Profile</h2>
+
+              <form onSubmit={handleUpdateProfile} className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Chef Name</label>
+                  <input 
+                    type="text" 
+                    value={editProfile.name}
+                    onChange={(e) => setEditProfile({...editProfile, name: e.target.value})}
+                    className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none focus:bg-mustard/10 transition-colors"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Kitchen Bio</label>
+                  <textarea 
+                    value={editProfile.bio}
+                    onChange={(e) => setEditProfile({...editProfile, bio: e.target.value})}
+                    rows={3}
+                    className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none focus:bg-mustard/10 transition-colors resize-none"
+                  />
+                </div>
+              </form>
             </div>
 
-            <form onSubmit={handleUpdateProfile} className="space-y-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Chef Name</label>
-                <input 
-                  type="text" 
-                  value={editProfile.name}
-                  onChange={(e) => setEditProfile({...editProfile, name: e.target.value})}
-                  className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none focus:bg-mustard/10 transition-colors"
-                />
-              </div>
+            {/* Payment Settings */}
+            <div className="bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-6">
+               <div className="flex items-center gap-3 border-b-2 border-ink/5 pb-4">
+                  <div className="p-2 bg-mustard/20 rounded-lg text-mustard">
+                     <CreditCard size={20} />
+                  </div>
+                  <h3 className="font-black uppercase tracking-widest text-sm">Payout Settings</h3>
+               </div>
 
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Kitchen Bio</label>
-                <textarea 
-                  value={editProfile.bio}
-                  onChange={(e) => setEditProfile({...editProfile, bio: e.target.value})}
-                  rows={4}
-                  className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none focus:bg-mustard/10 transition-colors resize-none"
-                />
-              </div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Bank Name</label>
+                    <select 
+                      value={editProfile.payment.bank_name}
+                      onChange={(e) => setEditProfile({...editProfile, payment: {...editProfile.payment, bank_name: e.target.value}})}
+                      className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none appearance-none"
+                    >
+                      <option value="">Select Bank</option>
+                      <option value="Kuda Bank">Kuda Bank</option>
+                      <option value="GTBank">GTBank</option>
+                      <option value="Access Bank">Access Bank</option>
+                      <option value="Zenith Bank">Zenith Bank</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Account Number</label>
+                    <input 
+                      type="text" 
+                      placeholder="0000000000"
+                      value={editProfile.payment.account_number}
+                      onChange={(e) => setEditProfile({...editProfile, payment: {...editProfile.payment, account_number: e.target.value}})}
+                      className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none"
+                    />
+                  </div>
+                  <div className="space-y-2 sm:col-span-2">
+                    <label className="text-[10px] font-black uppercase tracking-widest text-ink/40 ml-1">Account Name</label>
+                    <input 
+                      type="text" 
+                      placeholder="Enter Full Name"
+                      value={editProfile.payment.account_name}
+                      onChange={(e) => setEditProfile({...editProfile, payment: {...editProfile.payment, account_name: e.target.value}})}
+                      className="w-full bg-cream border-2 border-ink rounded-2xl px-4 py-3 font-bold outline-none"
+                    />
+                  </div>
+               </div>
+            </div>
 
-              <button 
-                type="submit"
-                className="w-full bg-ink text-white border-[3px] border-ink rounded-2xl py-4 font-black uppercase text-sm shadow-stk flex items-center justify-center gap-2 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all"
-              >
-                <Save size={18} /> Save Changes
-              </button>
-            </form>
+            {/* Verification & Legal */}
+            <div className="bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-6">
+               <div className="flex items-center gap-3 border-b-2 border-ink/5 pb-4">
+                  <div className="p-2 bg-sage/20 rounded-lg text-sage">
+                     <Shield size={20} />
+                  </div>
+                  <h3 className="font-black uppercase tracking-widest text-sm">Verification Status</h3>
+               </div>
+               
+               <div className="flex items-center justify-between p-4 bg-sage/5 border-2 border-dashed border-sage/20 rounded-2xl">
+                  <div className="flex gap-4 items-center">
+                     <div className="size-10 bg-sage text-white rounded-full flex items-center justify-center">
+                        <Check size={20} />
+                     </div>
+                     <div>
+                        <p className="text-xs font-black uppercase tracking-widest text-sage">Identity Verified</p>
+                        <p className="text-[10px] font-bold text-ink/40">Verified on {new Date().toLocaleDateString()}</p>
+                     </div>
+                  </div>
+                  <button className="text-[10px] font-black uppercase text-ink/40 underline">View Docs</button>
+               </div>
+            </div>
+
+            {/* Notification Settings */}
+            <div className="bg-white border-[3px] border-ink rounded-[40px] p-8 shadow-stk space-y-6">
+               <div className="flex items-center gap-3 border-b-2 border-ink/5 pb-4">
+                  <div className="p-2 bg-tomato/20 rounded-lg text-tomato">
+                     <Bell size={20} />
+                  </div>
+                  <h3 className="font-black uppercase tracking-widest text-sm">Notifications</h3>
+               </div>
+
+               <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                     <div>
+                        <p className="text-xs font-black uppercase tracking-widest">New Order Alerts</p>
+                        <p className="text-[10px] font-bold text-ink/40">Get notified when a customer places an order</p>
+                     </div>
+                     <button 
+                       onClick={() => setEditProfile({...editProfile, notifications: {...editProfile.notifications, orders: !editProfile.notifications.orders}})}
+                       className={cn("size-6 rounded-md border-2 border-ink transition-colors", editProfile.notifications.orders ? "bg-sage" : "bg-white")}
+                     />
+                  </div>
+                  <div className="flex items-center justify-between">
+                     <div>
+                        <p className="text-xs font-black uppercase tracking-widest">Payout Confirmations</p>
+                        <p className="text-[10px] font-bold text-ink/40">Get notified when your funds are sent</p>
+                     </div>
+                     <button 
+                       onClick={() => setEditProfile({...editProfile, notifications: {...editProfile.notifications, payouts: !editProfile.notifications.payouts}})}
+                       className={cn("size-6 rounded-md border-2 border-ink transition-colors", editProfile.notifications.payouts ? "bg-sage" : "bg-white")}
+                     />
+                  </div>
+               </div>
+            </div>
+
+            <div className="flex gap-4">
+               <button 
+                  onClick={handleUpdateProfile}
+                  className="flex-1 bg-ink text-white border-[3px] border-ink rounded-2xl py-5 font-black uppercase text-sm shadow-stk flex items-center justify-center gap-2 hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all"
+                >
+                  <Save size={18} /> Save All Changes
+                </button>
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('platera_user');
+                    navigate('/auth');
+                    toast.success('Signed out successfully');
+                  }}
+                  className="px-6 bg-white text-tomato border-[3px] border-ink rounded-2xl py-5 font-black uppercase text-sm shadow-stk flex items-center justify-center hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-stk-sm transition-all"
+                >
+                  <Power size={18} />
+                </button>
+            </div>
           </div>
         )}
       </div>
